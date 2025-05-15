@@ -13,10 +13,10 @@ include_directories("E:/Code/WinFsp/include")  # WinFsp-Header
 
 
 # === Quellcode-Dateien ===
-file(GLOB SOURCES "src/*.cpp")
-
-# === Executable erstellen ===
-add_executable(CachingProjekt ${SOURCES})
+add_executable(CachingProjekt
+    src/main.cpp
+    src/PassthroughFS.cpp
+)
 
 # === WinFsp-Bibliothek verlinken ===
 link_directories("E:/Code/WinFsp/lib")
