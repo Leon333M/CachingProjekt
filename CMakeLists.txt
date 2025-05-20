@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(CachingProjekt)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # === Include-Pfade ===
 include_directories(include)
@@ -11,8 +11,10 @@ include_directories("E:/Code/WinFsp/inc")  # WinFsp-Header
 
 # === Quellcode-Dateien ===
 add_executable(CachingProjekt
-    src/main.cpp
-    src/PassthroughFS.cpp
+    # src/main.cpp
+    # src/PassthroughFS.cpp
+    # src/passthrough_backend.cpp
+     src/passthrough.c 
 )
 
 # === WinFsp-Bibliothek verlinken ===

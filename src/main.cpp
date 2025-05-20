@@ -1,15 +1,27 @@
-#include <iostream>
+// main.cpp
 #include "PassthroughFS.h"
+#include <iostream>
+#include <windows.h> 
 
 int main() {
-    std::cout << "Starte virtuelles Laufwerk G:, das F: spiegelt\n";
+    try {
+        std::cout << "Mesage Box Anzeigen\n";
+        std::cout << "Starte virtuelles Laufwerk G:, das F: spiegelt\n";
 
-    PassthroughFS fs("F:\\");  // Backend-Quelle
-    fs.mount("G:");            // Mountpoint
+        PassthroughFS fs("F:\\");  // Backend-Quelle
+        fs.mount("G:");            // Mountpoint
 
-    std::cout << "Dateisystem lauuft. Druecke Enter zum Beenden.\n";
-    std::cin.get();
+        if (!fs.isMounted()) {
+            std::cerr << "main: Mount fehlgeschlagen. Programm wird beendet.\n";
+            return 1;
+        }
 
-    fs.unmount();
-    return 0;
+        std::cout << "Dateisystem lauuft. Druecke Enter zum Beenden.\n";
+        std::cin.get();
+
+        fs.unmount();
+        return 0;
+    } catch (...) {
+        std::cout << "Error das progam ist abgestuertzt\n";
+    }
 }
