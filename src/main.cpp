@@ -3,7 +3,7 @@
 #include <iostream>
 #include <windows.h> 
 
-int main() {
+int main(int argc, wchar_t **argv) {
     try {
         std::cout << "Init virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
         std::string orginalVolume = "F";
@@ -13,6 +13,8 @@ int main() {
 
         std::cout << "Starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
         vhdd.start();
+
+        // std::cin.get();
 
         std::cout << "Stoppe virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
         vhdd.stop();

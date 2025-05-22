@@ -62,11 +62,14 @@ VirtuelleFestplatte::VirtuelleFestplatte(std::string orginalVolume,std::string n
 }
 
 void VirtuelleFestplatte::start() {
-    if (!NT_SUCCESS(FspLoad(0)))
+    if (!NT_SUCCESS(FspLoad(0))) {
         std::cout << "fehler beim starten der vhdd." << std::endl;
         return ;
-    PWSTR ServiceName = PWSTR("passthrough");
-    FspServiceRun(ServiceName, SvcStart, SvcStop, 0);
+    }
+    PWSTR ServiceName = PWSTR(L"passthrough");
+    NTSTATUS status = FspServiceRun(ServiceName, SvcStart, SvcStop, 0);
+    // wprintf(L"[FspServiceRun] status = 0x%08X\n", status);
+    std::cout << "FspServiceRun status = " << (int)status << std::endl;
 }
 
 void VirtuelleFestplatte::stop(){}
@@ -92,7 +95,6 @@ VOID VirtuelleFestplatte::PtfsDelete(PTFS *Ptfs) {
 NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
 #define argtos(v)                       if (arge > ++argp) v = *argp; else goto usage
 // #define argtol(v)                       if (arge > ++argp) v = wcstol_deflt(*argp, v); else goto usage
-
     wchar_t **argp, **arge;
     PWSTR DebugLogFile = 0;
     ULONG DebugFlags = 0;
