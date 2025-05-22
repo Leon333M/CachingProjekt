@@ -1,6 +1,6 @@
 // passthrough_backend.cpp
 #include "passthrough_backend.h"
-// #include "passthrough.c"
+#include "passthroughV0.h"
 
 #include <string>
 #include <codecvt>
@@ -13,6 +13,7 @@
 #include <thread>
 
 #define PROGNAME "passthrough"
+/*
 extern "C" {
 //FspServiceRun;
 //NT_SUCCESS;
@@ -20,11 +21,13 @@ extern "C" {
 static NTSTATUS SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv);
 static NTSTATUS SvcStop(FSP_SERVICE *Service);
 };
-std::thread bekendThrad;
+*/
+static std::thread bekendThrad;
 
 void BekendThradFunktion() {
     std::cout << " BekendThradFunktion " << std::endl;
-    FspServiceRun(L"" PROGNAME, SvcStart, SvcStop, 0);
+    PWSTR ServiceName = PWSTR("passthrough");
+    FspServiceRun(ServiceName, SvcStart, SvcStop, 0);
 }
 
 void starteBekendThrad() {

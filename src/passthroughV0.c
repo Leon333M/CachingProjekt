@@ -28,6 +28,7 @@ Stop-Process -Name CachingProjekt
  * associated repository.
  */
 
+#include "passthroughV0.h"
 #include <winfsp/winfsp.h>
 #include <strsafe.h>
 
@@ -788,7 +789,7 @@ static NTSTATUS EnableBackupRestorePrivileges(VOID)
     Privileges.P.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
     Privileges.P.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
 
-    if (!LookupPrivilegeValueW(0, SE_BACKUP_NAME, &Privileges.P.Privileges[0].Luid) || 
+    if (!LookupPrivilegeValueW(0, SE_BACKUP_NAME, &Privileges.P.Privileges[0].Luid) ||
         !LookupPrivilegeValueW(0, SE_RESTORE_NAME, &Privileges.P.Privileges[1].Luid))
         return FspNtStatusFromWin32(GetLastError());
 
@@ -969,7 +970,7 @@ static NTSTATUS SvcStop(FSP_SERVICE *Service)
 
     return STATUS_SUCCESS;
 }
-
+/*
 int wmain(int argc, wchar_t **argv)
 {
     if (!NT_SUCCESS(FspLoad(0)))
@@ -977,3 +978,4 @@ int wmain(int argc, wchar_t **argv)
 
     return FspServiceRun(L"" PROGNAME, SvcStart, SvcStop, 0);
 }
+*/
