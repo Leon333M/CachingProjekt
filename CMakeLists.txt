@@ -13,10 +13,6 @@ include_directories("E:/Code/WinFsp/inc")  # WinFsp-Header
 add_executable(CachingProjekt
      src/main.cpp
      src/VirtuelleFestplatte.cpp
-    # src/PassthroughFS.cpp
-    # src/passthrough_backend.cpp
-    # src/passthroughV0.c 
-    # src/passthrough.c 
 )
 
 # === WinFsp-Bibliothek verlinken ===

@@ -370,6 +370,27 @@ exit:
     return Result;WCHAR volumeRoot[4] = { 0 };
 }
 
+// Gibt Zeiger auf statischen Puffer zurueck: z. B. L"F:\\"
+static LPCWSTR konvertExW(LPCWSTR path)
+{
+    static WCHAR volumeRoot[4] = { 0 };
+    // Pruefe: z. B. "\\?\F:\..." oder "F:\..."
+    if (path[0] && path[1] == ':' && path[2] == '\\') {
+        // Normaler Pfad: "F:\..."
+        volumeRoot[0] = path[0]; // 'F'
+        volumeRoot[1] = ':';
+        volumeRoot[2] = '\\';
+        volumeRoot[3] = '\0';
+    } else if (wcsncmp(path, L"\\\\?\\", 4) == 0) {
+        // Pfad im Format "\\?\F:\..."
+        volumeRoot[0] = path[4]; // 'F'
+        volumeRoot[1] = ':';
+        volumeRoot[2] = '\\';
+        volumeRoot[3] = '\0';
+    }
+    return volumeRoot; 
+}
+
 // PtfsInterface static
 static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
     FSP_FSCTL_VOLUME_INFO *VolumeInfo)
@@ -382,7 +403,7 @@ static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
     if (!GetVolumePathNameW(Ptfs->Path, Root, MAX_PATH))
         return FspNtStatusFromWin32(GetLastError());
     
-    if (!GetDiskFreeSpaceExW(Ptfs->Path, 0, &TotalSize, &FreeSize))
+    if (!GetDiskFreeSpaceExW(konvertExW(Ptfs->Path), 0, &TotalSize, &FreeSize))
         return FspNtStatusFromWin32(GetLastError());
 
     VolumeInfo->TotalSize = TotalSize.QuadPart;
