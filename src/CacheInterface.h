@@ -5,7 +5,7 @@
 
 class CacheInterface {
 protected:
-    UINT64 maxCacheSize = 8ULL * 1024 * 1024 * 1024; // 8 GB
+    UINT64 maxCacheSize = 5ULL * 1024 * 1024 * 1024; // 8 GB
     UINT64 currentCacheSize = 0;
 
 public:

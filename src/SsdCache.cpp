@@ -26,6 +26,7 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         // fullPath ist bereits in cashePfade
         // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
     }
+
     // von ReadCash lesen
     // Jetzt von E:/Cashe/... lesen
     HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -58,18 +59,19 @@ void SsdCache::Remove(const std::wstring &fullPath) {
         // entferne Datei aus Cache
         std::wstring cachePath = GetCachePathFromFullPath(fullPath);
         if (std::filesystem::exists(cachePath)) {
+            UINT64 size = SizeFromPath(cachePath);
             try {
-                std::filesystem::remove(cachePath); // Löscht die Datei
-                std::wcout << L"Datei im Cache gelöscht: " << cachePath << std::endl;
+                std::filesystem::remove(cachePath); // Loscht die Datei
+                std::wcout << L"Remove: Datei im Cache geloscht: " << cachePath << std::endl;
+                currentCacheSize -= size;
             } catch (const std::filesystem::filesystem_error &e) {
-                std::wcout << L"Fehler beim Löschen der Datei im Cache: " << std::endl;
+                std::wcout << L"Remove: Fehler beim Loschen der Datei im Cache: " << std::endl;
             }
         } else {
-            std::wcout << L"Datei existiert nicht im Cache: " << cachePath << std::endl;
+            std::wcout << L"Remove: Datei existiert nicht im Cache: " << cachePath << std::endl;
         }
-        std::wcout << L"RemoveFromCache: Entfernt aus Cache: " << fullPath << std::endl;
     } else {
-        std::wcout << L"RemoveFromCache: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
+        std::wcout << L"Remove: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
     }
 };
 
@@ -144,21 +146,55 @@ bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HAND
 };
 
 bool SsdCache::AddFileSize(const UINT64 &fileSize) {
-    size_t neueSize = currentCacheSize + fileSize;
+    UINT64 neueSize = currentCacheSize + fileSize;
     if (neueSize > maxCacheSize) {
         if (fileSize > maxCacheSize) {
             std::cout << "AddFileSize: Fehler Datei grosser als Cache: " << fileSize << " / " << maxCacheSize << std::endl;
             return false;
         } else {
-            size_t diff = neueSize - maxCacheSize;
-            Clear(diff);
-            std::cout << "AddFileSize: Fehler da nicht implementirt.";
-            return false; // da Clear(diff) nicht implementirt
+            UINT64 diff = neueSize - maxCacheSize;
+            UINT64 realClear = Clear(diff);
+            currentCacheSize += fileSize;
+            // std::cout << "AddFileSize: " << diff << " Speicher freigemacht" << std::endl;
+            // std::cout << diff << " / " << realClear << std::endl;
         }
     } else {
         currentCacheSize = neueSize;
     }
+    // std::cout << "AddFileSize: Cache: " << currentCacheSize << " / " << maxCacheSize << std::endl;
     return true;
 }
 
-void SsdCache::Clear(const size_t &size) {}
+UINT64 SsdCache::Clear(const UINT64 &size) {
+    UINT64 freedSize = 0;
+    UINT64 removedSize = 0;
+    std::wstring cacePath;
+    std::vector<std::wstring> removePfade;
+
+    for (const std::wstring fullPath : cashePfade) {
+        if (removedSize < size) {
+            cacePath = GetCachePathFromFullPath(fullPath);
+            removedSize += SizeFromPath(cacePath);
+            removePfade.emplace_back(fullPath);
+        } else {
+            break;
+        }
+    }
+    for (const std::wstring &fullPath : removePfade) {
+        Remove(fullPath);
+    }
+    return removedSize;
+}
+
+UINT64 SsdCache::SizeFromPath(const std::wstring &Path) {
+    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+    if (!GetFileAttributesExW(Path.c_str(), GetFileExInfoStandard, &fileInfo)) {
+        return 0; // oder ggf. Fehlerbehandlung
+    }
+
+    ULARGE_INTEGER size;
+    size.HighPart = fileInfo.nFileSizeHigh;
+    size.LowPart = fileInfo.nFileSizeLow;
+
+    return size.QuadPart;
+}

@@ -88,11 +88,13 @@ NTSTATUS VirtuelleFestplatte::SvcStop(FSP_SERVICE *Service) {
 }
 
 VOID VirtuelleFestplatte::PtfsDelete(PTFS *Ptfs) {
-    if (0 != Ptfs->FileSystem)
+    if (0 != Ptfs->FileSystem) {
         FspFileSystemDelete(Ptfs->FileSystem);
+    }
 
-    if (0 != Ptfs->Path)
+    if (0 != Ptfs->Path) {
         free(Ptfs->Path);
+    }
 
     free(Ptfs);
 }
@@ -117,8 +119,9 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
     NTSTATUS Result;
 
     for (argp = argv + 1, arge = argv + argc; arge > argp; argp++) {
-        if (L'-' != argp[0][0])
+        if (L'-' != argp[0][0]) {
             break;
+        }
         switch (argp[0][1]) {
             case L'?':
                 goto usage;
@@ -165,15 +168,15 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
         }
     }
 
-    if (0 == PassThrough || 0 == MountPoint)
+    if (0 == PassThrough || 0 == MountPoint) {
         goto usage;
-
+    }
     EnableBackupRestorePrivileges();
 
     if (0 != DebugLogFile) {
-        if (0 == wcscmp(L"-", DebugLogFile))
+        if (0 == wcscmp(L"-", DebugLogFile)) {
             DebugLogHandle = GetStdHandle(STD_ERROR_HANDLE);
-        else
+        } else
             DebugLogHandle = CreateFileW(
                 DebugLogFile,
                 FILE_APPEND_DATA,
@@ -215,8 +218,9 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
     Result = STATUS_SUCCESS;
 
 exit:
-    if (!NT_SUCCESS(Result) && 0 != Ptfs)
+    if (!NT_SUCCESS(Result) && 0 != Ptfs) {
         PtfsDelete(Ptfs);
+    }
 
     return Result;
 
@@ -251,11 +255,13 @@ NTSTATUS VirtuelleFestplatte::EnableBackupRestorePrivileges(VOID) {
     Privileges.P.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
 
     if (!LookupPrivilegeValue(0, SE_BACKUP_NAME, &Privileges.P.Privileges[0].Luid) || // zu LookupPrivilegeValueW aendern bei error
-        !LookupPrivilegeValue(0, SE_RESTORE_NAME, &Privileges.P.Privileges[1].Luid))
+        !LookupPrivilegeValue(0, SE_RESTORE_NAME, &Privileges.P.Privileges[1].Luid)) {
         return FspNtStatusFromWin32(GetLastError());
+    }
 
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &Token))
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &Token)) {
         return FspNtStatusFromWin32(GetLastError());
+    }
 
     if (!AdjustTokenPrivileges(Token, FALSE, &Privileges.P, 0, 0, 0)) {
         CloseHandle(Token);
@@ -284,9 +290,8 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
     Handle = CreateFileW(
         Path, FILE_READ_ATTRIBUTES, 0, 0,
         OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-    if (INVALID_HANDLE_VALUE == Handle)
+    if (INVALID_HANDLE_VALUE == Handle) {
         return FspNtStatusFromWin32(GetLastError());
-    {
     }
 
     Length = GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
@@ -340,8 +345,7 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
     VolumeParams.UmFileContextIsUserContext2 = 1;
     if (0 != VolumePrefix) {
         wcscpy_s(VolumeParams.Prefix, sizeof VolumeParams.Prefix / sizeof(WCHAR), VolumePrefix);
-        wcscpy_s(VolumeParams.FileSystemName, sizeof VolumeParams.FileSystemName / sizeof(WCHAR),
-                 L"" PROGNAME);
+        wcscpy_s(VolumeParams.FileSystemName, sizeof VolumeParams.FileSystemName / sizeof(WCHAR), L"" PROGNAME);
     }
 
     Result = FspFileSystemCreate(
@@ -355,18 +359,20 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
     Ptfs->FileSystem->UserContext = Ptfs;
 
     Result = FspFileSystemSetMountPoint(Ptfs->FileSystem, MountPoint);
-    if (!NT_SUCCESS(Result))
+    if (!NT_SUCCESS(Result)) {
         goto exit;
+    }
 
     FspFileSystemSetDebugLog(Ptfs->FileSystem, DebugFlags);
 
     Result = STATUS_SUCCESS;
 
 exit:
-    if (NT_SUCCESS(Result))
+    if (NT_SUCCESS(Result)) {
         *PPtfs = Ptfs;
-    else if (0 != Ptfs)
+    } else if (0 != Ptfs) {
         PtfsDelete(Ptfs);
+    }
 
     return Result;
     WCHAR volumeRoot[4] = {0};
@@ -400,11 +406,12 @@ static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
     ULARGE_INTEGER TotalSize, FreeSize;
 
     // windos funktin
-    if (!GetVolumePathNameW(Ptfs->Path, Root, MAX_PATH))
+    if (!GetVolumePathNameW(Ptfs->Path, Root, MAX_PATH)) {
         return FspNtStatusFromWin32(GetLastError());
-
-    if (!GetDiskFreeSpaceExW(konvertExW(Ptfs->Path), 0, &TotalSize, &FreeSize))
+    }
+    if (!GetDiskFreeSpaceExW(konvertExW(Ptfs->Path), 0, &TotalSize, &FreeSize)) {
         return FspNtStatusFromWin32(GetLastError());
+    }
 
     VolumeInfo->TotalSize = TotalSize.QuadPart;
     VolumeInfo->FreeSize = FreeSize.QuadPart;
@@ -438,8 +445,9 @@ static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
     DWORD SecurityDescriptorSizeNeeded;
     NTSTATUS Result;
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
+    if (!ConcatPath(Ptfs, FileName, FullPath)) {
         return STATUS_OBJECT_NAME_INVALID;
+    }
 
     Handle = CreateFileW(FullPath,
                          FILE_READ_ATTRIBUTES | READ_CONTROL, 0, 0,
@@ -474,9 +482,9 @@ static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
     Result = STATUS_SUCCESS;
 
 exit:
-    if (INVALID_HANDLE_VALUE != Handle)
+    if (INVALID_HANDLE_VALUE != Handle) {
         CloseHandle(Handle);
-
+    }
     return Result;
 }
 
@@ -490,12 +498,14 @@ static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
     ULONG CreateFlags;
     PTFS_FILE_CONTEXT *FileContext;
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
+    if (!ConcatPath(Ptfs, FileName, FullPath)) {
         return STATUS_OBJECT_NAME_INVALID;
+    }
 
     FileContext = (PTFS_FILE_CONTEXT *)malloc(sizeof *FileContext);
-    if (0 == FileContext)
+    if (0 == FileContext) {
         return STATUS_INSUFFICIENT_RESOURCES;
+    }
     memset(FileContext, 0, sizeof *FileContext);
 
     SecurityAttributes.nLength = sizeof SecurityAttributes;
@@ -503,9 +513,9 @@ static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
     SecurityAttributes.bInheritHandle = FALSE;
 
     CreateFlags = FILE_FLAG_BACKUP_SEMANTICS;
-    if (CreateOptions & FILE_DELETE_ON_CLOSE)
+    if (CreateOptions & FILE_DELETE_ON_CLOSE) {
         CreateFlags |= FILE_FLAG_DELETE_ON_CLOSE;
-
+    }
     if (CreateOptions & FILE_DIRECTORY_FILE) {
         /*
          * It is not widely known but CreateFileW can be used to create directories!
@@ -515,11 +525,13 @@ static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
          */
         CreateFlags |= FILE_FLAG_POSIX_SEMANTICS;
         FileAttributes |= FILE_ATTRIBUTE_DIRECTORY;
-    } else
+    } else {
         FileAttributes &= ~FILE_ATTRIBUTE_DIRECTORY;
+    }
 
-    if (0 == FileAttributes)
+    if (0 == FileAttributes) {
         FileAttributes = FILE_ATTRIBUTE_NORMAL;
+    }
 
     FileContext->Handle = CreateFileW(FullPath,
                                       GrantedAccess, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, &SecurityAttributes,
@@ -542,17 +554,20 @@ static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
     ULONG CreateFlags;
     PTFS_FILE_CONTEXT *FileContext;
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
+    if (!ConcatPath(Ptfs, FileName, FullPath)) {
         return STATUS_OBJECT_NAME_INVALID;
+    }
 
     FileContext = (PTFS_FILE_CONTEXT *)malloc(sizeof *FileContext);
-    if (0 == FileContext)
+    if (0 == FileContext) {
         return STATUS_INSUFFICIENT_RESOURCES;
+    }
     memset(FileContext, 0, sizeof *FileContext);
 
     CreateFlags = FILE_FLAG_BACKUP_SEMANTICS;
-    if (CreateOptions & FILE_DELETE_ON_CLOSE)
+    if (CreateOptions & FILE_DELETE_ON_CLOSE) {
         CreateFlags |= FILE_FLAG_DELETE_ON_CLOSE;
+    }
 
     FileContext->Handle = CreateFileW(FullPath,
                                       GrantedAccess, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0,
@@ -578,23 +593,24 @@ static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
     FILE_ATTRIBUTE_TAG_INFO AttributeTagInfo;
 
     if (ReplaceFileAttributes) {
-        if (0 == FileAttributes)
+        if (0 == FileAttributes) {
             FileAttributes = FILE_ATTRIBUTE_NORMAL;
+        }
 
         BasicInfo.FileAttributes = FileAttributes;
-        if (!SetFileInformationByHandle(Handle,
-                                        FileBasicInfo, &BasicInfo, sizeof BasicInfo))
+        if (!SetFileInformationByHandle(Handle, FileBasicInfo, &BasicInfo, sizeof BasicInfo)) {
             return FspNtStatusFromWin32(GetLastError());
+        }
     } else if (0 != FileAttributes) {
-        if (!GetFileInformationByHandleEx(Handle,
-                                          FileAttributeTagInfo, &AttributeTagInfo, sizeof AttributeTagInfo))
+        if (!GetFileInformationByHandleEx(Handle, FileAttributeTagInfo, &AttributeTagInfo, sizeof AttributeTagInfo)) {
             return FspNtStatusFromWin32(GetLastError());
+        }
 
         BasicInfo.FileAttributes = FileAttributes | AttributeTagInfo.FileAttributes;
         if (BasicInfo.FileAttributes ^ FileAttributes) {
-            if (!SetFileInformationByHandle(Handle,
-                                            FileBasicInfo, &BasicInfo, sizeof BasicInfo))
+            if (!SetFileInformationByHandle(Handle, FileBasicInfo, &BasicInfo, sizeof BasicInfo)) {
                 return FspNtStatusFromWin32(GetLastError());
+            }
         }
     }
 
@@ -655,13 +671,16 @@ static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
     OVERLAPPED Overlapped = {0};
 
     if (ConstrainedIo) {
-        if (!GetFileSizeEx(Handle, &FileSize))
+        if (!GetFileSizeEx(Handle, &FileSize)) {
             return FspNtStatusFromWin32(GetLastError());
+        }
 
-        if (Offset >= (UINT64)FileSize.QuadPart)
+        if (Offset >= (UINT64)FileSize.QuadPart) {
             return STATUS_SUCCESS;
-        if (Offset + Length > (UINT64)FileSize.QuadPart)
+        }
+        if (Offset + Length > (UINT64)FileSize.QuadPart) {
             Length = (ULONG)((UINT64)FileSize.QuadPart - Offset);
+        }
     }
 
     Overlapped.Offset = (DWORD)Offset;
@@ -680,12 +699,12 @@ static NTSTATUS Flush(FSP_FILE_SYSTEM *FileSystem,
     HANDLE Handle = HandleFromContext(FileContext);
 
     /* we do not flush the whole volume, so just return SUCCESS */
-    if (0 == Handle)
+    if (0 == Handle) {
         return STATUS_SUCCESS;
-
-    if (!FlushFileBuffers(Handle))
+    }
+    if (!FlushFileBuffers(Handle)) {
         return FspNtStatusFromWin32(GetLastError());
-
+    }
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -825,22 +844,25 @@ static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
 
     DirBufferResult = STATUS_SUCCESS;
     if (FspFileSystemAcquireDirectoryBuffer(&FileContext->DirBuffer, 0 == Marker, &DirBufferResult)) {
-        if (0 == Pattern)
+        if (0 == Pattern) {
             Pattern = (PWSTR)L"*";
+        }
         PatternLength = (ULONG)wcslen(Pattern);
 
         Length = GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
-        if (0 == Length)
+        if (0 == Length) {
             DirBufferResult = FspNtStatusFromWin32(GetLastError());
-        else if (Length + 1 + PatternLength >= FULLPATH_SIZE)
+        } else if (Length + 1 + PatternLength >= FULLPATH_SIZE) {
             DirBufferResult = STATUS_OBJECT_NAME_INVALID;
+        }
         if (!NT_SUCCESS(DirBufferResult)) {
             FspFileSystemReleaseDirectoryBuffer(&FileContext->DirBuffer);
             return DirBufferResult;
         }
 
-        if (L'\\' != FullPath[Length - 1])
+        if (L'\\' != FullPath[Length - 1]) {
             FullPath[Length++] = L'\\';
+        }
         memcpy(FullPath + Length, Pattern, PatternLength * sizeof(WCHAR));
         FullPath[Length + PatternLength] = L'\0';
 
@@ -863,8 +885,9 @@ static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
                 DirInfo->FileInfo.HardLinks = 0;
                 memcpy(DirInfo->FileNameBuf, FindData.cFileName, Length * sizeof(WCHAR));
 
-                if (!FspFileSystemFillDirectoryBuffer(&FileContext->DirBuffer, DirInfo, &DirBufferResult))
+                if (!FspFileSystemFillDirectoryBuffer(&FileContext->DirBuffer, DirInfo, &DirBufferResult)) {
                     break;
+                }
             } while (FindNextFileW(FindHandle, &FindData));
 
             FindClose(FindHandle);
@@ -873,11 +896,11 @@ static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
         FspFileSystemReleaseDirectoryBuffer(&FileContext->DirBuffer);
     }
 
-    if (!NT_SUCCESS(DirBufferResult))
+    if (!NT_SUCCESS(DirBufferResult)) {
         return DirBufferResult;
+    }
 
-    FspFileSystemReadDirectoryBuffer(&FileContext->DirBuffer,
-                                     Marker, Buffer, BufferLength, PBytesTransferred);
+    FspFileSystemReadDirectoryBuffer(&FileContext->DirBuffer, Marker, Buffer, BufferLength, PBytesTransferred);
 
     // std::wcout << "ReadDirectory : " << FullPath << std::endl;
 
@@ -906,15 +929,13 @@ static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo
     }
     FileInfo->FileAttributes = ByHandleFileInfo.dwFileAttributes;
     FileInfo->ReparseTag = 0;
-    FileInfo->FileSize =
-        ((UINT64)ByHandleFileInfo.nFileSizeHigh << 32) | (UINT64)ByHandleFileInfo.nFileSizeLow;
+    FileInfo->FileSize = ((UINT64)ByHandleFileInfo.nFileSizeHigh << 32) | (UINT64)ByHandleFileInfo.nFileSizeLow;
     FileInfo->AllocationSize = (FileInfo->FileSize + ALLOCATION_UNIT - 1) / ALLOCATION_UNIT * ALLOCATION_UNIT;
     FileInfo->CreationTime = ((PLARGE_INTEGER)&ByHandleFileInfo.ftCreationTime)->QuadPart;
     FileInfo->LastAccessTime = ((PLARGE_INTEGER)&ByHandleFileInfo.ftLastAccessTime)->QuadPart;
     FileInfo->LastWriteTime = ((PLARGE_INTEGER)&ByHandleFileInfo.ftLastWriteTime)->QuadPart;
     FileInfo->ChangeTime = FileInfo->LastWriteTime;
-    FileInfo->IndexNumber =
-        ((UINT64)ByHandleFileInfo.nFileIndexHigh << 32) | (UINT64)ByHandleFileInfo.nFileIndexLow;
+    FileInfo->IndexNumber = ((UINT64)ByHandleFileInfo.nFileIndexHigh << 32) | (UINT64)ByHandleFileInfo.nFileIndexLow;
     FileInfo->HardLinks = 0;
 
     return STATUS_SUCCESS;
