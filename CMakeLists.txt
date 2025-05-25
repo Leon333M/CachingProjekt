@@ -13,6 +13,9 @@ include_directories("E:/Code/WinFsp/inc")  # WinFsp-Header
 add_executable(CachingProjekt
      src/main.cpp
      src/VirtuelleFestplatte.cpp
+     src/CacheInterface.cpp
+     src/SsdCache.cpp
+     src/Cache.cpp
 )
 
 # === WinFsp-Bibliothek verlinken ===

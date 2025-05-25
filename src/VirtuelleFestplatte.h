@@ -14,11 +14,6 @@ typedef struct {
     PVOID DirBuffer;
 } PTFS_FILE_CONTEXT;
 
-struct VhdFileContext {
-    PTFS_FILE_CONTEXT fileContext;
-    bool isCached;
-};
-
 class VirtuelleFestplatte {
 private:
     std::wstring orginalVolume;

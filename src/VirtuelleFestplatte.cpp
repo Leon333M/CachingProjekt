@@ -16,6 +16,7 @@
 #define HandleFromContext(FC)           (((PTFS_FILE_CONTEXT *)(FC))->Handle)
 
 // init static
+    static Cache cache;
     static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
     static NTSTATUS SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem, PWSTR VolumeLabel, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
     static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem, PWSTR FileName, PUINT32 PFileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize);
@@ -77,109 +78,12 @@ void VirtuelleFestplatte::start() {
 
 void VirtuelleFestplatte::stop(){}
 
-static void ClearCacheDirectory()
-{
-    std::cout << "ClearCacheDirectory " << std::endl;
-    const std::filesystem::path cacheDir = L"E:/Cashe";
-
-    std::error_code ec; // Für Fehlerbehandlung ohne Exceptions
-
-    if (!std::filesystem::exists(cacheDir, ec))
-    {
-        std::wcout << L"Cache-Verzeichnis existiert nicht: " << cacheDir.wstring() << std::endl;
-        return;
-    }
-
-    for (const auto& entry : std::filesystem::directory_iterator(cacheDir, ec))
-    {
-        if (ec)
-        {
-            std::wcerr << L"Fehler beim Iterieren: " << ec.message().c_str() << std::endl;
-            return;
-        }
-
-        std::filesystem::remove_all(entry.path(), ec);
-        if (ec)
-        {
-            std::wcerr << L"Fehler beim Loschen von " << entry.path().wstring() << L": " << ec.message().c_str() << std::endl;
-        }
-        else
-        {
-            std::wcout << L"Geloscht: " << entry.path().wstring() << std::endl;
-        }
-    }
-}
-// zum entfernen RemoveFromCachePfade(std::wstring FullPath));
-// oder RemoveFromCachePfadeHandle (HANDLE Handle);
-static std::unordered_set<std::wstring> cashePfade;
-static void RemoveFromCachePfade(const std::wstring& FullPath) {
-    auto it = cashePfade.find(FullPath);
-    if (it != cashePfade.end()) {
-        // Hier konnen spater weitere Aktionen hinzugefugt werden
-        cashePfade.erase(it);
-        std::wcout << L"RemoveFromCache: Entfernt aus Cache: " << FullPath << std::endl;
-    } else {
-        std::wcout << L"RemoveFromCache: Pfad nicht im Cache gefunden: " << FullPath << std::endl;
-    }
-}
-static void RemoveFromCachePfadeHandle(HANDLE Handle) {
-    WCHAR FullPath[FULLPATH_SIZE];
-    GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
-    std::wcout << L"RemoveFromCachePfade Handle : "<< FullPath << std::endl;
-    RemoveFromCachePfade(FullPath);
-}
-static bool ReadCash(HANDLE Handle, LPVOID Buffer, DWORD Length, LPDWORD PBytesTransferred, LPOVERLAPPED Overlapped){
-    WCHAR FullPath[FULLPATH_SIZE];
-    GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
-    // std::wcout << L"ReadCash : " << FullPath << std::endl;
-    std::wstring originalPath = FullPath;
-    originalPath = originalPath.substr(4);
-    std::wstring originalPathForCashe = originalPath;
-    originalPathForCashe.erase(std::remove(originalPathForCashe.begin(), originalPathForCashe.end(), L':'), originalPathForCashe.end());
-    std::wstring cachePath = L"E:/Cashe/" + originalPathForCashe;
-    std::replace(cachePath.begin(), cachePath.end(), L'\\', L'/');
-
-    if (!(cashePfade.find(FullPath) != cashePfade.end())) {
-        // add Datei zum ReadCash
-        std::wcout << L"ReadCash: FullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
-        // Sicherstellen, dass die Zielverzeichnisse existieren
-        std::filesystem::create_directories(std::filesystem::path(cachePath).parent_path());
-        std::cout << "ReadCash: Zielverzeichnisse existieren" << std::endl;
-        // Datei kopieren
-        if (!CopyFileW(originalPath.c_str(), cachePath.c_str(), FALSE)) {
-            fail(L"Fehler beim Kopieren in Cache: %s", originalPath.c_str());
-            return false;
-        }
-        std::wcout << L"ReadCash: FullPath insert : " << FullPath << std::endl;
-        cashePfade.insert(FullPath);
-    } else {
-        // FullPath ist bereits in cashePfade
-        // std::wcout << L"ReadCash: FullPath vorhanden : " << FullPath << std::endl;
-    }
-    // von ReadCash lesen
-    // Jetzt von E:/Cashe/... lesen
-    HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (cacheHandle == INVALID_HANDLE_VALUE) {
-        fail(L"Fehler beim Offnen der Cache-Datei: %s", cachePath.c_str());
-        return false;
-    }
-    BOOL result = ReadFile(cacheHandle, Buffer, Length, PBytesTransferred, Overlapped);
-    CloseHandle(cacheHandle);
-    if (!result){
-        std::wcout << L"ReadCash: Fehler beim laden von Cashe : " << cachePath << std::endl;
-       return false;
-    }
-    // std::wcout << L"ReadCash: FullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
-    // result = false; // erstmal, entferen ich spater
-    return result;
-}
-
 // private Funktion:
 NTSTATUS VirtuelleFestplatte::SvcStop(FSP_SERVICE *Service) {
     PTFS *Ptfs = (PTFS *)Service->UserContext;
     FspFileSystemStopDispatcher(Ptfs->FileSystem);
     PtfsDelete(Ptfs);
-    ClearCacheDirectory();
+    cache.Clear();
     return STATUS_SUCCESS;
 }
 
@@ -728,7 +632,7 @@ static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
     if (!SetFileInformationByHandle(Handle, FileAllocationInfo, &AllocationInfo, sizeof AllocationInfo)){
         return FspNtStatusFromWin32(GetLastError());
     }
-    RemoveFromCachePfadeHandle(Handle);
+    cache.RemoveHandle(Handle);
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -767,7 +671,7 @@ static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
     Overlapped.Offset = (DWORD)Offset;
     Overlapped.OffsetHigh = (DWORD)(Offset >> 32);
 
-    if (!ReadCash(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
+    if (cache.Read(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
         if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
          return FspNtStatusFromWin32(GetLastError());
         }
@@ -803,7 +707,7 @@ static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
     if (!WriteFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped)){
         return FspNtStatusFromWin32(GetLastError());
     }
-    RemoveFromCachePfadeHandle(Handle);
+    cache.RemoveHandle(Handle);
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -893,7 +797,7 @@ static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem,
             FileEndOfFileInfo, &EndOfFileInfo, sizeof EndOfFileInfo))
             return FspNtStatusFromWin32(GetLastError());
     }
-    RemoveFromCachePfadeHandle(Handle);
+    cache.RemoveHandle(Handle);
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -910,10 +814,10 @@ static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem,
     if (!ConcatPath(Ptfs, NewFileName, NewFullPath))
         return STATUS_OBJECT_NAME_INVALID;
 
-    if (!MoveFileExW(FullPath, NewFullPath, ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0))
+    if (!MoveFileExW(FullPath, NewFullPath, ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0)){
         return FspNtStatusFromWin32(GetLastError());
-
-    RemoveFromCachePfade(FullPath);
+    }
+    cache.Remove(FullPath);
     return STATUS_SUCCESS;
 }
 
@@ -943,10 +847,10 @@ static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem,
 {
     HANDLE Handle = HandleFromContext(FileContext);
 
-    if (!SetKernelObjectSecurity(Handle, SecurityInformation, ModificationDescriptor))
+    if (!SetKernelObjectSecurity(Handle, SecurityInformation, ModificationDescriptor)){
         return FspNtStatusFromWin32(GetLastError());
-
-    RemoveFromCachePfadeHandle(Handle);
+    }
+    cache.RemoveHandle(Handle);
     return STATUS_SUCCESS;
 }
 
@@ -1044,9 +948,10 @@ static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem,
     DispositionInfo.DeleteFile = DeleteFile;
 
     if (!SetFileInformationByHandle(Handle,
-        FileDispositionInfo, &DispositionInfo, sizeof DispositionInfo))
+        FileDispositionInfo, &DispositionInfo, sizeof DispositionInfo)){
         return FspNtStatusFromWin32(GetLastError());
-    RemoveFromCachePfadeHandle(Handle);
+    }
+    cache.RemoveHandle(Handle);
     return STATUS_SUCCESS;
 }
 

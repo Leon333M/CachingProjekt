@@ -11,6 +11,6 @@ public:
     virtual bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
     virtual bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
     virtual void Remove(const std::wstring& fullPath) = 0;
-    virtual void RemoveHandle(HANDLE handle) = 0;
+    void RemoveHandle(HANDLE handle);
     virtual void Clear() = 0;
 };

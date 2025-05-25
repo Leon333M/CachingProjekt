@@ -21,10 +21,6 @@ void Cache::Remove(const std::wstring& fullPath) {
     ramCache.Remove(fullPath);
     ssdCache.Remove(fullPath);
 }
-void Cache::RemoveHandle(HANDLE handle){
-    ramCache.RemoveHandle(handle);
-    ssdCache.RemoveHandle(handle);
-}
 
 void Cache::Clear() {
     ramCache.Clear();
