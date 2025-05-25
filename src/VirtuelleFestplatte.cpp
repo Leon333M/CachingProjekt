@@ -671,7 +671,7 @@ static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
     Overlapped.Offset = (DWORD)Offset;
     Overlapped.OffsetHigh = (DWORD)(Offset >> 32);
 
-    if (cache.Read(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
+    if (!cache.Read(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
         if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
          return FspNtStatusFromWin32(GetLastError());
         }

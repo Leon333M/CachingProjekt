@@ -11,4 +11,6 @@ public:
     bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void Remove(const std::wstring& fullPath);
     void Clear();
+private:
+    std::wstring GetCachePathFromFullPath(const std::wstring& fullPath);
 };

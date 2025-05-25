@@ -13,10 +13,7 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
     // std::wcout << L"ReadCash : " << FullPath << std::endl;
     std::wstring originalPath = FullPath;
     originalPath = originalPath.substr(4);
-    std::wstring originalPathForCashe = originalPath;
-    originalPathForCashe.erase(std::remove(originalPathForCashe.begin(), originalPathForCashe.end(), L':'), originalPathForCashe.end());
-    std::wstring cachePath = L"E:/Cashe/" + originalPathForCashe;
-    std::replace(cachePath.begin(), cachePath.end(), L'\\', L'/');
+    std::wstring cachePath = GetCachePathFromFullPath(FullPath);
 
     if (!(cashePfade.find(FullPath) != cashePfade.end())) {
         // add Datei zum ReadCash
@@ -33,7 +30,7 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         cashePfade.insert(FullPath);
     } else {
         // FullPath ist bereits in cashePfade
-        // std::wcout << L"ReadCash: FullPath vorhanden : " << FullPath << std::endl;
+        std::wcout << L"ReadCash: FullPath vorhanden : " << FullPath << std::endl;
     }
     // von ReadCash lesen
     // Jetzt von E:/Cashe/... lesen
@@ -48,24 +45,40 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         std::wcout << L"ReadCash: Fehler beim laden von Cashe : " << cachePath << std::endl;
        return false;
     }
-    // std::wcout << L"ReadCash: FullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
+    std::wcout << L"ReadCash: FullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
     // result = false; // erstmal, entferen ich spater
     return result;
 };
+
 bool SsdCache::Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped){
     RemoveHandle(handle);
     return false;
 };
+
 void SsdCache::Remove(const std::wstring& fullPath){
     auto it = cashePfade.find(fullPath);
     if (it != cashePfade.end()) {
         // Hier konnen spater weitere Aktionen hinzugefugt werden
+        // entferne aus Liste
         cashePfade.erase(it);
+        // entferne Datei aus Cache
+        std::wstring cachePath = GetCachePathFromFullPath(fullPath);
+        if (std::filesystem::exists(cachePath)) {
+            try {
+                std::filesystem::remove(cachePath);  // Löscht die Datei
+                std::wcout << L"Datei im Cache gelöscht: " << cachePath << std::endl;
+            } catch (const std::filesystem::filesystem_error& e) {
+                std::wcout << L"Fehler beim Löschen der Datei im Cache: " << std::endl;
+            }
+        } else {
+            std::wcout << L"Datei existiert nicht im Cache: " << cachePath << std::endl;
+        }
         std::wcout << L"RemoveFromCache: Entfernt aus Cache: " << fullPath << std::endl;
     } else {
         std::wcout << L"RemoveFromCache: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
     }
 };
+
 void SsdCache::Clear(){
     std::cout << "ClearCacheDirectory" << std::endl;
     const std::filesystem::path cacheDir = L"E:/Cashe";
@@ -87,3 +100,19 @@ void SsdCache::Clear(){
         }
     }
 };
+
+// private Funktioen
+
+// Hilfsfunktion, um den Cache-Pfad zu extrahieren
+std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring& fullPath) {
+    // Der vollstandige Pfad wird bearbeitet, um den relativen Cache-Pfad zu erhalten
+    std::wstring originalPath = fullPath;
+    originalPath = originalPath.substr(4);  // Entferne den Laufwerksbuchstaben (z.B. "E:/")
+    std::wstring originalPathForCashe = originalPath;
+    originalPathForCashe.erase(std::remove(originalPathForCashe.begin(), originalPathForCashe.end(), L':'), originalPathForCashe.end());
+    // Der Cache-Pfad wird erstellt
+    std::wstring cachePath = L"E:/Cashe/" + originalPathForCashe;
+    std::replace(cachePath.begin(), cachePath.end(), L'\\', L'/');
+
+    return cachePath;
+}
