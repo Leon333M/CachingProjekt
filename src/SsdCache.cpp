@@ -17,6 +17,9 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
 
     // prufe ob im Cache
     if (!(cashePfade.find(fullPath) != cashePfade.end())) {
+        if (!ShouldCachePath(fullPath)) {
+            return false;
+        }
         // add zum Cache
         if (!AddFile(originalPath, cachePath, handle, fullPath)) {
             std::wcout << "Read: Fehler beim hinzufugen der Datei: " << fullPath << std::endl;
@@ -115,7 +118,7 @@ std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {
 
 bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]) {
     // add Datei zum ReadCash
-    std::wcout << L"AddFile: fullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
+    // std::wcout << L"AddFile: fullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
 
     // add Dateigroesse
     BY_HANDLE_FILE_INFORMATION handleFileInfo;
@@ -197,4 +200,25 @@ UINT64 SsdCache::SizeFromPath(const std::wstring &Path) {
     size.LowPart = fileInfo.nFileSizeLow;
 
     return size.QuadPart;
+}
+
+bool SsdCache::ShouldCachePath(const std::wstring &fullPath) {
+    // Zahle, wie oft der Pfad in pfadHistorie bereits vorkommt.
+    int count = std::count(pfadHistorie.begin(), pfadHistorie.end(), fullPath);
+    // Wenn ≥ minZugriffsHaufigkeit z.B. 2
+    if (count >= minZugriffsHaufigkeit) {
+        // - Alle Vorkommen aus pfadHistorie entfernen.
+        pfadHistorie.erase(std::remove(pfadHistorie.begin(), pfadHistorie.end(), fullPath), pfadHistorie.end());
+        // - Gib true zuruck (→ jetzt cachen).
+        return true;
+    } else { // Sonst:
+        // - Fuge den Pfad hinten in pfadHistorie ein.
+        pfadHistorie.push_back(fullPath);
+        // - Wenn recentPaths.size() > maxRecentPaths, entferne das vorderste Element.
+        if (pfadHistorie.size() > maxPfadHistorie) {
+            pfadHistorie.pop_front();
+        }
+        // - Gib false zurück (→ noch nicht cachen).
+        return false;
+    }
 }

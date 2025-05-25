@@ -1,11 +1,15 @@
 // SsdCache.h
 #pragma once
 #include "CacheInterface.h"
+#include <deque>
 #include <unordered_set>
 
 class SsdCache : public CacheInterface {
 private:
     std::unordered_set<std::wstring> cashePfade;
+    std::deque<std::wstring> pfadHistorie;
+    const int minZugriffsHaufigkeit = 2;
+    const int maxPfadHistorie = 100;
 
 public:
     bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
@@ -19,4 +23,5 @@ private:
     bool AddFileSize(const UINT64 &fileSize);
     UINT64 Clear(const size_t &size);
     UINT64 SizeFromPath(const std::wstring &Path);
+    bool ShouldCachePath(const std::wstring &fullPath);
 };
