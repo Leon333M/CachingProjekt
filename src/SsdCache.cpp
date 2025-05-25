@@ -1,13 +1,13 @@
 // SsdCache.cpp
 #include "SsdCache.h"
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 #include <strsafe.h>
 #include <winfsp/winfsp.h>
 
-#define FULLPATH_SIZE                   (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
+#define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
-bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped){
+bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     WCHAR FullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, FullPath, FULLPATH_SIZE - 1, 0);
     // std::wcout << L"ReadCash : " << FullPath << std::endl;
@@ -41,21 +41,21 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
     }
     BOOL result = ReadFile(cacheHandle, buffer, length, bytesTransferred, overlapped);
     CloseHandle(cacheHandle);
-    if (!result){
+    if (!result) {
         std::wcout << L"ReadCash: Fehler beim laden von Cashe : " << cachePath << std::endl;
-       return false;
+        return false;
     }
     std::wcout << L"ReadCash: FullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
     // result = false; // erstmal, entferen ich spater
     return result;
 };
 
-bool SsdCache::Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped){
+bool SsdCache::Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     RemoveHandle(handle);
     return false;
 };
 
-void SsdCache::Remove(const std::wstring& fullPath){
+void SsdCache::Remove(const std::wstring &fullPath) {
     auto it = cashePfade.find(fullPath);
     if (it != cashePfade.end()) {
         // Hier konnen spater weitere Aktionen hinzugefugt werden
@@ -65,9 +65,9 @@ void SsdCache::Remove(const std::wstring& fullPath){
         std::wstring cachePath = GetCachePathFromFullPath(fullPath);
         if (std::filesystem::exists(cachePath)) {
             try {
-                std::filesystem::remove(cachePath);  // Löscht die Datei
+                std::filesystem::remove(cachePath); // Löscht die Datei
                 std::wcout << L"Datei im Cache gelöscht: " << cachePath << std::endl;
-            } catch (const std::filesystem::filesystem_error& e) {
+            } catch (const std::filesystem::filesystem_error &e) {
                 std::wcout << L"Fehler beim Löschen der Datei im Cache: " << std::endl;
             }
         } else {
@@ -79,7 +79,7 @@ void SsdCache::Remove(const std::wstring& fullPath){
     }
 };
 
-void SsdCache::Clear(){
+void SsdCache::Clear() {
     std::cout << "ClearCacheDirectory" << std::endl;
     const std::filesystem::path cacheDir = L"E:/Cashe";
     std::error_code ec; // Fur Fehlerbehandlung ohne Exceptions
@@ -87,7 +87,7 @@ void SsdCache::Clear(){
         std::wcout << L"Cache-Verzeichnis existiert nicht: " << cacheDir.wstring() << std::endl;
         return;
     }
-    for (const auto& entry : std::filesystem::directory_iterator(cacheDir, ec)) {
+    for (const auto &entry : std::filesystem::directory_iterator(cacheDir, ec)) {
         if (ec) {
             std::wcerr << L"Fehler beim Iterieren: " << ec.message().c_str() << std::endl;
             return;
@@ -104,10 +104,10 @@ void SsdCache::Clear(){
 // private Funktioen
 
 // Hilfsfunktion, um den Cache-Pfad zu extrahieren
-std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring& fullPath) {
+std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {
     // Der vollstandige Pfad wird bearbeitet, um den relativen Cache-Pfad zu erhalten
     std::wstring originalPath = fullPath;
-    originalPath = originalPath.substr(4);  // Entferne den Laufwerksbuchstaben (z.B. "E:/")
+    originalPath = originalPath.substr(4); // Entferne den Laufwerksbuchstaben (z.B. "E:/")
     std::wstring originalPathForCashe = originalPath;
     originalPathForCashe.erase(std::remove(originalPathForCashe.begin(), originalPathForCashe.end(), L':'), originalPathForCashe.end());
     // Der Cache-Pfad wird erstellt

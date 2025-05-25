@@ -1,7 +1,7 @@
 // Cache.h
 #pragma once
-#include "SsdCache.h"
 #include "RamCache.h"
+#include "SsdCache.h"
 
 class Cache : public CacheInterface {
 private:
@@ -11,6 +11,6 @@ private:
 public:
     bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
-    void Remove(const std::wstring& fullPath);
+    void Remove(const std::wstring &fullPath);
     void Clear();
 };

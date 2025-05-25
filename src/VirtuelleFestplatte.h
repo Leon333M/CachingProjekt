@@ -2,8 +2,8 @@
 #pragma once
 #include "Cache.h"
 #include <string>
-#include <winfsp/winfsp.h>
 #include <strsafe.h>
+#include <winfsp/winfsp.h>
 
 typedef struct {
     FSP_FILE_SYSTEM *FileSystem;
@@ -23,12 +23,12 @@ private:
 public:
     /**
      * @brief ersellt ein neues Vituelles Volume
-     * 
+     *
      * @param orginalVolume das Volume wo die daten ligen.
      * @param neuesVolume das neue Volume wo die Daten von orginalVolume aber mit Cache sind.
      * @param cacheVolume das Volume was zum cashen genommen wird
      */
-    VirtuelleFestplatte(std::wstring orginalVolume,std::wstring neuesVolume,std::wstring cacheVolume);
+    VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, std::wstring cacheVolume);
     void start();
     void stop();
 
@@ -38,7 +38,7 @@ private:
     static VOID PtfsDelete(PTFS *Ptfs);
     static NTSTATUS EnableBackupRestorePrivileges(VOID);
     static NTSTATUS PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR MountPoint, UINT32 DebugFlags, PTFS **PPtfs);
-};  
+};
 /*
     // PtfsInterface
     static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
@@ -61,7 +61,7 @@ private:
     static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,PVOID FileContext0, PWSTR Pattern, PWSTR Marker,PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred);
     static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem,PVOID FileContext, PWSTR FileName, BOOLEAN DeleteFile);
     static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo);
-    static FSP_FILE_SYSTEM_INTERFACE PtfsInterface = { 
+    static FSP_FILE_SYSTEM_INTERFACE PtfsInterface = {
         .GetVolumeInfo = GetVolumeInfo,
         .SetVolumeLabel = SetVolumeLabel_,
         .GetSecurityByName = GetSecurityByName,

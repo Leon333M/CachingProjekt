@@ -1,7 +1,7 @@
 // main.cpp
 #include "VirtuelleFestplatte.h"
 #include <iostream>
-#include <windows.h> 
+#include <windows.h>
 
 int main(int argc, wchar_t **argv) {
     try {
@@ -9,7 +9,7 @@ int main(int argc, wchar_t **argv) {
         std::wstring orginalVolume = L"F";
         std::wstring neuesVolume = L"G";
         std::wstring cacheVolum = L"S";
-        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume,neuesVolume,cacheVolum);
+        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume, neuesVolume, cacheVolum);
 
         std::cout << "Starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
         vhdd.start();
