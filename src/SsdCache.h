@@ -15,4 +15,7 @@ public:
 
 private:
     std::wstring GetCachePathFromFullPath(const std::wstring &fullPath);
+    bool AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]);
+    bool AddFileSize(const UINT64 &fileSize);
+    void Clear(const size_t &size);
 };

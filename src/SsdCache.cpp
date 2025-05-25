@@ -8,47 +8,41 @@
 #define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
 bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    WCHAR FullPath[FULLPATH_SIZE];
-    GetFinalPathNameByHandleW(handle, FullPath, FULLPATH_SIZE - 1, 0);
-    // std::wcout << L"ReadCash : " << FullPath << std::endl;
-    std::wstring originalPath = FullPath;
+    WCHAR fullPath[FULLPATH_SIZE];
+    GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
+    // std::wcout << L"Read : " << fullPath << std::endl;
+    std::wstring originalPath = fullPath;
     originalPath = originalPath.substr(4);
-    std::wstring cachePath = GetCachePathFromFullPath(FullPath);
+    std::wstring cachePath = GetCachePathFromFullPath(fullPath);
 
-    if (!(cashePfade.find(FullPath) != cashePfade.end())) {
-        // add Datei zum ReadCash
-        std::wcout << L"ReadCash: FullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
-        // Sicherstellen, dass die Zielverzeichnisse existieren
-        std::filesystem::create_directories(std::filesystem::path(cachePath).parent_path());
-        std::cout << "ReadCash: Zielverzeichnisse existieren" << std::endl;
-        // Datei kopieren
-        if (!CopyFileW(originalPath.c_str(), cachePath.c_str(), FALSE)) {
-            std::wcout << L"Fehler beim Kopieren in Cache: " << originalPath << std::endl;
+    // prufe ob im Cache
+    if (!(cashePfade.find(fullPath) != cashePfade.end())) {
+        // add zum Cache
+        if (!AddFile(originalPath, cachePath, handle, fullPath)) {
+            std::wcout << "Read: Fehler beim hinzufugen der Datei: " << fullPath << std::endl;
             return false;
         }
-        std::wcout << L"ReadCash: FullPath insert : " << FullPath << std::endl;
-        cashePfade.insert(FullPath);
     } else {
-        // FullPath ist bereits in cashePfade
-        std::wcout << L"ReadCash: FullPath vorhanden : " << FullPath << std::endl;
+        // fullPath ist bereits in cashePfade
+        // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
     }
     // von ReadCash lesen
     // Jetzt von E:/Cashe/... lesen
     HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (cacheHandle == INVALID_HANDLE_VALUE) {
-        std::wcout << L"Fehler beim Offnen der Cache-Datei: " << cachePath << std::endl;
+        std::wcout << L"Read: Fehler beim Offnen der Cache-Datei: " << cachePath << std::endl;
         return false;
     }
     BOOL result = ReadFile(cacheHandle, buffer, length, bytesTransferred, overlapped);
     CloseHandle(cacheHandle);
     if (!result) {
-        std::wcout << L"ReadCash: Fehler beim laden von Cashe : " << cachePath << std::endl;
+        std::wcout << L"Read: Fehler beim laden von Cashe : " << cachePath << std::endl;
         return false;
     }
-    std::wcout << L"ReadCash: FullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
+    // std::wcout << L"ReadCash: fullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
     // result = false; // erstmal, entferen ich spater
     return result;
-};
+}
 
 bool SsdCache::Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     RemoveHandle(handle);
@@ -116,3 +110,55 @@ std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {
 
     return cachePath;
 }
+
+bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]) {
+    // add Datei zum ReadCash
+    std::wcout << L"AddFile: fullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
+
+    // add Dateigroesse
+    BY_HANDLE_FILE_INFORMATION handleFileInfo;
+    if (!GetFileInformationByHandle(handle, &handleFileInfo)) {
+        std::cout << "AddFile: Fehler bei der handleFileInfo" << std::endl;
+        return FspNtStatusFromWin32(GetLastError());
+    }
+    UINT64 FileSize = ((UINT64)handleFileInfo.nFileSizeHigh << 32) | (UINT64)handleFileInfo.nFileSizeLow;
+    if (!AddFileSize(FileSize)) {
+        std::cout << "AddFile: Fehler bei der dateirgoesse: " << FileSize << std::endl;
+        return false;
+    }
+
+    // Sicherstellen, dass die Zielverzeichnisse existieren
+    std::filesystem::create_directories(std::filesystem::path(cachePath).parent_path());
+    std::cout << "AddFile: Zielverzeichnisse erstellt" << std::endl;
+
+    // Datei kopieren
+    if (!CopyFileW(originalPath.c_str(), cachePath.c_str(), FALSE)) {
+        std::wcout << L"AddFile: Fehler beim Kopieren in Cache: " << originalPath << std::endl;
+        return false;
+    }
+
+    // Merke das Datei vorhanden
+    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    cashePfade.insert(fullPath);
+    return true;
+};
+
+bool SsdCache::AddFileSize(const UINT64 &fileSize) {
+    size_t neueSize = currentCacheSize + fileSize;
+    if (neueSize > maxCacheSize) {
+        if (fileSize > maxCacheSize) {
+            std::cout << "AddFileSize: Fehler Datei grosser als Cache: " << fileSize << " / " << maxCacheSize << std::endl;
+            return false;
+        } else {
+            size_t diff = neueSize - maxCacheSize;
+            Clear(diff);
+            std::cout << "AddFileSize: Fehler da nicht implementirt.";
+            return false; // da Clear(diff) nicht implementirt
+        }
+    } else {
+        currentCacheSize = neueSize;
+    }
+    return true;
+}
+
+void SsdCache::Clear(const size_t &size) {}

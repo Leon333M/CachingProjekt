@@ -901,10 +901,9 @@ static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem,
 
 static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo) {
     BY_HANDLE_FILE_INFORMATION ByHandleFileInfo;
-
-    if (!GetFileInformationByHandle(Handle, &ByHandleFileInfo))
+    if (!GetFileInformationByHandle(Handle, &ByHandleFileInfo)) {
         return FspNtStatusFromWin32(GetLastError());
-
+    }
     FileInfo->FileAttributes = ByHandleFileInfo.dwFileAttributes;
     FileInfo->ReparseTag = 0;
     FileInfo->FileSize =

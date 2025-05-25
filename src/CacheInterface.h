@@ -4,9 +4,9 @@
 #include <windows.h>
 
 class CacheInterface {
-private:
-    size_t maxCacheSize = 8 * 1024 * 1024 * 1024; // 8 GB
-    size_t currentCacheSize = 0;
+protected:
+    UINT64 maxCacheSize = 8ULL * 1024 * 1024 * 1024; // 8 GB
+    UINT64 currentCacheSize = 0;
 
 public:
     virtual ~CacheInterface() = default;
