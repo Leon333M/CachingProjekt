@@ -1,25 +1,29 @@
 // VirtuelleFestplatte.h
 #pragma once
+#include "Cache.h"
 #include <string>
 #include <winfsp/winfsp.h>
 #include <strsafe.h>
 
-typedef struct
-{
+typedef struct {
     FSP_FILE_SYSTEM *FileSystem;
     PWSTR Path;
 } PTFS;
-typedef struct
-{
+typedef struct {
     HANDLE Handle;
     PVOID DirBuffer;
 } PTFS_FILE_CONTEXT;
 
+struct VhdFileContext {
+    PTFS_FILE_CONTEXT fileContext;
+    bool isCached;
+};
+
 class VirtuelleFestplatte {
 private:
-    std::string orginalVolume;
-    std::string neuesVolume;
-    std::string CacheVolume;
+    std::wstring orginalVolume;
+    std::wstring neuesVolume;
+    std::wstring cacheVolume;
 
 public:
     /**
@@ -29,7 +33,7 @@ public:
      * @param neuesVolume das neue Volume wo die Daten von orginalVolume aber mit Cache sind.
      * @param cacheVolume das Volume was zum cashen genommen wird
      */
-    VirtuelleFestplatte(std::string orginalVolume,std::string neuesVolume,std::string cacheVolume);
+    VirtuelleFestplatte(std::wstring orginalVolume,std::wstring neuesVolume,std::wstring cacheVolume);
     void start();
     void stop();
 
@@ -42,7 +46,6 @@ private:
 };  
 /*
     // PtfsInterface
-    static NTSTATUS exit();
     static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
     static NTSTATUS SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem, PWSTR VolumeLabel, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
     static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem, PWSTR FileName, PUINT32 PFileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize);

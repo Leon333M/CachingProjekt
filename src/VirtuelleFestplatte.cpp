@@ -1,6 +1,10 @@
 // VirtuelleFestplatte.cpp
 #include "VirtuelleFestplatte.h"
 #include <iostream>
+#include <unordered_set>
+#include <fstream>  
+#include <Windows.h>
+#include <filesystem>
 
 #define PROGNAME                        "passthrough"
 #define ALLOCATION_UNIT                 4096
@@ -55,10 +59,10 @@
 };
 
 // VirtuelleFestplatte.cpp
-VirtuelleFestplatte::VirtuelleFestplatte(std::string orginalVolume,std::string neuesVolume,std::string cacheVolume) {
+VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume,std::wstring neuesVolume,std::wstring cacheVolume) {
     this->orginalVolume = orginalVolume;
     this->neuesVolume = neuesVolume;
-    this->CacheVolume = CacheVolume;
+    this->cacheVolume = cacheVolume;
 }
 
 void VirtuelleFestplatte::start() {
@@ -66,19 +70,116 @@ void VirtuelleFestplatte::start() {
         std::cout << "fehler beim starten der vhdd." << std::endl;
         return ;
     }
-    PWSTR ServiceName = PWSTR(L"passthrough");
+    PWSTR ServiceName = PWSTR( L"" PROGNAME);
     NTSTATUS status = FspServiceRun(ServiceName, SvcStart, SvcStop, 0);
-    // wprintf(L"[FspServiceRun] status = 0x%08X\n", status);
     std::cout << "FspServiceRun status = " << (int)status << std::endl;
 }
 
 void VirtuelleFestplatte::stop(){}
+
+static void ClearCacheDirectory()
+{
+    std::cout << "ClearCacheDirectory " << std::endl;
+    const std::filesystem::path cacheDir = L"E:/Cashe";
+
+    std::error_code ec; // Für Fehlerbehandlung ohne Exceptions
+
+    if (!std::filesystem::exists(cacheDir, ec))
+    {
+        std::wcout << L"Cache-Verzeichnis existiert nicht: " << cacheDir.wstring() << std::endl;
+        return;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(cacheDir, ec))
+    {
+        if (ec)
+        {
+            std::wcerr << L"Fehler beim Iterieren: " << ec.message().c_str() << std::endl;
+            return;
+        }
+
+        std::filesystem::remove_all(entry.path(), ec);
+        if (ec)
+        {
+            std::wcerr << L"Fehler beim Loschen von " << entry.path().wstring() << L": " << ec.message().c_str() << std::endl;
+        }
+        else
+        {
+            std::wcout << L"Geloscht: " << entry.path().wstring() << std::endl;
+        }
+    }
+}
+// zum entfernen RemoveFromCachePfade(std::wstring FullPath));
+// oder RemoveFromCachePfadeHandle (HANDLE Handle);
+static std::unordered_set<std::wstring> cashePfade;
+static void RemoveFromCachePfade(const std::wstring& FullPath) {
+    auto it = cashePfade.find(FullPath);
+    if (it != cashePfade.end()) {
+        // Hier konnen spater weitere Aktionen hinzugefugt werden
+        cashePfade.erase(it);
+        std::wcout << L"RemoveFromCache: Entfernt aus Cache: " << FullPath << std::endl;
+    } else {
+        std::wcout << L"RemoveFromCache: Pfad nicht im Cache gefunden: " << FullPath << std::endl;
+    }
+}
+static void RemoveFromCachePfadeHandle(HANDLE Handle) {
+    WCHAR FullPath[FULLPATH_SIZE];
+    GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
+    std::wcout << L"RemoveFromCachePfade Handle : "<< FullPath << std::endl;
+    RemoveFromCachePfade(FullPath);
+}
+static bool ReadCash(HANDLE Handle, LPVOID Buffer, DWORD Length, LPDWORD PBytesTransferred, LPOVERLAPPED Overlapped){
+    WCHAR FullPath[FULLPATH_SIZE];
+    GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
+    // std::wcout << L"ReadCash : " << FullPath << std::endl;
+    std::wstring originalPath = FullPath;
+    originalPath = originalPath.substr(4);
+    std::wstring originalPathForCashe = originalPath;
+    originalPathForCashe.erase(std::remove(originalPathForCashe.begin(), originalPathForCashe.end(), L':'), originalPathForCashe.end());
+    std::wstring cachePath = L"E:/Cashe/" + originalPathForCashe;
+    std::replace(cachePath.begin(), cachePath.end(), L'\\', L'/');
+
+    if (!(cashePfade.find(FullPath) != cashePfade.end())) {
+        // add Datei zum ReadCash
+        std::wcout << L"ReadCash: FullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
+        // Sicherstellen, dass die Zielverzeichnisse existieren
+        std::filesystem::create_directories(std::filesystem::path(cachePath).parent_path());
+        std::cout << "ReadCash: Zielverzeichnisse existieren" << std::endl;
+        // Datei kopieren
+        if (!CopyFileW(originalPath.c_str(), cachePath.c_str(), FALSE)) {
+            fail(L"Fehler beim Kopieren in Cache: %s", originalPath.c_str());
+            return false;
+        }
+        std::wcout << L"ReadCash: FullPath insert : " << FullPath << std::endl;
+        cashePfade.insert(FullPath);
+    } else {
+        // FullPath ist bereits in cashePfade
+        // std::wcout << L"ReadCash: FullPath vorhanden : " << FullPath << std::endl;
+    }
+    // von ReadCash lesen
+    // Jetzt von E:/Cashe/... lesen
+    HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (cacheHandle == INVALID_HANDLE_VALUE) {
+        fail(L"Fehler beim Offnen der Cache-Datei: %s", cachePath.c_str());
+        return false;
+    }
+    BOOL result = ReadFile(cacheHandle, Buffer, Length, PBytesTransferred, Overlapped);
+    CloseHandle(cacheHandle);
+    if (!result){
+        std::wcout << L"ReadCash: Fehler beim laden von Cashe : " << cachePath << std::endl;
+       return false;
+    }
+    // std::wcout << L"ReadCash: FullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
+    // result = false; // erstmal, entferen ich spater
+    return result;
+}
 
 // private Funktion:
 NTSTATUS VirtuelleFestplatte::SvcStop(FSP_SERVICE *Service) {
     PTFS *Ptfs = (PTFS *)Service->UserContext;
     FspFileSystemStopDispatcher(Ptfs->FileSystem);
     PtfsDelete(Ptfs);
+    ClearCacheDirectory();
     return STATUS_SUCCESS;
 }
 
@@ -101,6 +202,7 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
     PWSTR VolumePrefix = 0;
     PWSTR PassThrough = 0;
     PWSTR MountPoint = 0;
+    PWSTR CashePrefix = 0;
     HANDLE DebugLogHandle = INVALID_HANDLE_VALUE;
     WCHAR PassThroughBuf[MAX_PATH];
     PTFS *Ptfs = 0;
@@ -128,6 +230,9 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
             break;
         case L'u':
             argtos(VolumePrefix);
+            break;
+        case L'c':
+            argtos(CashePrefix);
             break;
         default:
             goto usage;
@@ -205,7 +310,7 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
     info(L"%s%s%s -p %s -m %s",
         L"" PROGNAME,
         0 != VolumePrefix && L'\0' != VolumePrefix[0] ? L" -u " : L"",
-            0 != VolumePrefix && L'\0' != VolumePrefix[0] ? VolumePrefix : L"",
+        0 != VolumePrefix && L'\0' != VolumePrefix[0] ? VolumePrefix : L"",
         PassThrough,
         MountPoint);
 
@@ -285,7 +390,8 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
         Path, FILE_READ_ATTRIBUTES, 0, 0,
         OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
     if (INVALID_HANDLE_VALUE == Handle)
-        return FspNtStatusFromWin32(GetLastError());
+        return FspNtStatusFromWin32(GetLastError()); {
+    }
 
     Length = GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
     if (0 == Length)
@@ -294,8 +400,9 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
         CloseHandle(Handle);
         return FspNtStatusFromWin32(LastError);
     }
-    if (L'\\' == FullPath[Length - 1])
+    if (L'\\' == FullPath[Length - 1]){
         FullPath[--Length] = L'\0';
+    }
 
     if (!GetFileTime(Handle, &CreationTime, 0, 0))
     {
@@ -339,18 +446,20 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
     VolumeParams.PassQueryDirectoryPattern = 1;
     VolumeParams.FlushAndPurgeOnCleanup = 1;
     VolumeParams.UmFileContextIsUserContext2 = 1;
-    if (0 != VolumePrefix)
+    if (0 != VolumePrefix) {
         wcscpy_s(VolumeParams.Prefix, sizeof VolumeParams.Prefix / sizeof(WCHAR), VolumePrefix);
     wcscpy_s(VolumeParams.FileSystemName, sizeof VolumeParams.FileSystemName / sizeof(WCHAR),
         L"" PROGNAME);
+    }
 
     Result = FspFileSystemCreate(
         (PWSTR)(VolumeParams.Prefix[0] ? L"" FSP_FSCTL_NET_DEVICE_NAME : L"" FSP_FSCTL_DISK_DEVICE_NAME),
         &VolumeParams,
         &PtfsInterface,
         &Ptfs->FileSystem);
-    if (!NT_SUCCESS(Result))
+    if (!NT_SUCCESS(Result)) {
         goto exit;
+    }
     Ptfs->FileSystem->UserContext = Ptfs;
 
     Result = FspFileSystemSetMountPoint(Ptfs->FileSystem, MountPoint);
@@ -409,12 +518,14 @@ static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
     VolumeInfo->TotalSize = TotalSize.QuadPart;
     VolumeInfo->FreeSize = FreeSize.QuadPart;
 
+    /*
     printf("Passthrough-Pfad : %ls\n", Ptfs->Path);
     printf("VolumeInfo pointer: %p\n", (void*)VolumeInfo);
     printf("TotalSize        : %llu\n",
         (unsigned long long) VolumeInfo->TotalSize);
     printf("FreeSize         : %llu\n",
         (unsigned long long) VolumeInfo->FreeSize);
+    */
 
     return STATUS_SUCCESS;
 }
@@ -575,6 +686,8 @@ static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
 
     *PFileContext = FileContext;
 
+    // std::wcout << L"Open Pfad : " << FileName << std::endl;
+
     return GetFileInfoInternal(FileContext->Handle, FileInfo);
 }
 
@@ -612,10 +725,10 @@ static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
         }
     }
 
-    if (!SetFileInformationByHandle(Handle,
-        FileAllocationInfo, &AllocationInfo, sizeof AllocationInfo))
+    if (!SetFileInformationByHandle(Handle, FileAllocationInfo, &AllocationInfo, sizeof AllocationInfo)){
         return FspNtStatusFromWin32(GetLastError());
-
+    }
+    RemoveFromCachePfadeHandle(Handle);
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -654,9 +767,13 @@ static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
     Overlapped.Offset = (DWORD)Offset;
     Overlapped.OffsetHigh = (DWORD)(Offset >> 32);
 
-    if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped))
-        return FspNtStatusFromWin32(GetLastError());
-
+    if (!ReadCash(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
+        if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
+         return FspNtStatusFromWin32(GetLastError());
+        }
+    } else {
+        // std::cout << "Read : von cash " << std::endl;
+    }
     return STATUS_SUCCESS;
 }
 
@@ -683,9 +800,10 @@ static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
     Overlapped.Offset = (DWORD)Offset;
     Overlapped.OffsetHigh = (DWORD)(Offset >> 32);
 
-    if (!WriteFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped))
+    if (!WriteFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped)){
         return FspNtStatusFromWin32(GetLastError());
-
+    }
+    RemoveFromCachePfadeHandle(Handle);
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -775,7 +893,7 @@ static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem,
             FileEndOfFileInfo, &EndOfFileInfo, sizeof EndOfFileInfo))
             return FspNtStatusFromWin32(GetLastError());
     }
-
+    RemoveFromCachePfadeHandle(Handle);
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
@@ -795,6 +913,7 @@ static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem,
     if (!MoveFileExW(FullPath, NewFullPath, ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0))
         return FspNtStatusFromWin32(GetLastError());
 
+    RemoveFromCachePfade(FullPath);
     return STATUS_SUCCESS;
 }
 
@@ -827,6 +946,7 @@ static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem,
     if (!SetKernelObjectSecurity(Handle, SecurityInformation, ModificationDescriptor))
         return FspNtStatusFromWin32(GetLastError());
 
+    RemoveFromCachePfadeHandle(Handle);
     return STATUS_SUCCESS;
 }
 
@@ -910,6 +1030,8 @@ static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
     FspFileSystemReadDirectoryBuffer(&FileContext->DirBuffer,
         Marker, Buffer, BufferLength, PBytesTransferred);
 
+    // std::wcout << "ReadDirectory : " << FullPath << std::endl;
+
     return STATUS_SUCCESS;
 }
 
@@ -924,7 +1046,7 @@ static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem,
     if (!SetFileInformationByHandle(Handle,
         FileDispositionInfo, &DispositionInfo, sizeof DispositionInfo))
         return FspNtStatusFromWin32(GetLastError());
-
+    RemoveFromCachePfadeHandle(Handle);
     return STATUS_SUCCESS;
 }
 

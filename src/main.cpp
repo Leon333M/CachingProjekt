@@ -6,9 +6,9 @@
 int main(int argc, wchar_t **argv) {
     try {
         std::cout << "Init virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
-        std::string orginalVolume = "F";
-        std::string neuesVolume = "G";
-        std::string cacheVolum = "S";
+        std::wstring orginalVolume = L"F";
+        std::wstring neuesVolume = L"G";
+        std::wstring cacheVolum = L"S";
         VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume,neuesVolume,cacheVolum);
 
         std::cout << "Starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
@@ -24,5 +24,6 @@ int main(int argc, wchar_t **argv) {
 
     } catch (...) {
         std::cout << "Error das progam ist abgestuertzt\n";
+        return 0;
     }
 }
