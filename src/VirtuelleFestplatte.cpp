@@ -15,70 +15,150 @@
 #define ConcatPath(Ptfs, FN, FP) (0 == StringCbPrintfW(FP, sizeof FP, L"%s%s", Ptfs->Path, FN))
 #define HandleFromContext(FC) (((PTFS_FILE_CONTEXT *)(FC))->Handle)
 
-// init static
-static Cache cache;
-static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
-static NTSTATUS SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem, PWSTR VolumeLabel, FSP_FSCTL_VOLUME_INFO *VolumeInfo);
-static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem, PWSTR FileName, PUINT32 PFileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize);
-static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem, PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess, UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize, PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem, PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess, PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes, UINT64 AllocationSize, FSP_FSCTL_FILE_INFO *FileInfo);
-static VOID Cleanup(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, ULONG Flags);
-static VOID Close(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext0);
-static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length, PULONG PBytesTransferred);
-static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length, BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo, PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS Flush(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS GetFileInfo(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS SetBasicInfo(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, UINT32 FileAttributes, UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize, FSP_FSCTL_FILE_INFO *FileInfo);
-static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists);
-static NTSTATUS GetSecurity(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize);
-static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor);
-static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext0, PWSTR Pattern, PWSTR Marker, PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred);
-static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, BOOLEAN DeleteFile);
-static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo);
-static FSP_FILE_SYSTEM_INTERFACE PtfsInterface = {
-    .GetVolumeInfo = GetVolumeInfo,
-    .SetVolumeLabel = SetVolumeLabel_,
-    .GetSecurityByName = GetSecurityByName,
-    .Create = Create,
-    .Open = Open,
-    .Overwrite = Overwrite,
-    .Cleanup = Cleanup,
-    .Close = Close,
-    .Read = Read,
-    .Write = Write,
-    .Flush = Flush,
-    .GetFileInfo = GetFileInfo,
-    .SetBasicInfo = SetBasicInfo,
-    .SetFileSize = SetFileSize,
-    .Rename = Rename,
-    .GetSecurity = GetSecurity,
-    .SetSecurity = SetSecurity,
-    .ReadDirectory = ReadDirectory,
-    .SetDelete = SetDelete,
-};
+// init static fur WinFSP
+static VirtuelleFestplatte *vhdd;
+static NTSTATUS staticStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
+    return vhdd->SvcStart(Service, argc, argv);
+}
+static NTSTATUS staticStop(FSP_SERVICE *Service) {
+    return vhdd->SvcStop(Service);
+}
+static NTSTATUS staticGetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
+    return vhdd->GetVolumeInfo(FileSystem, VolumeInfo);
+}
+static NTSTATUS staticSetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem, PWSTR VolumeLabel, FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
+    return vhdd->SetVolumeLabel_(FileSystem, VolumeLabel, VolumeInfo);
+}
+static NTSTATUS staticGetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
+                                        PWSTR FileName, PUINT32 PFileAttributes,
+                                        PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
+    return vhdd->GetSecurityByName(FileSystem, FileName, PFileAttributes, SecurityDescriptor, PSecurityDescriptorSize);
+}
+static NTSTATUS staticCreate(FSP_FILE_SYSTEM *FileSystem,
+                             PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
+                             UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize,
+                             PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->Create(FileSystem, FileName, CreateOptions, GrantedAccess, FileAttributes, SecurityDescriptor,
+                        AllocationSize, PFileContext, FileInfo);
+}
+static NTSTATUS staticOpen(FSP_FILE_SYSTEM *FileSystem,
+                           PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
+                           PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->Open(FileSystem, FileName, CreateOptions, GrantedAccess,
+                      PFileContext, FileInfo);
+}
+static NTSTATUS staticOverwrite(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes,
+                                UINT64 AllocationSize, FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->Overwrite(FileSystem, FileContext, FileAttributes, ReplaceFileAttributes, AllocationSize, FileInfo);
+}
+static VOID staticCleanup(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, ULONG Flags) {
+    return vhdd->Cleanup(FileSystem, FileContext, FileName, Flags);
+}
+static VOID staticClose(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext0) {
+    return vhdd->Close(FileSystem, FileContext0);
+}
+static NTSTATUS staticRead(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PVOID Buffer, UINT64 Offset,
+                           ULONG Length, PULONG PBytesTransferred) {
+    return vhdd->Read(FileSystem, FileContext, Buffer, Offset, Length, PBytesTransferred);
+}
+static NTSTATUS staticWrite(FSP_FILE_SYSTEM *FileSystem,
+                            PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
+                            BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo,
+                            PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->Write(FileSystem, FileContext, Buffer, Offset, Length, WriteToEndOfFile, ConstrainedIo, PBytesTransferred, FileInfo);
+}
+static NTSTATUS staticFlush(FSP_FILE_SYSTEM *FileSystem,
+                            PVOID FileContext,
+                            FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->Flush(FileSystem, FileContext, FileInfo);
+}
+static NTSTATUS staticGetFileInfo(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->GetFileInfo(FileSystem, FileContext, FileInfo);
+}
+static NTSTATUS staticSetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
+                                   PVOID FileContext, UINT32 FileAttributes,
+                                   UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime,
+                                   FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->SetBasicInfo(FileSystem, FileContext, FileAttributes, CreationTime, LastAccessTime, LastWriteTime, ChangeTime, FileInfo);
+}
+static NTSTATUS staticSetFileSize(FSP_FILE_SYSTEM *FileSystem,
+                                  PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize,
+                                  FSP_FSCTL_FILE_INFO *FileInfo) {
+    return vhdd->SetFileSize(FileSystem, FileContext, NewSize, SetAllocationSize, FileInfo);
+}
+static NTSTATUS staticRename(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext,
+                             PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists) {
+    return vhdd->Rename(FileSystem, FileContext, FileName, NewFileName, ReplaceIfExists);
+}
+static NTSTATUS staticGetSecurity(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext,
+                                  PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
+    return vhdd->GetSecurity(FileSystem, FileContext, SecurityDescriptor, PSecurityDescriptorSize);
+}
+static NTSTATUS staticSetSecurity(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext,
+                                  SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor) {
+    return vhdd->SetSecurity(FileSystem, FileContext, SecurityInformation, ModificationDescriptor);
+}
+static NTSTATUS staticReadDirectory(FSP_FILE_SYSTEM *FileSystem,
+                                    PVOID FileContext0, PWSTR Pattern, PWSTR Marker,
+                                    PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred) {
+    return vhdd->ReadDirectory(FileSystem, FileContext0, Pattern, Marker, Buffer, BufferLength, PBytesTransferred);
+}
+static NTSTATUS staticSetDelete(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, BOOLEAN DeleteFile) {
+    return vhdd->SetDelete(FileSystem, FileContext, FileName, DeleteFile);
+}
 
 // VirtuelleFestplatte.cpp
-VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, std::wstring cacheVolume) {
-    this->orginalVolume = orginalVolume;
-    this->neuesVolume = neuesVolume;
-    this->cacheVolume = cacheVolume;
+VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, Cache &cache)
+    : orginalVolume(orginalVolume), neuesVolume(neuesVolume), cache(cache) {
+    vhdd = this;
+
+    PtfsInterface = {
+        .GetVolumeInfo = staticGetVolumeInfo,
+        .SetVolumeLabel = staticSetVolumeLabel_,
+        .GetSecurityByName = staticGetSecurityByName,
+        .Create = staticCreate,
+        .Open = staticOpen,
+        .Overwrite = staticOverwrite,
+        .Cleanup = staticCleanup,
+        .Close = staticClose,
+        .Read = staticRead,
+        .Write = staticWrite,
+        .Flush = staticFlush,
+        .GetFileInfo = staticGetFileInfo,
+        .SetBasicInfo = staticSetBasicInfo,
+        .SetFileSize = staticSetFileSize,
+        .Rename = staticRename,
+        .GetSecurity = staticGetSecurity,
+        .SetSecurity = staticSetSecurity,
+        .ReadDirectory = staticReadDirectory,
+        .SetDelete = staticSetDelete,
+    };
 }
 
 void VirtuelleFestplatte::start() {
     if (!NT_SUCCESS(FspLoad(0))) {
-        std::cout << "fehler beim starten der vhdd." << std::endl;
+        std::cout << "Fehler beim starten der vhdd." << std::endl;
         return;
     }
     PWSTR ServiceName = PWSTR(L"" PROGNAME);
-    NTSTATUS status = FspServiceRun(ServiceName, SvcStart, SvcStop, 0);
+    NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, 0);
     std::cout << "FspServiceRun status = " << (int)status << std::endl;
 }
 
 void VirtuelleFestplatte::stop() {}
 
 // private Funktion:
+bool VirtuelleFestplatte::isFail(NTSTATUS result, PTFS *ptfs) {
+    if (!NT_SUCCESS(result)) {
+        fail(L"isFail: VirtuelleFestplatte konte nicht erstellt werden.");
+        if (0 != ptfs) {
+            PtfsDelete(ptfs);
+        }
+        return true;
+    }
+    return false;
+}
+
 NTSTATUS VirtuelleFestplatte::SvcStop(FSP_SERVICE *Service) {
     PTFS *Ptfs = (PTFS *)Service->UserContext;
     FspFileSystemStopDispatcher(Ptfs->FileSystem);
@@ -100,147 +180,42 @@ VOID VirtuelleFestplatte::PtfsDelete(PTFS *Ptfs) {
 }
 
 NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
-#define argtos(v)      \
-    if (arge > ++argp) \
-        v = *argp;     \
-    else               \
-        goto usage
-    // #define argtol(v)                       if (arge > ++argp) v = wcstol_deflt(*argp, v); else goto usage
-    wchar_t **argp, **arge;
     PWSTR DebugLogFile = 0;
     ULONG DebugFlags = 0;
     PWSTR VolumePrefix = 0;
     PWSTR PassThrough = 0;
     PWSTR MountPoint = 0;
-    PWSTR CashePrefix = 0;
+
     HANDLE DebugLogHandle = INVALID_HANDLE_VALUE;
     WCHAR PassThroughBuf[MAX_PATH];
     PTFS *Ptfs = 0;
     NTSTATUS Result;
 
-    for (argp = argv + 1, arge = argv + argc; arge > argp; argp++) {
-        if (L'-' != argp[0][0]) {
-            break;
-        }
-        switch (argp[0][1]) {
-            case L'?':
-                goto usage;
-            case L'd':
-                // argtol(DebugFlags);
-                break;
-            case L'D':
-                argtos(DebugLogFile);
-                break;
-            case L'm':
-                argtos(MountPoint);
-                break;
-            case L'p':
-                argtos(PassThrough);
-                break;
-            case L'u':
-                argtos(VolumePrefix);
-                break;
-            case L'c':
-                argtos(CashePrefix);
-                break;
-            default:
-                goto usage;
-        }
-    }
+    PassThrough = const_cast<PWSTR>(orginalVolume.c_str());
+    MountPoint = const_cast<PWSTR>(neuesVolume.c_str());
 
-    if (arge > argp) {
-        goto usage;
-    }
-
-    if (0 == PassThrough && 0 != VolumePrefix) {
-        PWSTR P;
-
-        P = wcschr(VolumePrefix, L'\\');
-        if (0 != P && L'\\' != P[1]) {
-            P = wcschr(P + 1, L'\\');
-            if (0 != P &&
-                ((L'A' <= P[1] && P[1] <= L'Z') ||
-                 (L'a' <= P[1] && P[1] <= L'z')) &&
-                L'$' == P[2]) {
-                StringCbPrintfW(PassThroughBuf, sizeof PassThroughBuf, L"%c:%s", P[1], P + 3);
-                PassThrough = PassThroughBuf;
-            }
-        }
-    }
-
-    if (0 == PassThrough || 0 == MountPoint) {
-        goto usage;
-    }
     EnableBackupRestorePrivileges();
 
-    if (0 != DebugLogFile) {
-        if (0 == wcscmp(L"-", DebugLogFile)) {
-            DebugLogHandle = GetStdHandle(STD_ERROR_HANDLE);
-        } else
-            DebugLogHandle = CreateFileW(
-                DebugLogFile,
-                FILE_APPEND_DATA,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                0,
-                OPEN_ALWAYS,
-                FILE_ATTRIBUTE_NORMAL,
-                0);
-        if (INVALID_HANDLE_VALUE == DebugLogHandle) {
-            fail(L"cannot open debug log file");
-            goto usage;
-        }
-
-        FspDebugLogSetHandle(DebugLogHandle);
-    }
-
     Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags, &Ptfs);
-    if (!NT_SUCCESS(Result)) {
-        fail(L"cannot create file system");
-        goto exit;
+    if (isFail(Result, Ptfs)) {
+        return Result;
     }
 
     Result = FspFileSystemStartDispatcher(Ptfs->FileSystem, 0);
-    if (!NT_SUCCESS(Result)) {
-        fail(L"cannot start file system");
-        goto exit;
+    if (isFail(Result, Ptfs)) {
+        return Result;
     }
 
     MountPoint = FspFileSystemMountPoint(Ptfs->FileSystem);
 
-    info(L"%s%s%s -p %s -m %s",
-         L"" PROGNAME,
-         0 != VolumePrefix && L'\0' != VolumePrefix[0] ? L" -u " : L"",
-         0 != VolumePrefix && L'\0' != VolumePrefix[0] ? VolumePrefix : L"",
-         PassThrough,
-         MountPoint);
-
     Service->UserContext = Ptfs;
     Result = STATUS_SUCCESS;
 
-exit:
-    if (!NT_SUCCESS(Result) && 0 != Ptfs) {
-        PtfsDelete(Ptfs);
+    if (isFail(Result, Ptfs)) {
+        return Result;
     }
 
     return Result;
-
-usage:
-    static wchar_t usage[] = L""
-                             "usage: %s OPTIONS\n"
-                             "\n"
-                             "options:\n"
-                             "    -d DebugFlags       [-1: enable all debug logs]\n"
-                             "    -D DebugLogFile     [file path; use - for stderr]\n"
-                             "    -u \\Server\\Share    [UNC prefix (single backslash)]\n"
-                             "    -p Directory        [directory to expose as pass through file system]\n"
-                             "    -m MountPoint       [X:|*|directory]\n";
-
-    fail(usage, L"" PROGNAME);
-
-    return STATUS_UNSUCCESSFUL;
-
-// #undef argtos
-#undef argtol
 }
 
 NTSTATUS VirtuelleFestplatte::EnableBackupRestorePrivileges(VOID) {
@@ -375,11 +350,10 @@ exit:
     }
 
     return Result;
-    WCHAR volumeRoot[4] = {0};
 }
 
 // Gibt Zeiger auf statischen Puffer zurueck: z. B. L"F:\\"
-static LPCWSTR konvertExW(LPCWSTR path) {
+LPCWSTR VirtuelleFestplatte::konvertExW(LPCWSTR path) {
     static WCHAR volumeRoot[4] = {0};
     // Pruefe: z. B. "\\?\F:\..." oder "F:\..."
     if (path[0] && path[1] == ':' && path[2] == '\\') {
@@ -398,9 +372,7 @@ static LPCWSTR konvertExW(LPCWSTR path) {
     return volumeRoot;
 }
 
-// PtfsInterface static
-static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
-                              FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
+NTSTATUS VirtuelleFestplatte::GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
     PTFS *Ptfs = (PTFS *)FileSystem->UserContext;
     WCHAR Root[MAX_PATH];
     ULARGE_INTEGER TotalSize, FreeSize;
@@ -428,16 +400,16 @@ static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem,
-                                PWSTR VolumeLabel,
-                                FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
+NTSTATUS VirtuelleFestplatte::SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem,
+                                              PWSTR VolumeLabel,
+                                              FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
     /* we do not support changing the volume label */
     return STATUS_INVALID_DEVICE_REQUEST;
 }
 
-static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
-                                  PWSTR FileName, PUINT32 PFileAttributes,
-                                  PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
+NTSTATUS VirtuelleFestplatte::GetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
+                                                PWSTR FileName, PUINT32 PFileAttributes,
+                                                PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
     PTFS *Ptfs = (PTFS *)FileSystem->UserContext;
     WCHAR FullPath[FULLPATH_SIZE];
     HANDLE Handle;
@@ -488,10 +460,10 @@ exit:
     return Result;
 }
 
-static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
-                       PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-                       UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize,
-                       PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::Create(FSP_FILE_SYSTEM *FileSystem,
+                                     PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
+                                     UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize,
+                                     PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
     PTFS *Ptfs = (PTFS *)FileSystem->UserContext;
     WCHAR FullPath[FULLPATH_SIZE];
     SECURITY_ATTRIBUTES SecurityAttributes;
@@ -546,9 +518,9 @@ static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(FileContext->Handle, FileInfo);
 }
 
-static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
-                     PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-                     PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::Open(FSP_FILE_SYSTEM *FileSystem,
+                                   PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
+                                   PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
     PTFS *Ptfs = (PTFS *)FileSystem->UserContext;
     WCHAR FullPath[FULLPATH_SIZE];
     ULONG CreateFlags;
@@ -584,9 +556,9 @@ static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(FileContext->Handle, FileInfo);
 }
 
-static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
-                          PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes, UINT64 AllocationSize,
-                          FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::Overwrite(FSP_FILE_SYSTEM *FileSystem,
+                                        PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes, UINT64 AllocationSize,
+                                        FSP_FSCTL_FILE_INFO *FileInfo) {
     HANDLE Handle = HandleFromContext(FileContext);
     FILE_BASIC_INFO BasicInfo = {0};
     FILE_ALLOCATION_INFO AllocationInfo = {0};
@@ -621,7 +593,7 @@ static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
-static VOID Cleanup(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, ULONG Flags) {
+VOID VirtuelleFestplatte::Cleanup(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, ULONG Flags) {
     HANDLE Handle = HandleFromContext(FileContext);
 
     if (Flags & FspCleanupDelete) {
@@ -632,8 +604,8 @@ static VOID Cleanup(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileNa
     }
 }
 
-VOID Close(FSP_FILE_SYSTEM *FileSystem,
-           PVOID FileContext0) {
+VOID VirtuelleFestplatte::Close(FSP_FILE_SYSTEM *FileSystem,
+                                PVOID FileContext0) {
     PTFS_FILE_CONTEXT *FileContext = (PTFS_FILE_CONTEXT *)FileContext0;
     HANDLE Handle = HandleFromContext(FileContext);
 
@@ -643,9 +615,9 @@ VOID Close(FSP_FILE_SYSTEM *FileSystem,
     free(FileContext);
 }
 
-static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
-                     PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
-                     PULONG PBytesTransferred) {
+NTSTATUS VirtuelleFestplatte::Read(FSP_FILE_SYSTEM *FileSystem,
+                                   PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
+                                   PULONG PBytesTransferred) {
     HANDLE Handle = HandleFromContext(FileContext);
     OVERLAPPED Overlapped = {0};
 
@@ -662,10 +634,10 @@ static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
-                      PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
-                      BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo,
-                      PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::Write(FSP_FILE_SYSTEM *FileSystem,
+                                    PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
+                                    BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo,
+                                    PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo) {
     HANDLE Handle = HandleFromContext(FileContext);
     LARGE_INTEGER FileSize;
     OVERLAPPED Overlapped = {0};
@@ -693,9 +665,9 @@ static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
-static NTSTATUS Flush(FSP_FILE_SYSTEM *FileSystem,
-                      PVOID FileContext,
-                      FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::Flush(FSP_FILE_SYSTEM *FileSystem,
+                                    PVOID FileContext,
+                                    FSP_FSCTL_FILE_INFO *FileInfo) {
     HANDLE Handle = HandleFromContext(FileContext);
 
     /* we do not flush the whole volume, so just return SUCCESS */
@@ -708,18 +680,18 @@ static NTSTATUS Flush(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
-static NTSTATUS GetFileInfo(FSP_FILE_SYSTEM *FileSystem,
-                            PVOID FileContext,
-                            FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::GetFileInfo(FSP_FILE_SYSTEM *FileSystem,
+                                          PVOID FileContext,
+                                          FSP_FSCTL_FILE_INFO *FileInfo) {
     HANDLE Handle = HandleFromContext(FileContext);
 
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
-static NTSTATUS SetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
-                             PVOID FileContext, UINT32 FileAttributes,
-                             UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime,
-                             FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::SetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
+                                           PVOID FileContext, UINT32 FileAttributes,
+                                           UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime,
+                                           FSP_FSCTL_FILE_INFO *FileInfo) {
     HANDLE Handle = HandleFromContext(FileContext);
     FILE_BASIC_INFO BasicInfo = {0};
 
@@ -741,9 +713,9 @@ static NTSTATUS SetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
-static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem,
-                            PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize,
-                            FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::SetFileSize(FSP_FILE_SYSTEM *FileSystem,
+                                          PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize,
+                                          FSP_FSCTL_FILE_INFO *FileInfo) {
     HANDLE Handle = HandleFromContext(FileContext);
     FILE_ALLOCATION_INFO AllocationInfo;
     FILE_END_OF_FILE_INFO EndOfFileInfo;
@@ -776,9 +748,9 @@ static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem,
     return GetFileInfoInternal(Handle, FileInfo);
 }
 
-static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem,
-                       PVOID FileContext,
-                       PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists) {
+NTSTATUS VirtuelleFestplatte::Rename(FSP_FILE_SYSTEM *FileSystem,
+                                     PVOID FileContext,
+                                     PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists) {
     PTFS *Ptfs = (PTFS *)FileSystem->UserContext;
     WCHAR FullPath[FULLPATH_SIZE], NewFullPath[FULLPATH_SIZE];
 
@@ -795,9 +767,9 @@ static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS GetSecurity(FSP_FILE_SYSTEM *FileSystem,
-                            PVOID FileContext,
-                            PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
+NTSTATUS VirtuelleFestplatte::GetSecurity(FSP_FILE_SYSTEM *FileSystem,
+                                          PVOID FileContext,
+                                          PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
     HANDLE Handle = HandleFromContext(FileContext);
     DWORD SecurityDescriptorSizeNeeded;
 
@@ -813,9 +785,9 @@ static NTSTATUS GetSecurity(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem,
-                            PVOID FileContext,
-                            SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor) {
+NTSTATUS VirtuelleFestplatte::SetSecurity(FSP_FILE_SYSTEM *FileSystem,
+                                          PVOID FileContext,
+                                          SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor) {
     HANDLE Handle = HandleFromContext(FileContext);
 
     if (!SetKernelObjectSecurity(Handle, SecurityInformation, ModificationDescriptor)) {
@@ -825,9 +797,9 @@ static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
-                              PVOID FileContext0, PWSTR Pattern, PWSTR Marker,
-                              PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred) {
+NTSTATUS VirtuelleFestplatte::ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
+                                            PVOID FileContext0, PWSTR Pattern, PWSTR Marker,
+                                            PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred) {
     PTFS *Ptfs = (PTFS *)FileSystem->UserContext;
     PTFS_FILE_CONTEXT *FileContext = (PTFS_FILE_CONTEXT *)FileContext0;
     HANDLE Handle = HandleFromContext(FileContext);
@@ -907,8 +879,8 @@ static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem,
-                          PVOID FileContext, PWSTR FileName, BOOLEAN DeleteFile) {
+NTSTATUS VirtuelleFestplatte::SetDelete(FSP_FILE_SYSTEM *FileSystem,
+                                        PVOID FileContext, PWSTR FileName, BOOLEAN DeleteFile) {
     HANDLE Handle = HandleFromContext(FileContext);
     FILE_DISPOSITION_INFO DispositionInfo;
 
@@ -922,7 +894,7 @@ static NTSTATUS SetDelete(FSP_FILE_SYSTEM *FileSystem,
     return STATUS_SUCCESS;
 }
 
-static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo) {
+NTSTATUS VirtuelleFestplatte::GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo) {
     BY_HANDLE_FILE_INFORMATION ByHandleFileInfo;
     if (!GetFileInformationByHandle(Handle, &ByHandleFileInfo)) {
         return FspNtStatusFromWin32(GetLastError());

@@ -74,7 +74,7 @@ void SsdCache::Remove(const std::wstring &fullPath) {
             std::wcout << L"Remove: Datei existiert nicht im Cache: " << cachePath << std::endl;
         }
     } else {
-        std::wcout << L"Remove: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
+        // std::wcout << L"Remove: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
     }
 };
 
