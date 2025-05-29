@@ -16,4 +16,7 @@ public:
     virtual void Remove(const std::wstring &fullPath) = 0;
     void RemoveHandle(HANDLE handle);
     virtual void Clear() = 0;
+
+private:
+    void setMaxCacheSize(UINT64 maxCacheSizeInGb);
 };

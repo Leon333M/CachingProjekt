@@ -12,3 +12,7 @@ void CacheInterface::RemoveHandle(HANDLE handle) {
     std::wcout << L"RemoveHandle : " << fullPath << std::endl;
     Remove(fullPath);
 }
+
+void CacheInterface::setMaxCacheSize(UINT64 maxCacheSizeInGb) {
+    maxCacheSize = maxCacheSizeInGb * 1024 * 1024 * 1024;
+}

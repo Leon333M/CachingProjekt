@@ -21,8 +21,10 @@ int main(int argc, char *argv[]) {
             MessageBox(NULL, "Fehler falsche Argumente.", "Fehler", MB_OK);
         }
 
-        Cache cacheBackend = Cache(cacheVolume);
-        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume, neuesVolume, cacheBackend);
+        SsdCache ssdCache = SsdCache(cacheVolume, 8);
+        RamCache ramCache = RamCache(8);
+        Cache cacheBackend = Cache(ssdCache, ramCache);
+        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume, neuesVolume, ramCache);
 
         std::string text = " virtuelles Laufwerk G:, das F: spiegelt";
         std::cout << "Starte" << text << std::endl;

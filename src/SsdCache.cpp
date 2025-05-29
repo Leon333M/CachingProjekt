@@ -7,9 +7,10 @@
 
 #define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
-SsdCache::SsdCache(std::wstring ssdCacheValue) {
+SsdCache::SsdCache(std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb) {
     cacheVolume = ssdCacheValue;
     cacheStammVerzeichnis = cacheVolume + L"/Cashe/";
+    maxCacheSize = maxCacheSizeInGb;
 }
 
 bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {

@@ -15,6 +15,7 @@ add_executable(CachingProjekt
      src/VirtuelleFestplatte.cpp
      src/CacheInterface.cpp
      src/SsdCache.cpp
+     src/RamCache.cpp
      src/Cache.cpp
 )
 

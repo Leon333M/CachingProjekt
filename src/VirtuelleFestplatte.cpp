@@ -108,7 +108,7 @@ static NTSTATUS staticSetDelete(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, 
 }
 
 // VirtuelleFestplatte.cpp
-VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, Cache &cache)
+VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, CacheInterface &cache)
     : orginalVolume(orginalVolume), neuesVolume(neuesVolume), cache(cache) {
     vhdd = this;
     PtfsInterface = {

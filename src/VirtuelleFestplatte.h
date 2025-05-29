@@ -30,7 +30,7 @@ public:
      * @param neuesVolume das neue Volume wo die Daten von orginalVolume aber mit Cache sind.
      * @param cache ist die Implementierung der Cache-Logik.
      */
-    VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, Cache &cache);
+    VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, CacheInterface &cache);
     void start();
     void stop();
 

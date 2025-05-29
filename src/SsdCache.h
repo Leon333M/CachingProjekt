@@ -14,7 +14,7 @@ private:
     std::wstring cacheStammVerzeichnis = cacheVolume + L"/Cashe/";
 
 public:
-    SsdCache(std::wstring ssdCacheValue);
+    SsdCache(std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb);
     bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void Remove(const std::wstring &fullPath);
