@@ -111,7 +111,6 @@ static NTSTATUS staticSetDelete(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, 
 VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, Cache &cache)
     : orginalVolume(orginalVolume), neuesVolume(neuesVolume), cache(cache) {
     vhdd = this;
-
     PtfsInterface = {
         .GetVolumeInfo = staticGetVolumeInfo,
         .SetVolumeLabel = staticSetVolumeLabel_,
@@ -354,7 +353,7 @@ exit:
 
 // Gibt Zeiger auf statischen Puffer zurueck: z. B. L"F:\\"
 LPCWSTR VirtuelleFestplatte::konvertExW(LPCWSTR path) {
-    static WCHAR volumeRoot[4] = {0};
+    std::fill(std::begin(volumeRoot), std::end(volumeRoot), 0);
     // Pruefe: z. B. "\\?\F:\..." oder "F:\..."
     if (path[0] && path[1] == ':' && path[2] == '\\') {
         // Normaler Pfad: "F:\..."

@@ -20,6 +20,7 @@ private:
     std::wstring neuesVolume;
     Cache &cache;
     FSP_FILE_SYSTEM_INTERFACE PtfsInterface;
+    WCHAR volumeRoot[4];
 
 public:
     /**
