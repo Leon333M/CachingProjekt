@@ -7,6 +7,11 @@
 
 #define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
+SsdCache::SsdCache(std::wstring ssdCacheValue) {
+    cacheVolume = ssdCacheValue;
+    cacheStammVerzeichnis = cacheVolume + L"/Cashe/";
+}
+
 bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
@@ -80,7 +85,7 @@ void SsdCache::Remove(const std::wstring &fullPath) {
 
 void SsdCache::Clear() {
     std::cout << "ClearCacheDirectory" << std::endl;
-    const std::filesystem::path cacheDir = L"E:/Cashe";
+    const std::filesystem::path cacheDir = cacheStammVerzeichnis;
     std::error_code ec; // Fur Fehlerbehandlung ohne Exceptions
     if (!std::filesystem::exists(cacheDir, ec)) {
         std::wcout << L"Cache-Verzeichnis existiert nicht: " << cacheDir.wstring() << std::endl;
@@ -110,7 +115,7 @@ std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {
     std::wstring originalPathForCashe = originalPath;
     originalPathForCashe.erase(std::remove(originalPathForCashe.begin(), originalPathForCashe.end(), L':'), originalPathForCashe.end());
     // Der Cache-Pfad wird erstellt
-    std::wstring cachePath = L"E:/Cashe/" + originalPathForCashe;
+    std::wstring cachePath = cacheStammVerzeichnis + originalPathForCashe;
     std::replace(cachePath.begin(), cachePath.end(), L'\\', L'/');
 
     return cachePath;

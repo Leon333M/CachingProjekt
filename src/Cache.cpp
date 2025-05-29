@@ -1,6 +1,8 @@
 // Cache.cpp
 #include "Cache.h"
 
+Cache::Cache(std::wstring ssdCacheValue) : ssdCache(ssdCacheValue), ramCache() {}
+
 bool Cache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     bool ret = true;
     if (!ramCache.Read(handle, buffer, length, bytesTransferred, overlapped)) {
