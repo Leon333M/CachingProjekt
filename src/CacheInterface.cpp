@@ -16,3 +16,10 @@ void CacheInterface::RemoveHandle(HANDLE handle) {
 void CacheInterface::setMaxCacheSize(UINT64 maxCacheSizeInGb) {
     maxCacheSize = maxCacheSizeInGb * 1024 * 1024 * 1024;
 }
+
+void CacheInterface::Clear() {
+    std::unordered_set<std::wstring> delcashePfade = cashePfade;
+    for (std::wstring pfad : delcashePfade) {
+        Remove(pfad);
+    }
+};

@@ -66,6 +66,12 @@
     "optional": "cpp",
     "ratio": "cpp",
     "sstream": "cpp",
-    "deque": "cpp"
+    "deque": "cpp",
+    "mutex": "cpp",
+    "map": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp",
+    "unordered_map": "cpp",
+    "xtree": "cpp"
   }
 }

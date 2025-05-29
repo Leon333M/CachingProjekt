@@ -10,7 +10,7 @@
 SsdCache::SsdCache(std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb) {
     cacheVolume = ssdCacheValue;
     cacheStammVerzeichnis = cacheVolume + L"/Cashe/";
-    maxCacheSize = maxCacheSizeInGb;
+    setMaxCacheSize(maxCacheSizeInGb);
 }
 
 bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
@@ -36,8 +36,8 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
     }
 
-    // von ReadCash lesen
     // Jetzt von E:/Cashe/... lesen
+    // von ReadCash lesen
     HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (cacheHandle == INVALID_HANDLE_VALUE) {
         std::wcout << L"Read: Fehler beim Offnen der Cache-Datei: " << cachePath << std::endl;
@@ -81,28 +81,6 @@ void SsdCache::Remove(const std::wstring &fullPath) {
         }
     } else {
         // std::wcout << L"Remove: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
-    }
-};
-
-void SsdCache::Clear() {
-    std::cout << "ClearCacheDirectory" << std::endl;
-    const std::filesystem::path cacheDir = cacheStammVerzeichnis;
-    std::error_code ec; // Fur Fehlerbehandlung ohne Exceptions
-    if (!std::filesystem::exists(cacheDir, ec)) {
-        std::wcout << L"Cache-Verzeichnis existiert nicht: " << cacheDir.wstring() << std::endl;
-        return;
-    }
-    for (const auto &entry : std::filesystem::directory_iterator(cacheDir, ec)) {
-        if (ec) {
-            std::wcerr << L"Fehler beim Iterieren: " << ec.message().c_str() << std::endl;
-            return;
-        }
-        std::filesystem::remove_all(entry.path(), ec);
-        if (ec) {
-            std::wcerr << L"Fehler beim Loschen von " << entry.path().wstring() << L": " << ec.message().c_str() << std::endl;
-        } else {
-            std::wcout << L"Geloscht: " << entry.path().wstring() << std::endl;
-        }
     }
 };
 

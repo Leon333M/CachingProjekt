@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
         SsdCache ssdCache = SsdCache(cacheVolume, 8);
         RamCache ramCache = RamCache(8);
         Cache cacheBackend = Cache(ssdCache, ramCache);
-        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume, neuesVolume, ramCache);
+        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume, neuesVolume, ssdCache);
 
         std::string text = " virtuelles Laufwerk G:, das F: spiegelt";
         std::cout << "Starte" << text << std::endl;

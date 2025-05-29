@@ -5,8 +5,8 @@
 
 class Cache : public CacheInterface {
 private:
-    SsdCache &ssdCache;
-    RamCache &ramCache;
+    CacheInterface &ssdCache;
+    CacheInterface &ramCache;
 
 public:
     Cache(SsdCache &ssdCache, RamCache &ramCache);
