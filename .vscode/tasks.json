@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build CachingProjekt mit MSVC",
+      "type": "shell",
+      "command": "cl",
+      "args": [
+        "/EHsc",
+        "/std:c++17",
+        "src\\main.cpp",
+        "src\\PassthroughFS.cpp",
+        "/I", "E:\\Code\\WinFsp\\inc",
+        "/link",
+        "/LIBPATH:E:\\Code\\WinFsp\\lib",
+        "winfsp-x64.lib"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$msCompile"]
+    }
+  ]
+}

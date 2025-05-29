@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Starte CachingProjekt",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Debug/CachingProjekt.exe",
+      "args": [
+        "-p",
+        "F:",
+        "-m",
+        "G:",
+        "-c",
+        "S:",
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "console": "externalTerminal"
+    }
+  ]
+}
