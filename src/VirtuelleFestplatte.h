@@ -18,7 +18,7 @@ class VirtuelleFestplatte {
 private:
     std::wstring orginalVolume;
     std::wstring neuesVolume;
-    Cache &cache;
+    CacheInterface &cache;
     FSP_FILE_SYSTEM_INTERFACE PtfsInterface;
     WCHAR volumeRoot[4];
 
