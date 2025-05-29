@@ -9,7 +9,7 @@
 void CacheInterface::RemoveHandle(HANDLE handle) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
-    std::wcout << L"RemoveHandle : " << fullPath << std::endl;
+    // std::wcout << L"RemoveHandle : " << fullPath << std::endl;
     Remove(fullPath);
 }
 

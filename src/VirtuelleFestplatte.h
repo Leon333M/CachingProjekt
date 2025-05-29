@@ -5,9 +5,11 @@
 #include <strsafe.h>
 #include <winfsp/winfsp.h>
 
+struct VirtuelleFestplatte;
 typedef struct {
     FSP_FILE_SYSTEM *FileSystem;
     PWSTR Path;
+    VirtuelleFestplatte *vhdd;
 } PTFS;
 typedef struct {
     HANDLE Handle;

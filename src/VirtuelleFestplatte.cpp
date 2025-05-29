@@ -21,56 +21,54 @@ static NTSTATUS staticStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
     return vhdd->SvcStart(Service, argc, argv);
 }
 static NTSTATUS staticStop(FSP_SERVICE *Service) {
-    return vhdd->SvcStop(Service);
+    return ((PTFS *)Service->UserContext)->vhdd->SvcStop(Service);
 }
 static NTSTATUS staticGetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
-    return vhdd->GetVolumeInfo(FileSystem, VolumeInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->GetVolumeInfo(FileSystem, VolumeInfo);
 }
 static NTSTATUS staticSetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem, PWSTR VolumeLabel, FSP_FSCTL_VOLUME_INFO *VolumeInfo) {
-    return vhdd->SetVolumeLabel_(FileSystem, VolumeLabel, VolumeInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->SetVolumeLabel_(FileSystem, VolumeLabel, VolumeInfo);
 }
 static NTSTATUS staticGetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
                                         PWSTR FileName, PUINT32 PFileAttributes,
                                         PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
-    return vhdd->GetSecurityByName(FileSystem, FileName, PFileAttributes, SecurityDescriptor, PSecurityDescriptorSize);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->GetSecurityByName(FileSystem, FileName, PFileAttributes, SecurityDescriptor, PSecurityDescriptorSize);
 }
 static NTSTATUS staticCreate(FSP_FILE_SYSTEM *FileSystem,
                              PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
                              UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize,
                              PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->Create(FileSystem, FileName, CreateOptions, GrantedAccess, FileAttributes, SecurityDescriptor,
-                        AllocationSize, PFileContext, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Create(FileSystem, FileName, CreateOptions, GrantedAccess, FileAttributes, SecurityDescriptor, AllocationSize, PFileContext, FileInfo);
 }
 static NTSTATUS staticOpen(FSP_FILE_SYSTEM *FileSystem,
                            PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
                            PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->Open(FileSystem, FileName, CreateOptions, GrantedAccess,
-                      PFileContext, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Open(FileSystem, FileName, CreateOptions, GrantedAccess, PFileContext, FileInfo);
 }
 static NTSTATUS staticOverwrite(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes,
                                 UINT64 AllocationSize, FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->Overwrite(FileSystem, FileContext, FileAttributes, ReplaceFileAttributes, AllocationSize, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Overwrite(FileSystem, FileContext, FileAttributes, ReplaceFileAttributes, AllocationSize, FileInfo);
 }
 static VOID staticCleanup(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, ULONG Flags) {
-    return vhdd->Cleanup(FileSystem, FileContext, FileName, Flags);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Cleanup(FileSystem, FileContext, FileName, Flags);
 }
 static VOID staticClose(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext0) {
-    return vhdd->Close(FileSystem, FileContext0);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Close(FileSystem, FileContext0);
 }
 static NTSTATUS staticRead(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PVOID Buffer, UINT64 Offset,
                            ULONG Length, PULONG PBytesTransferred) {
-    return vhdd->Read(FileSystem, FileContext, Buffer, Offset, Length, PBytesTransferred);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Read(FileSystem, FileContext, Buffer, Offset, Length, PBytesTransferred);
 }
 static NTSTATUS staticWrite(FSP_FILE_SYSTEM *FileSystem,
                             PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
                             BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo,
                             PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->Write(FileSystem, FileContext, Buffer, Offset, Length, WriteToEndOfFile, ConstrainedIo, PBytesTransferred, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Write(FileSystem, FileContext, Buffer, Offset, Length, WriteToEndOfFile, ConstrainedIo, PBytesTransferred, FileInfo);
 }
 static NTSTATUS staticFlush(FSP_FILE_SYSTEM *FileSystem,
                             PVOID FileContext,
                             FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->Flush(FileSystem, FileContext, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Flush(FileSystem, FileContext, FileInfo);
 }
 static NTSTATUS staticGetFileInfo(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, FSP_FSCTL_FILE_INFO *FileInfo) {
     return vhdd->GetFileInfo(FileSystem, FileContext, FileInfo);
@@ -79,38 +77,37 @@ static NTSTATUS staticSetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
                                    PVOID FileContext, UINT32 FileAttributes,
                                    UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime,
                                    FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->SetBasicInfo(FileSystem, FileContext, FileAttributes, CreationTime, LastAccessTime, LastWriteTime, ChangeTime, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->SetBasicInfo(FileSystem, FileContext, FileAttributes, CreationTime, LastAccessTime, LastWriteTime, ChangeTime, FileInfo);
 }
 static NTSTATUS staticSetFileSize(FSP_FILE_SYSTEM *FileSystem,
                                   PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize,
                                   FSP_FSCTL_FILE_INFO *FileInfo) {
-    return vhdd->SetFileSize(FileSystem, FileContext, NewSize, SetAllocationSize, FileInfo);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->SetFileSize(FileSystem, FileContext, NewSize, SetAllocationSize, FileInfo);
 }
 static NTSTATUS staticRename(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext,
                              PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists) {
-    return vhdd->Rename(FileSystem, FileContext, FileName, NewFileName, ReplaceIfExists);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->Rename(FileSystem, FileContext, FileName, NewFileName, ReplaceIfExists);
 }
 static NTSTATUS staticGetSecurity(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext,
                                   PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize) {
-    return vhdd->GetSecurity(FileSystem, FileContext, SecurityDescriptor, PSecurityDescriptorSize);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->GetSecurity(FileSystem, FileContext, SecurityDescriptor, PSecurityDescriptorSize);
 }
 static NTSTATUS staticSetSecurity(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext,
                                   SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor) {
-    return vhdd->SetSecurity(FileSystem, FileContext, SecurityInformation, ModificationDescriptor);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->SetSecurity(FileSystem, FileContext, SecurityInformation, ModificationDescriptor);
 }
 static NTSTATUS staticReadDirectory(FSP_FILE_SYSTEM *FileSystem,
                                     PVOID FileContext0, PWSTR Pattern, PWSTR Marker,
                                     PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred) {
-    return vhdd->ReadDirectory(FileSystem, FileContext0, Pattern, Marker, Buffer, BufferLength, PBytesTransferred);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->ReadDirectory(FileSystem, FileContext0, Pattern, Marker, Buffer, BufferLength, PBytesTransferred);
 }
 static NTSTATUS staticSetDelete(FSP_FILE_SYSTEM *FileSystem, PVOID FileContext, PWSTR FileName, BOOLEAN DeleteFile) {
-    return vhdd->SetDelete(FileSystem, FileContext, FileName, DeleteFile);
+    return ((PTFS *)FileSystem->UserContext)->vhdd->SetDelete(FileSystem, FileContext, FileName, DeleteFile);
 }
 
 // VirtuelleFestplatte.cpp
 VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, CacheInterface &cache)
     : orginalVolume(orginalVolume), neuesVolume(neuesVolume), cache(cache) {
-    vhdd = this;
     PtfsInterface = {
         .GetVolumeInfo = staticGetVolumeInfo,
         .SetVolumeLabel = staticSetVolumeLabel_,
@@ -140,6 +137,7 @@ void VirtuelleFestplatte::start() {
         return;
     }
     PWSTR ServiceName = PWSTR(L"" PROGNAME);
+    vhdd = this;
     NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, 0);
     std::cout << "FspServiceRun status = " << (int)status << std::endl;
 }
@@ -199,6 +197,7 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
     if (isFail(Result, Ptfs)) {
         return Result;
     }
+    Ptfs->vhdd = this;
 
     Result = FspFileSystemStartDispatcher(Ptfs->FileSystem, 0);
     if (isFail(Result, Ptfs)) {
