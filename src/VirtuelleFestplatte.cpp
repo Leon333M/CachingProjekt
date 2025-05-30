@@ -16,6 +16,7 @@
 #define HandleFromContext(FC) (((PTFS_FILE_CONTEXT *)(FC))->Handle)
 
 // init static fur WinFSP
+static bool fspStartet = false;
 static VirtuelleFestplatte *vhdd;
 static NTSTATUS staticStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
     return vhdd->SvcStart(Service, argc, argv);
@@ -136,13 +137,17 @@ void VirtuelleFestplatte::start() {
         std::cout << "Fehler beim starten der vhdd." << std::endl;
         return;
     }
-    PWSTR ServiceName = PWSTR(L"" PROGNAME);
-    vhdd = this;
-    NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, 0);
-    std::cout << "FspServiceRun status = " << (int)status << std::endl;
+    if (!fspStartet) {
+        // starte fsp
+        fspStartet = true;
+        PWSTR ServiceName = PWSTR(L"" PROGNAME);
+        vhdd = this;
+        NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, 0);
+        std::cout << "FspServiceRun status = " << (int)status << std::endl;
+    } else {
+        erstelleVhdd();
+    }
 }
-
-void VirtuelleFestplatte::stop() {}
 
 // private Funktion:
 bool VirtuelleFestplatte::isFail(NTSTATUS result, PTFS *ptfs) {
@@ -154,6 +159,24 @@ bool VirtuelleFestplatte::isFail(NTSTATUS result, PTFS *ptfs) {
         return true;
     }
     return false;
+}
+
+void VirtuelleFestplatte::erstelleVhdd() {
+    PWSTR PassThrough = const_cast<PWSTR>(orginalVolume.c_str());
+    PWSTR MountPoint = const_cast<PWSTR>(neuesVolume.c_str());
+    PWSTR VolumePrefix = 0;
+    ULONG DebugFlags = 0;
+    PTFS *Ptfs = 0;
+
+    NTSTATUS Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags, &Ptfs);
+    if (isFail(Result, Ptfs)) {
+        std::cout << "erstellung der Vhdd ist fehlgeschlagen bei PtfsCreate." << std::endl;
+    }
+    Result = FspFileSystemStartDispatcher(Ptfs->FileSystem, 0);
+    if (isFail(Result, Ptfs)) {
+        std::cout << "erstellung der Vhdd ist fehlgeschlagen bei FspFileSystem." << std::endl;
+    }
+    MountPoint = FspFileSystemMountPoint(Ptfs->FileSystem);
 }
 
 NTSTATUS VirtuelleFestplatte::SvcStop(FSP_SERVICE *Service) {
@@ -182,7 +205,6 @@ NTSTATUS VirtuelleFestplatte::SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
     PWSTR VolumePrefix = 0;
     PWSTR PassThrough = 0;
     PWSTR MountPoint = 0;
-
     HANDLE DebugLogHandle = INVALID_HANDLE_VALUE;
     WCHAR PassThroughBuf[MAX_PATH];
     PTFS *Ptfs = 0;

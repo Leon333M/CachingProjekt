@@ -85,7 +85,7 @@ bool RamCache::AddFile(std::wstring &originalPath, HANDLE handle, WCHAR fullPath
     BY_HANDLE_FILE_INFORMATION handleFileInfo;
     if (!GetFileInformationByHandle(handle, &handleFileInfo)) {
         std::cout << "AddFile: Fehler bei der handleFileInfo" << std::endl;
-        return FspNtStatusFromWin32(GetLastError());
+        return false;
     }
     UINT64 FileSize = ((UINT64)handleFileInfo.nFileSizeHigh << 32) | (UINT64)handleFileInfo.nFileSizeLow;
     if (!AddFileSize(FileSize)) {
@@ -101,7 +101,7 @@ bool RamCache::AddFile(std::wstring &originalPath, HANDLE handle, WCHAR fullPath
     }
 
     // Merke das Datei vorhanden
-    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
     cashePfade.insert(fullPath);
     return true;
 };

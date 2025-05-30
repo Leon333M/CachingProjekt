@@ -122,7 +122,6 @@ bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HAND
 
     // Sicherstellen, dass die Zielverzeichnisse existieren
     std::filesystem::create_directories(std::filesystem::path(cachePath).parent_path());
-    std::cout << "AddFile: Zielverzeichnisse erstellt" << std::endl;
 
     // Datei kopieren
     if (!CopyFileW(originalPath.c_str(), cachePath.c_str(), FALSE)) {
@@ -131,7 +130,7 @@ bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HAND
     }
 
     // Merke das Datei vorhanden
-    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
     cashePfade.insert(fullPath);
     return true;
 };

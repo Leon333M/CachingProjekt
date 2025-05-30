@@ -34,11 +34,11 @@ public:
      */
     VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, CacheInterface &cache);
     void start();
-    void stop();
 
 private:
     LPCWSTR konvertExW(LPCWSTR path);
     bool isFail(NTSTATUS result, PTFS *ptfs);
+    void erstelleVhdd();
     VOID PtfsDelete(PTFS *Ptfs);
     NTSTATUS EnableBackupRestorePrivileges(VOID);
     NTSTATUS PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR MountPoint, UINT32 DebugFlags, PTFS **PPtfs);

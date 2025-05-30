@@ -12,7 +12,7 @@ protected:
     std::unordered_set<std::wstring> cashePfade;
     std::deque<std::wstring> pfadHistorie;
     int minZugriffsHaufigkeit = 2;
-    const int maxPfadHistorie = 128;
+    const int maxPfadHistorie = 64;
     std::deque<HANDLE> handleHistorie;
     const int maxHandleHistorie = 8;
 

@@ -16,7 +16,6 @@ bool ConfigLoader::loadFromFile(const std::wstring &filename) {
 }
 
 void ConfigLoader::start() {
-
     std::vector<std::thread> threads = std::vector<std::thread>();
     for (VirtuelleFestplatte &vhdd : vhdds) {
         threads.emplace_back(&ConfigLoader::starteVhdd, this, std::ref(vhdd));
@@ -30,9 +29,7 @@ void ConfigLoader::start() {
 void ConfigLoader::starteVhdd(VirtuelleFestplatte &vhdd) {
     std::cout << "Starte vhdd" << std::endl;
     vhdd.start();
-    std::cout << "Stope vhdd" << std::endl;
-    vhdd.stop();
-    std::cout << "Ende vhdd" << std::endl;
+    std::cout << "Starte vhdd zuende" << std::endl;
 }
 
 bool ConfigLoader::loadFile(const std::wstring &filename) {
