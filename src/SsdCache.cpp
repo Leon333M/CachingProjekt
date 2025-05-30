@@ -12,6 +12,7 @@ SsdCache::SsdCache(std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZ
     cacheStammVerzeichnis = cacheVolume + L"/Cashe/";
     setMaxCacheSize(maxCacheSizeInGb);
     setMinZugriffsHaufigkeit(minZugriffsHaufigkeit);
+    clearCacheVerzeichnis();
 }
 
 bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
@@ -205,7 +206,21 @@ bool SsdCache::ShouldCachePath(const std::wstring &fullPath) {
         if (pfadHistorie.size() > maxPfadHistorie) {
             pfadHistorie.pop_front();
         }
-        // - Gib false zurück (→ noch nicht cachen).
+        // - Gib false zurück (-> noch nicht cachen).
         return false;
+    }
+}
+
+void SsdCache::clearCacheVerzeichnis() {
+    try {
+        // Uberprufe, ob das Verzeichnis existiert
+        if (std::filesystem::exists(cacheStammVerzeichnis) && std::filesystem::is_directory(cacheStammVerzeichnis)) {
+            // Losche rekursiv alle Dateien und Unterverzeichnisse
+            for (const auto &entry : std::filesystem::directory_iterator(cacheStammVerzeichnis)) {
+                std::filesystem::remove_all(entry); // Entfernt die Datei/Ordner
+            }
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Fehler beim Loschen des Cache-Verzeichnisses: " << e.what() << std::endl;
     }
 }

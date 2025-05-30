@@ -20,4 +20,5 @@ private:
     UINT64 Clear(const size_t &size);
     UINT64 SizeFromPath(const std::wstring &Path);
     bool ShouldCachePath(const std::wstring &fullPath);
+    void clearCacheVerzeichnis();
 };
