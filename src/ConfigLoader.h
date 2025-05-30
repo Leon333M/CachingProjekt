@@ -1,12 +1,14 @@
 // ConfigLoader.h
+#pragma once
 #include "VirtuelleFestplatte.h"
-#include <memory>
+#include <thread>
 
 class ConfigLoader {
 private:
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> cacheMap;
     std::vector<VirtuelleFestplatte> vhdds;
     std::vector<std::string> configData;
+    std::vector<std::thread> threads;
 
 public:
     bool loadFromFile(const std::wstring &filename);

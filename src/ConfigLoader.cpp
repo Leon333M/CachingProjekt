@@ -5,7 +5,6 @@
 #include <iostream>
 #include <locale>
 #include <sstream>
-#include <thread>
 
 bool ConfigLoader::loadFromFile(const std::wstring &filename) {
     bool ret = false;
@@ -16,7 +15,7 @@ bool ConfigLoader::loadFromFile(const std::wstring &filename) {
 }
 
 void ConfigLoader::start() {
-    std::vector<std::thread> threads = std::vector<std::thread>();
+    threads = std::vector<std::thread>();
     for (VirtuelleFestplatte &vhdd : vhdds) {
         threads.emplace_back(&ConfigLoader::starteVhdd, this, std::ref(vhdd));
         Sleep(1000);
@@ -27,6 +26,10 @@ void ConfigLoader::start() {
 }
 
 void ConfigLoader::clear() {
+    for (const auto &cacheM : cacheMap) {
+        cacheM.second->Clear();
+    }
+    threads.clear();
     for (const auto &cacheM : cacheMap) {
         cacheM.second->Clear();
     }

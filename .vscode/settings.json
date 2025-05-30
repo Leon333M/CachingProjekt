@@ -73,6 +73,7 @@
     "thread": "cpp",
     "unordered_map": "cpp",
     "xtree": "cpp",
-    "codecvt": "cpp"
+    "codecvt": "cpp",
+    "*.rh": "cpp"
   }
 }

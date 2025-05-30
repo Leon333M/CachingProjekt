@@ -1,5 +1,6 @@
 // main.cpp
 #include "ConfigLoader.h"
+#include "SymbolHandler.h"
 #include <filesystem>
 #include <iostream>
 #include <thread>
@@ -39,6 +40,8 @@ int main(int argc, char *argv[]) {
         ConfigLoader configLoader;
         std::cout << "lade config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
+        // init exit symbol
+        SymbolHandler symbolHandler = SymbolHandler(&configLoader);
         std::cout << "starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
         configLoader.start();
         std::cout << "ende main" << std::endl;

@@ -18,6 +18,7 @@ add_executable(CachingProjekt
      src/RamCache.cpp
      src/Cache.cpp
      src/ConfigLoader.cpp
+     src/SymbolHandler.cpp
 )
 
 # === WinFsp-Bibliothek verlinken ===
