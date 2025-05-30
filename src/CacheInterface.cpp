@@ -27,3 +27,17 @@ void CacheInterface::Clear() {
 void CacheInterface::setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit) {
     this->minZugriffsHaufigkeit = minZugriffsHaufigkeit;
 }
+
+bool CacheInterface::ShouldHadelCache(const HANDLE handle) {
+    int count = std::count(handleHistorie.begin(), handleHistorie.end(), handle);
+    // prufe ob im Cache
+    if (count < 1) {
+        // handle hinzufugen
+        handleHistorie.push_back(handle);
+        if (handleHistorie.size() > maxHandleHistorie) {
+            handleHistorie.pop_front();
+        }
+        return true;
+    }
+    return false;
+}
