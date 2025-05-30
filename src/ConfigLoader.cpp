@@ -26,6 +26,12 @@ void ConfigLoader::start() {
     }
 }
 
+void ConfigLoader::clear() {
+    for (const auto &cacheM : cacheMap) {
+        cacheM.second->Clear();
+    }
+}
+
 void ConfigLoader::starteVhdd(VirtuelleFestplatte &vhdd) {
     std::cout << "Starte vhdd" << std::endl;
     vhdd.start();

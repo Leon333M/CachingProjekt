@@ -11,6 +11,7 @@ private:
 public:
     bool loadFromFile(const std::wstring &filename);
     void start();
+    void clear();
     std::wstring stringToWString(const std::string &str);
     std::string wstringToString(const std::wstring &wstr);
 

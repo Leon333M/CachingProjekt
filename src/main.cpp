@@ -7,6 +7,12 @@
 
 int main(int argc, char *argv[]) {
     try {
+        // Hole das Konsolenfenster des aktuellen Prozesses
+        HWND hwnd = GetConsoleWindow();
+        // Verberge das Konsolenfenster
+        ShowWindow(hwnd, SW_HIDE);
+
+        // Init Argumente
         std::cout << "Init Argumente" << std::endl;
         std::cout << "Argumente : " << argc << " " << argv << std::endl;
         std::string file = "";
