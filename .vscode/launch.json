@@ -7,12 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/Debug/CachingProjekt.exe",
       "args": [
-        "-p",
-        "F:",
-        "-m",
-        "G:",
-        "-c",
-        "S:",
+        "E:\\Code\\Caching-Projekt\\config.txt",
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
