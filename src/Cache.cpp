@@ -14,9 +14,13 @@ bool Cache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransf
 }
 
 bool Cache::Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    ramCache.Write(handle, buffer, length, bytesTransferred, overlapped);
-    ssdCache.Write(handle, buffer, length, bytesTransferred, overlapped);
-    return false;
+    bool ret = false;
+    bool ret1 = ramCache.Write(handle, buffer, length, bytesTransferred, overlapped);
+    bool ret2 = ssdCache.Write(handle, buffer, length, bytesTransferred, overlapped);
+    if (ret1 || ret2) {
+        ret = true;
+    }
+    return ret;
 }
 
 void Cache::Remove(const std::wstring &fullPath) {
@@ -28,3 +32,5 @@ void Cache::Clear() {
     ramCache.Clear();
     ssdCache.Clear();
 }
+
+bool Cache::ShouldCachePath(const std::wstring &fullPath) { return false; };

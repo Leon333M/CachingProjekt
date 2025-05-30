@@ -40,15 +40,14 @@ int main(int argc, char *argv[]) {
         ConfigLoader configLoader;
         std::cout << "lade config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
-        // init exit symbol
-        SymbolHandler symbolHandler = SymbolHandler(&configLoader);
+        SymbolHandler symbolHandler = SymbolHandler(&configLoader); // init exit symbol
         std::cout << "starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
         configLoader.start();
         std::cout << "ende main" << std::endl;
         return 0;
 
     } catch (...) {
-        std::cout << "Error das progam ist abgestuertzt\n";
+        std::cout << "Error das progam ist abgestuertzt" << std::endl;
         return 0;
     }
 }

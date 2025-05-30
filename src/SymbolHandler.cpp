@@ -64,7 +64,7 @@ void SymbolHandler::startSymbolHandler() {
         return;
     }
 
-    HWND hwnd2 = CreateWindow(wc.lpszClassName, "Tray App", 0, 0, 0, 0, 0, 0, 0, 0, hInstance, 0);
+    HWND hwnd2 = CreateWindow(wc.lpszClassName, "Tray App", 0, 0, 0, 0, 0, 0, 0, 0, hInstance);
     if (hwnd2 == NULL) {
         return;
     }
