@@ -13,8 +13,9 @@
 
 #define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
-RamCache::RamCache(UINT64 maxCacheSizeInGb) {
+RamCache::RamCache(UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit) {
     setMaxCacheSize(maxCacheSizeInGb);
+    setMinZugriffsHaufigkeit(minZugriffsHaufigkeit);
 }
 
 bool RamCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {

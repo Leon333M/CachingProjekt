@@ -22,4 +22,8 @@ void CacheInterface::Clear() {
     for (std::wstring pfad : delcashePfade) {
         Remove(pfad);
     }
-};
+}
+
+void CacheInterface::setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit) {
+    this->minZugriffsHaufigkeit = minZugriffsHaufigkeit;
+}

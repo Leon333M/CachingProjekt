@@ -1,38 +1,40 @@
 // main.cpp
-#include "VirtuelleFestplatte.h"
+#include "ConfigLoader.h"
+#include <filesystem>
 #include <iostream>
+#include <thread>
 #include <windows.h>
 
 int main(int argc, char *argv[]) {
     try {
-        std::cout << "Init virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
-        std::wstring orginalVolume = L"F:";
-        std::wstring neuesVolume = L"G:";
-        std::wstring cacheVolume = L"E:";
+        std::cout << "Init Argumente" << std::endl;
         std::cout << "Argumente : " << argc << " " << argv << std::endl;
-        if (argc == 4) {
-            orginalVolume = std::wstring(argv[1], argv[1] + strlen(argv[1]));
-            neuesVolume = std::wstring(argv[2], argv[2] + strlen(argv[2]));
-            cacheVolume = std::wstring(argv[3], argv[3] + strlen(argv[3]));
+        std::string file = "";
+        if (argc == 2) {
+            file = argv[1];
+        } else if (argc == 1) {
+            file = argv[0];
+            std::filesystem::path path(file);
+            std::string dir = path.parent_path().string();
+            std::string newFile = dir + "\\config.txt";
+            file = newFile;
         } else {
             for (int i = 0; i < argc; i++) {
                 std::cout << argv[i] << std::endl;
             }
             MessageBox(NULL, "Fehler falsche Argumente.", "Fehler", MB_OK);
+            return 0;
         }
-
-        SsdCache ssdCache = SsdCache(cacheVolume, 8);
-        RamCache ramCache = RamCache(8);
-        Cache cacheBackend = Cache(ssdCache, ramCache);
-        VirtuelleFestplatte vhdd = VirtuelleFestplatte(orginalVolume, neuesVolume, ramCache);
-
-        std::string text = " virtuelles Laufwerk G:, das F: spiegelt";
-        std::cout << "Starte" << text << std::endl;
-        vhdd.start();
-
-        std::cout << "Stoppe" << text << std::endl;
-        vhdd.stop();
-
+        if (!std::filesystem::exists(file)) {
+            MessageBox(NULL, "Fehler config nicht gefuden", "Fehler", MB_OK);
+            return 0;
+        }
+        std::cout << "Init virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
+        ConfigLoader configLoader;
+        std::cout << "lade config" << std::endl;
+        configLoader.loadFromFile(configLoader.stringToWString(file));
+        std::cout << "starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
+        configLoader.start();
         std::cout << "ende main" << std::endl;
         return 0;
 

@@ -1,7 +1,7 @@
 // Cache.cpp
 #include "Cache.h"
 
-Cache::Cache(SsdCache &ssdCache, RamCache &ramCache) : ssdCache(ssdCache), ramCache(ramCache) {}
+Cache::Cache(CacheInterface &ssdCache, CacheInterface &ramCache) : ssdCache(ssdCache), ramCache(ramCache) {}
 
 bool Cache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     bool ret = true;

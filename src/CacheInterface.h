@@ -11,7 +11,7 @@ protected:
     UINT64 currentCacheSize = 0;
     std::unordered_set<std::wstring> cashePfade;
     std::deque<std::wstring> pfadHistorie;
-    const int minZugriffsHaufigkeit = 2;
+    int minZugriffsHaufigkeit = 2;
     const int maxPfadHistorie = 100;
 
 public:
@@ -22,4 +22,5 @@ public:
     void RemoveHandle(HANDLE handle);
     virtual void Clear();
     void setMaxCacheSize(UINT64 maxCacheSizeInGb);
+    void setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit);
 };

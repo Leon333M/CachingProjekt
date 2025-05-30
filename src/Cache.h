@@ -9,7 +9,7 @@ private:
     CacheInterface &ramCache;
 
 public:
-    Cache(SsdCache &ssdCache, RamCache &ramCache);
+    Cache(CacheInterface &ssdCache, CacheInterface &ramCache);
     bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void Remove(const std::wstring &fullPath);

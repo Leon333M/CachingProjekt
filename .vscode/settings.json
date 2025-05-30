@@ -72,6 +72,7 @@
     "stop_token": "cpp",
     "thread": "cpp",
     "unordered_map": "cpp",
-    "xtree": "cpp"
+    "xtree": "cpp",
+    "codecvt": "cpp"
   }
 }

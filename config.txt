@@ -1,0 +1,4 @@
+RamCache rc1 8 2
+SsdCache sc1 E: 8 10
+Cache c1 rc1 sc1 
+Vhdd F: G: rc1 

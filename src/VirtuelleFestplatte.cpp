@@ -339,6 +339,7 @@ NTSTATUS VirtuelleFestplatte::PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
     FspFileSystemSetDebugLog(Ptfs->FileSystem, DebugFlags);
 
     Result = STATUS_SUCCESS;
+    Ptfs->vhdd = this;
 
 exit:
     if (NT_SUCCESS(Result)) {
