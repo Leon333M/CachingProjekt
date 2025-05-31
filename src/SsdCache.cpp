@@ -54,8 +54,7 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         std::wcout << L"Read: Fehler beim laden von Cashe : " << cachePath << std::endl;
         return false;
     }
-    // std::wcout << L"ReadCash: fullPath vorhanden und von Cashe geladen : " << cachePath << std::endl;
-    // result = false; // erstmal, entferen ich spater
+    // std::wcout << L"ReadCash: Datei von Cashe geladen : " << cachePath << std::endl;
     return result;
 }
 
@@ -131,7 +130,7 @@ bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HAND
     }
 
     // Merke das Datei vorhanden
-    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
     cashePfade.insert(fullPath);
     return true;
 };

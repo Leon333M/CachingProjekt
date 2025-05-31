@@ -9,9 +9,9 @@
 int main(int argc, char *argv[]) {
     try {
         // Hole das Konsolenfenster des aktuellen Prozesses
-        HWND hwnd = GetConsoleWindow();
+        // HWND hwnd = GetConsoleWindow();
         // Verberge das Konsolenfenster
-        ShowWindow(hwnd, SW_HIDE);
+        // ShowWindow(hwnd, SW_HIDE);
 
         // Init Argumente
         std::cout << "Init Argumente" << std::endl;
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
         std::cout << "lade config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
         std::cout << "lade symbolHandler" << std::endl;
-        SymbolHandler symbolHandler = SymbolHandler(&configLoader); // init exit symbol
+        // SymbolHandler symbolHandler = SymbolHandler(&configLoader); // init exit symbol
         std::cout << "starte virtuelles Laufwerk:, das Hdd spiegelt." << std::endl;
         configLoader.start();
         std::cout << "ende main" << std::endl;

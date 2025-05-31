@@ -38,6 +38,7 @@ bool RamCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
             std::wcout << "Read: Fehler beim hinzufugen der Datei: " << fullPath << std::endl;
             return false;
         }
+
     } else {
         // fullPath ist bereits in cashePfade
         // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
@@ -49,6 +50,7 @@ bool RamCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         std::wcout << L"Read: Fehler beim laden von RamCashe : " << originalPath << std::endl;
         return false;
     }
+    // std::wcout << L"ReadCash: Datei von Cashe geladen : " << fullPath << std::endl;
     return result;
 }
 
@@ -101,7 +103,7 @@ bool RamCache::AddFile(std::wstring &originalPath, HANDLE handle, WCHAR fullPath
     }
 
     // Merke das Datei vorhanden
-    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
     cashePfade.insert(fullPath);
     return true;
 };
@@ -178,13 +180,12 @@ bool RamCache::ShouldCachePath(const std::wstring &fullPath) {
         return false;
     }
 }
-bool RamCache::storeInRam(const std::wstring &fullPath) {
-    const UINT64 BLOCK_SIZE = 4ULL * 1024 * 1024; // 4 MB pro Block
 
+bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei im Binarmodus oeffnen und an das Ende springen
     std::ifstream file(fullPath, std::ios::binary | std::ios::ate);
     if (!file) {
-        std::wcerr << L"[RAM-Cache] Fehler beim Oeffnen der Datei: " << fullPath << std::endl;
+        std::wcerr << L"storeInRam: Fehler beim Oeffnen der Datei: " << fullPath << std::endl;
         return false;
     }
 
@@ -192,73 +193,51 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     std::streamsize fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    std::map<UINT64, std::vector<char>> blocks;
-    UINT64 offset = 0;
-    int blockCount = 0;
-
-    // Datei blockweise einlesen
-    while (fileSize > 0) {
-        std::vector<char> buffer(BLOCK_SIZE);
-        std::streamsize toRead = std::min<std::streamsize>(BLOCK_SIZE, fileSize);
-
-        if (!file.read(buffer.data(), toRead)) {
-            std::wcerr << L"[RAM-Cache] Fehler beim Lesen der Datei bei Offset " << offset << std::endl;
-            return false;
-        }
-
-        buffer.resize(toRead); // Nur tatsaechlich gelesene Bytes speichern
-        blocks[offset] = std::move(buffer);
-
-        offset += BLOCK_SIZE;
-        fileSize -= toRead;
-        blockCount++;
+    // Datei einlesen
+    std::vector<char> buffer(fileSize);
+    if (!file.read(buffer.data(), fileSize)) {
+        std::wcerr << L"storeInRam: Fehler beim Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
+        return false;
     }
 
     // Bloecke in Cache eintragen
-    ramCache[fullPath] = std::move(blocks);
+    ramCache[fullPath] = std::move(buffer);
+
+    std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
 
     return true;
 }
 
 bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    const UINT64 BLOCK_SIZE = 4ULL * 1024 * 1024; // 4 MB wie beim Schreiben
-
     // Offset aus OVERLAPPED-Struktur berechnen
     UINT64 requestOffset = (static_cast<UINT64>(overlapped->OffsetHigh) << 32) | overlapped->Offset;
 
     // Datei im Cache suchen
     auto itFile = ramCache.find(originalPath);
     if (itFile == ramCache.end()) {
-        std::wcerr << L"[RAM-Cache] Fehler: Datei nicht im Cache: " << originalPath << std::endl;
+        std::wcerr << L"readFromRam: Fehler: Datei nicht im Cache: " << originalPath << std::endl;
         return false;
     }
 
-    // Block-Offset und Position innerhalb des Blocks berechnen
-    UINT64 blockOffset = (requestOffset / BLOCK_SIZE) * BLOCK_SIZE;
-    UINT64 withinBlockOffset = requestOffset % BLOCK_SIZE;
-
-    // Gesuchten Block im Cache suchen
-    auto itBlock = itFile->second.find(blockOffset);
-    if (itBlock == itFile->second.end()) {
-        std::wcerr << L"[RAM-Cache] Fehler: Kein Block gefunden fuer Offset: " << requestOffset
-                   << L" (Block-Offset: " << blockOffset << L")" << std::endl;
-        return false;
-    }
-
-    const std::vector<char> &block = itBlock->second;
+    const std::vector<char> &block = itFile->second;
+    DWORD dataLength = length;
 
     // Pruefen ob der Offset innerhalb des Blocks liegt
-    if (withinBlockOffset >= block.size()) {
-        std::wcerr << L"[RAM-Cache] Fehler: Innerhalb des Blocks liegt Offset ausserhalb der Blockgroesse." << std::endl;
-        return false;
+    if (requestOffset + dataLength > block.size()) {
+        if (requestOffset < block.size()) {
+            // Gehe davon aus, dass die Anfrage uber das Dateilimit geht, und korrigiere die Anfrage.
+            dataLength = block.size() - requestOffset;
+        } else {
+            std::wcerr << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath << std::endl;
+            std::wcout << L"readFromRam: requestOffset length block.size(): "
+                       << requestOffset << L" " << dataLength << L" " << requestOffset + dataLength << L" " << block.size() << std::endl;
+            return false;
+        }
     }
 
-    // Anzahl der zu kopierenden Bytes berechnen
-    DWORD copySize = std::min<DWORD>(length, static_cast<DWORD>(block.size() - withinBlockOffset));
-
     // Daten aus Block in Zielpuffer kopieren
-    memcpy(buffer, block.data() + withinBlockOffset, copySize);
-    *bytesTransferred = copySize;
+    memcpy(buffer, block.data() + requestOffset, dataLength);
+    *bytesTransferred = dataLength;
 
     return true;
 }

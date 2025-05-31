@@ -6,7 +6,7 @@
 
 class RamCache : public CacheInterface {
 private:
-    std::unordered_map<std::wstring, std::map<UINT64, std::vector<char>>> ramCache;
+    std::unordered_map<std::wstring, std::vector<char>> ramCache;
 
 public:
     RamCache(UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 2);
