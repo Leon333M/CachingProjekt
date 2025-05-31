@@ -171,10 +171,12 @@ void VirtuelleFestplatte::erstelleVhdd() {
     NTSTATUS Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags, &Ptfs);
     if (isFail(Result, Ptfs)) {
         std::cout << "erstellung der Vhdd ist fehlgeschlagen bei PtfsCreate." << std::endl;
+        return;
     }
     Result = FspFileSystemStartDispatcher(Ptfs->FileSystem, 0);
     if (isFail(Result, Ptfs)) {
         std::cout << "erstellung der Vhdd ist fehlgeschlagen bei FspFileSystem." << std::endl;
+        return;
     }
     MountPoint = FspFileSystemMountPoint(Ptfs->FileSystem);
 }

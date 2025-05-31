@@ -131,8 +131,9 @@ UINT64 RamCache::Clear(const UINT64 &size) {
     UINT64 freedSize = 0;
     UINT64 removedSize = 0;
     std::vector<std::wstring> removePfade;
+    std::unordered_set<std::wstring> cashePfadeKopie = cashePfade;
 
-    for (const std::wstring fullPath : cashePfade) {
+    for (const std::wstring &fullPath : cashePfadeKopie) {
         if (removedSize < size) {
             removedSize += SizeFromPath(fullPath);
             removePfade.emplace_back(fullPath);
