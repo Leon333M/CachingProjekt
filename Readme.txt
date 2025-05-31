@@ -25,7 +25,7 @@ Cache c1 rc1 sc1
 
 # Virtuelle Festplatten-Konfiguration
 Vhdd F: G: rc1
-# F: und G: als virtuelle Festplatten, verwendet rc1 (RamCache)
+# F: ist die originale Festplatte, die auf G: gespiegelt wird. Der Cache (rc1) wird auf G: angewendet.
 
 Vhdd D: H: rc1
-# D: und H: als virtuelle Festplatten, verwendet rc1 (RamCache)
+# D: ist die originale Festplatte, die auf H: gespiegelt wird. Der Cache (rc1) wird auf G: angewendet.
