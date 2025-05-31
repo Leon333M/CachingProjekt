@@ -103,7 +103,7 @@ bool RamCache::AddFile(std::wstring &originalPath, HANDLE handle, WCHAR fullPath
     }
 
     // Merke das Datei vorhanden
-    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
     cashePfade.insert(fullPath);
     return true;
 };
@@ -203,7 +203,7 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Bloecke in Cache eintragen
     ramCache[fullPath] = std::move(buffer);
 
-    std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
+    // std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
 
     return true;
 }

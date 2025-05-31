@@ -130,7 +130,7 @@ bool SsdCache::AddFile(std::wstring &originalPath, std::wstring &cachePath, HAND
     }
 
     // Merke das Datei vorhanden
-    std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
+    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
     cashePfade.insert(fullPath);
     return true;
 };
