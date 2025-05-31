@@ -36,12 +36,13 @@ int main(int argc, char *argv[]) {
             MessageBox(NULL, "Fehler config nicht gefuden", "Fehler", MB_OK);
             return 0;
         }
-        std::cout << "Init virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
+        std::cout << "Init virtuelles Laufwerk, das Hdd spiegelt." << std::endl;
         ConfigLoader configLoader;
         std::cout << "lade config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
+        std::cout << "lade symbolHandler" << std::endl;
         SymbolHandler symbolHandler = SymbolHandler(&configLoader); // init exit symbol
-        std::cout << "starte virtuelles Laufwerk G:, das F: spiegelt" << std::endl;
+        std::cout << "starte virtuelles Laufwerk:, das Hdd spiegelt." << std::endl;
         configLoader.start();
         std::cout << "ende main" << std::endl;
         return 0;
