@@ -1,6 +1,5 @@
 // RamCache.cpp
 #include "RamCache.h"
-#include "CacheInterface.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>

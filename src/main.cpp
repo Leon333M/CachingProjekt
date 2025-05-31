@@ -3,7 +3,6 @@
 #include "SymbolHandler.h"
 #include <filesystem>
 #include <iostream>
-#include <thread>
 #include <windows.h>
 
 int main(int argc, char *argv[]) {
