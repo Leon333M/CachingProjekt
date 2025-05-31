@@ -8,13 +8,13 @@
 int main(int argc, char *argv[]) {
     try {
         // Hole das Konsolenfenster des aktuellen Prozesses
-        // HWND hwnd = GetConsoleWindow();
+        HWND hwnd = GetConsoleWindow();
         // Verberge das Konsolenfenster
-        // ShowWindow(hwnd, SW_HIDE);
+        ShowWindow(hwnd, SW_HIDE);
         // init Config
         ConfigLoader configLoader;
         // init exit symbol
-        // SymbolHandler symbolHandler = SymbolHandler(&configLoader);
+        SymbolHandler symbolHandler = SymbolHandler(&configLoader);
 
         // Init Argumente
         std::cout << "Init Argumente" << std::endl;
