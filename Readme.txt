@@ -8,3 +8,24 @@ Jetzt habt ihr zwei Optionen:
 Entweder ihr kopiert die winfsp-x64.dll in den Ordner, in dem sich die CachingProjekt.exe befindet,
 oder
 ihr bindet den Pfad C:\Code\WinFsp\bin\ in die Systemumgebungsvariablen ein.
+
+Hier eine Anleitung für die config.txt:
+
+# Konfiguration für RamCache
+RamCache rc1 8 2
+# rc1: RamCache mit 8 GB und caching nach 2 Lesezugriffen
+
+# Konfiguration für SsdCache
+SsdCache sc1 E: 8 10
+# sc1: SsdCache auf Laufwerk E: mit 8 GB und caching nach 10 Lesezugriffen
+
+# Kombination der Caches
+Cache c1 rc1 sc1
+# c1: Kombination von rc1 (RamCache) und sc1 (SsdCache)
+
+# Virtuelle Festplatten-Konfiguration
+Vhdd F: G: rc1
+# F: und G: als virtuelle Festplatten, verwendet rc1 (RamCache)
+
+Vhdd D: H: rc1
+# D: und H: als virtuelle Festplatten, verwendet rc1 (RamCache)
