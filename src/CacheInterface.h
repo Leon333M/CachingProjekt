@@ -114,7 +114,17 @@ protected:
      */
     int countPathInHistory(const std::wstring &fullPath);
 
+    /**
+     * @brief Entfernt den angegebenen Pfad aus der Historie.
+     *
+     * @param fullPath Der Pfad, der aus der Historie entfernt werden soll.
+     */
     void removePathFromHistory(const std::wstring &fullPath);
 
+    /**
+     * @brief Fuegt einen Pfad der Historie hinzu.
+     *
+     * @param fullPath Der Pfad, der zur Historie hinzugefuegt werden soll.
+     */
     void addPathToHistory(const std::wstring &fullPath);
 };
