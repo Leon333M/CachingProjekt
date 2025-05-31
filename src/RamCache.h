@@ -19,7 +19,6 @@ private:
     bool AddFileSize(const UINT64 &fileSize);
     UINT64 Clear(const UINT64 &size);
     UINT64 SizeFromPath(const std::wstring &Path);
-    bool ShouldCachePath(const std::wstring &fullPath);
     bool storeInRam(const std::wstring &fullPath);
     bool readFromRam(const std::wstring &originalPath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 };

@@ -32,5 +32,3 @@ void Cache::Clear() {
     ramCache.Clear();
     ssdCache.Clear();
 }
-
-bool Cache::ShouldCachePath(const std::wstring &fullPath) { return false; };

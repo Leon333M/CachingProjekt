@@ -159,27 +159,6 @@ UINT64 RamCache::SizeFromPath(const std::wstring &Path) {
     return size.QuadPart;
 }
 
-bool RamCache::ShouldCachePath(const std::wstring &fullPath) {
-    // Zahle, wie oft der Pfad in pfadHistorie bereits vorkommt.
-    int count = countPathInHistory(fullPath);
-    // Wenn ≥ minZugriffsHaufigkeit z.B. 2
-    if (count >= minZugriffsHaufigkeit) {
-        // - Alle Vorkommen aus pfadHistorie entfernen.
-        pfadHistorie.erase(std::remove(pfadHistorie.begin(), pfadHistorie.end(), fullPath), pfadHistorie.end());
-        // - Gib true zuruck (→ jetzt cachen).
-        return true;
-    } else { // Sonst:
-        // - Fuge den Pfad hinten in pfadHistorie ein.
-        pfadHistorie.push_back(fullPath);
-        // - Wenn recentPaths.size() > maxRecentPaths, entferne das vorderste Element.
-        if (pfadHistorie.size() > maxPfadHistorie) {
-            pfadHistorie.pop_front();
-        }
-        // - Gib false zuruck (→ noch nicht cachen).
-        return false;
-    }
-}
-
 bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei im Binarmodus oeffnen und an das Ende springen
     std::ifstream file(fullPath, std::ios::binary | std::ios::ate);

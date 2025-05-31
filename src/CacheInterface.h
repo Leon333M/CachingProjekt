@@ -1,6 +1,7 @@
 // CacheInterface.h
 #pragma once
 #include <deque>
+#include <shared_mutex>
 #include <string>
 #include <unordered_set>
 #include <windows.h>
@@ -16,11 +17,14 @@ protected:
     UINT64 maxCacheSize = 8ULL * 1024 * 1024 * 1024; // 8 GB
     UINT64 currentCacheSize = 0;
     std::unordered_set<std::wstring> cashePfade;
-    std::deque<std::wstring> pfadHistorie; // std::wstring::reserve()
     int minZugriffsHaufigkeit = 2;
     const int maxPfadHistorie = 64;
     std::deque<HANDLE> handleHistorie;
     const int maxHandleHistorie = 8;
+
+private:
+    // std::shared_mutex pfadHistorieMutex; // sperre fur Thread sicherheits // in cpp
+    std::deque<std::wstring> pfadHistorie; // Todo: std::wstring::reserve() <-- als Array[maxPfadHistorie] fur keine sperren
 
 public:
     /**
@@ -91,7 +95,7 @@ protected:
      * @return true, wenn die Datei gecacht werden soll.
      * @return false, wenn die Datei nicht gecacht werden soll.
      */
-    virtual bool ShouldCachePath(const std::wstring &fullPath) = 0;
+    bool ShouldCachePath(const std::wstring &fullPath);
 
     /**
      * @brief ShouldHandleCache dient dazu, um zu verhindern, dass bei Einlesen einer Datei nicht mehrmals ShouldCachePath aufgerufen wird.
@@ -109,4 +113,8 @@ protected:
      * @return int Die Anzahl, wie oft fullPath vorhanden ist.
      */
     int countPathInHistory(const std::wstring &fullPath);
+
+    void removePathFromHistory(const std::wstring &fullPath);
+
+    void addPathToHistory(const std::wstring &fullPath);
 };

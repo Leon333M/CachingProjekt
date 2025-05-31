@@ -74,6 +74,8 @@
     "unordered_map": "cpp",
     "xtree": "cpp",
     "codecvt": "cpp",
-    "*.rh": "cpp"
+    "*.rh": "cpp",
+    "condition_variable": "cpp",
+    "shared_mutex": "cpp"
   }
 }
