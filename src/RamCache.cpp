@@ -161,7 +161,7 @@ UINT64 RamCache::SizeFromPath(const std::wstring &Path) {
 
 bool RamCache::ShouldCachePath(const std::wstring &fullPath) {
     // Zahle, wie oft der Pfad in pfadHistorie bereits vorkommt.
-    int count = std::count(pfadHistorie.begin(), pfadHistorie.end(), fullPath);
+    int count = countPathInHistory(fullPath);
     // Wenn ≥ minZugriffsHaufigkeit z.B. 2
     if (count >= minZugriffsHaufigkeit) {
         // - Alle Vorkommen aus pfadHistorie entfernen.
@@ -202,7 +202,7 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Bloecke in Cache eintragen
     ramCache[fullPath] = std::move(buffer);
 
-    // std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
+    std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
 
     return true;
 }

@@ -191,7 +191,7 @@ UINT64 SsdCache::SizeFromPath(const std::wstring &Path) {
 
 bool SsdCache::ShouldCachePath(const std::wstring &fullPath) {
     // Zahle, wie oft der Pfad in pfadHistorie bereits vorkommt.
-    int count = std::count(pfadHistorie.begin(), pfadHistorie.end(), fullPath);
+    int count = countPathInHistory(fullPath);
     // Wenn ≥ minZugriffsHaufigkeit z.B. 2
     if (count >= minZugriffsHaufigkeit) {
         // - Alle Vorkommen aus pfadHistorie entfernen.

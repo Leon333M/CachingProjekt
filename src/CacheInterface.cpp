@@ -41,3 +41,7 @@ bool CacheInterface::ShouldHadelCache(const HANDLE handle) {
     }
     return false;
 }
+
+int CacheInterface::countPathInHistory(const std::wstring &fullPath) {
+    return std::count(pfadHistorie.begin(), pfadHistorie.end(), fullPath);
+}
