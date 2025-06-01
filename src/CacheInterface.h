@@ -96,10 +96,30 @@ public:
     virtual void Clear();
 
 protected:
+    /**
+     * @brief Entfernt Daten aus dem Cache bis zur angegebenen Groesse.
+     *
+     * Diese Methode versucht, Speicherplatz im Cache freizugeben,
+     * indem sie Daten entfernt, bis mindestens die angegebene Groesse
+     * freigegeben wurde.
+     *
+     * @param size Die gewuenschte Freigabegroesse in Bytes.
+     * @return Die tatsaechlich freigegebene Groesse in Bytes.
+     */
+    UINT64 Clear(const UINT64 &size);
+
     // virtual bool AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]) = 0;
     // virtual bool readCache(const std::wstring &fullPath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
 
-    UINT64 Clear(const UINT64 &size);
+    /**
+     * @brief Berechnet die Groesse des Eintrags fuer einen gegebenen Pfad.
+     *
+     * Diese Methode ermittelt, wie viel Speicherplatz der Cache-Eintrag
+     * fuer den angegebenen Pfad belegt.
+     *
+     * @param Path Der Pfad, dessen Cache-Groesse berechnet werden soll.
+     * @return Die Groesse des Eintrags in Bytes.
+     */
     UINT64 SizeFromPath(const std::wstring &Path);
 
     /**
