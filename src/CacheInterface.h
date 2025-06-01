@@ -96,6 +96,12 @@ public:
     virtual void Clear();
 
 protected:
+    // virtual bool AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]) = 0;
+    // virtual bool readCache(const std::wstring &fullPath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+
+    UINT64 Clear(const UINT64 &size);
+    UINT64 SizeFromPath(const std::wstring &Path);
+
     /**
      * @brief ShouldCachePath dient zur Strukturierung des Caches, in dem es abfragt, ob die Datei gecacht werden soll.
      *

@@ -158,40 +158,6 @@ bool SsdCache::AddFileSize(const UINT64 &fileSize) {
     return true;
 }
 
-UINT64 SsdCache::Clear(const UINT64 &size) {
-    UINT64 freedSize = 0;
-    UINT64 removedSize = 0;
-    std::wstring cacePath;
-    std::vector<std::wstring> removePfade;
-
-    for (const std::wstring fullPath : cashePfade) {
-        if (removedSize < size) {
-            cacePath = GetCachePathFromFullPath(fullPath);
-            removedSize += SizeFromPath(cacePath);
-            removePfade.emplace_back(fullPath);
-        } else {
-            break;
-        }
-    }
-    for (const std::wstring &fullPath : removePfade) {
-        Remove(fullPath);
-    }
-    return removedSize;
-}
-
-UINT64 SsdCache::SizeFromPath(const std::wstring &Path) {
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-    if (!GetFileAttributesExW(Path.c_str(), GetFileExInfoStandard, &fileInfo)) {
-        return 0; // oder ggf. Fehlerbehandlung
-    }
-
-    ULARGE_INTEGER size;
-    size.HighPart = fileInfo.nFileSizeHigh;
-    size.LowPart = fileInfo.nFileSizeLow;
-
-    return size.QuadPart;
-}
-
 void SsdCache::clearCacheVerzeichnis() {
     try {
         // Uberprufe, ob das Verzeichnis existiert

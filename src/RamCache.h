@@ -17,8 +17,6 @@ public:
 private:
     bool AddFile(std::wstring &originalPath, HANDLE handle, WCHAR fullPath[1284]);
     bool AddFileSize(const UINT64 &fileSize);
-    UINT64 Clear(const UINT64 &size);
-    UINT64 SizeFromPath(const std::wstring &Path);
     bool storeInRam(const std::wstring &fullPath);
     bool readFromRam(const std::wstring &originalPath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 };
