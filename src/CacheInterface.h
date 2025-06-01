@@ -35,14 +35,14 @@ public:
     virtual ~CacheInterface() = default;
 
     /**
-     * @brief Setzt die maximale Cache-Größe.
+     * @brief Setzt die maximale Cache-Grosse.
      *
-     * @param maxCacheSizeInGb Maximale Cache-Größe in Gigabyte.
+     * @param maxCacheSizeInGb Maximale Cache-Grosse in Gigabyte.
      */
     void setMaxCacheSize(UINT64 maxCacheSizeInGb);
 
     /**
-     * @brief Setzt die minimale Zugriffs-Häufigkeit.
+     * @brief Setzt die minimale Zugriffs-Haufigkeit.
      *
      * @param minZugriffsHaufigkeit Minimale Anzahl an Zugriffen, ab der eine Datei im Cache verbleibt.
      */
@@ -56,7 +56,7 @@ public:
     void setNextCache(CacheInterface *cache);
 
     /**
-     * @brief Read ist die Grundfunktion für den Cache.
+     * @brief Read ist die Grundfunktion fur den Cache.
      * Hier wird gepruft, ob die Datei im Cache liegt. Wenn nicht,
      * wird entschieden, ob diese Datei dann gecacht wird.
      *
@@ -115,7 +115,7 @@ protected:
      * @brief ShouldHandleCache dient dazu, um zu verhindern, dass bei Einlesen einer Datei nicht mehrmals ShouldCachePath aufgerufen wird.
      *
      * @param handle Standard-Winfsp-Handle, der gespeichert wird, wenn nicht vorhanden.
-     * @return true, wenn der Handle und somit der Read nicht schon einmal weitergeleitet wurde (also true zurückgegeben wurde).
+     * @return true, wenn der Handle und somit der Read nicht schon einmal weitergeleitet wurde (also true zuruckgegeben wurde).
      * @return false, wenn der Handle bereits vorhanden ist, was bedeutet, dass der Pfad zur Datei schon an den Cache weitergeleitet wurde.
      */
     bool ShouldHadelCache(const HANDLE handle);
