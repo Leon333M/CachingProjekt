@@ -21,6 +21,7 @@ protected:
     const int maxPfadHistorie = 64;
     std::deque<HANDLE> handleHistorie;
     const int maxHandleHistorie = 8;
+    CacheInterface *nextCache = nullptr;
 
 private:
     // std::shared_mutex pfadHistorieMutex; // sperre fur Thread sicherheits // in cpp
@@ -46,6 +47,13 @@ public:
      * @param minZugriffsHaufigkeit Minimale Anzahl an Zugriffen, ab der eine Datei im Cache verbleibt.
      */
     void setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit);
+
+    /**
+     * @brief Setzt den Pointer auf den cache.
+     *
+     * @param cache der Cache auf den der Pointers gesetzt wird.
+     */
+    void setNextCache(CacheInterface *cache);
 
     /**
      * @brief Read ist die Grundfunktion für den Cache.
@@ -127,4 +135,13 @@ protected:
      * @param fullPath Der Pfad, der zur Historie hinzugefuegt werden soll.
      */
     void addPathToHistory(const std::wstring &fullPath);
+
+    /**
+     * @brief readNextCache ruft Read von nachsten Cache auf wenn gesetzt.
+     *
+     * @param Alle Parameter sind die WinAPI-Parameter, die nur durchgereicht werden.
+     * @return true Wenn erfolgreich vom Cache gelesen.
+     * @return false Wenn der Pfad nicht im Cache ist und somit nicht eingelesen wurde.
+     */
+    bool readNextCache(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 };

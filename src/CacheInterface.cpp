@@ -30,6 +30,10 @@ void CacheInterface::setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit) {
     this->minZugriffsHaufigkeit = minZugriffsHaufigkeit;
 }
 
+void CacheInterface::setNextCache(CacheInterface *cache) {
+    nextCache = cache;
+}
+
 bool CacheInterface::ShouldCachePath(const std::wstring &fullPath) {
     // Zahle, wie oft der Pfad in pfadHistorie bereits vorkommt.
     int count = countPathInHistory(fullPath);
@@ -79,4 +83,11 @@ void CacheInterface::addPathToHistory(const std::wstring &fullPath) {
     if (pfadHistorie.size() > maxPfadHistorie) {
         pfadHistorie.pop_front();
     }
+}
+
+bool CacheInterface::readNextCache(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
+    if (nextCache != nullptr) {
+        return nextCache->Read(handle, buffer, length, bytesTransferred, overlapped);
+    }
+    return false;
 }

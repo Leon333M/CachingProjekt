@@ -25,6 +25,9 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
 
     // prufe ob im Cache
     if (!(cashePfade.find(fullPath) != cashePfade.end())) {
+        if (readNextCache(handle, buffer, length, bytesTransferred, overlapped)) {
+            return false;
+        }
         if (!ShouldHadelCache(handle)) {
             return false;
         }
