@@ -44,8 +44,11 @@ bool SsdCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTra
         // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
     }
 
-    // Jetzt von E:/Cashe/... lesen
     // von ReadCash lesen
+    return readSsdCache(cachePath, buffer, length, bytesTransferred, overlapped);
+}
+
+bool SsdCache::readSsdCache(std::wstring &cachePath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (cacheHandle == INVALID_HANDLE_VALUE) {
         std::wcout << L"Read: Fehler beim Offnen der Cache-Datei: " << cachePath << std::endl;
