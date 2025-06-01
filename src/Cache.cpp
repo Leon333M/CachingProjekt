@@ -24,11 +24,6 @@ void Cache::Remove(const std::wstring &fullPath) {
     ssdCache.Remove(fullPath);
 }
 
-void Cache::Clear() {
-    ramCache.Clear();
-    ssdCache.Clear();
-}
-
 void Cache::setNextCache(CacheInterface *cache) {
     ssdCache.setNextCache(cache);
 }

@@ -64,7 +64,7 @@ public:
      * @return true Wenn erfolgreich vom Cache gelesen.
      * @return false Wenn der Pfad nicht im Cache ist und somit nicht eingelesen wurde.
      */
-    virtual bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+    virtual bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 
     /**
      * @brief Write dient der Handhabung eines potenziellen WriteCaches und der Information, dass die Datei geaendert wurde.
@@ -73,7 +73,7 @@ public:
      * @return true wenn kein Schreiben im Originalpfad mehr noetig ist.
      * @return false wenn die Datei noch gespeichert werden muss.
      */
-    virtual bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+    virtual bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 
     /**
      * @brief Remove dient der Entfernung einer Datei aus dem Cache. Nuetzlich bei einem Write oder zum Aufraeumen.
@@ -108,8 +108,11 @@ protected:
      */
     UINT64 Clear(const UINT64 &size);
 
-    // virtual bool AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]) = 0;
-    // virtual bool readCache(const std::wstring &fullPath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+    bool AddFileSize(const UINT64 &fileSize);
+    bool AddFile(const std::wstring &fullPath, HANDLE handle);
+
+    virtual bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+    virtual bool storeInCache(const std::wstring &fullPath, HANDLE handle) = 0;
 
     /**
      * @brief Berechnet die Groesse des Eintrags fuer einen gegebenen Pfad.

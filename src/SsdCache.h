@@ -9,15 +9,15 @@ private:
 
 public:
     SsdCache(std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 10);
-    bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
-    bool readSsdCache(std::wstring &cachePath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
-    bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void Remove(const std::wstring &fullPath);
 
 private:
-    std::wstring GetCachePathFromFullPath(const std::wstring &fullPath);
-    bool AddFile(std::wstring &originalPath, std::wstring &cachePath, HANDLE handle, WCHAR fullPath[1284]);
-    bool AddFileSize(const UINT64 &fileSize);
+    bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
+    bool storeInCache(const std::wstring &fullPath, HANDLE handle);
+
+    // eigene Funktionen
+    bool readSsdCache(const std::wstring &cachePath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
+    bool storeInSsdCache(const std::wstring &originalPath, std::wstring &cachePath);
     void clearCacheVerzeichnis();
-    bool readSsdCache();
+    std::wstring GetCachePathFromFullPath(const std::wstring &fullPath);
 };

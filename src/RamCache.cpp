@@ -17,50 +17,6 @@ RamCache::RamCache(UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit) {
     setMinZugriffsHaufigkeit(minZugriffsHaufigkeit);
 }
 
-bool RamCache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    WCHAR fullPath[FULLPATH_SIZE];
-    GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
-    // std::wcout << L"Read : " << fullPath << std::endl;
-    std::wstring originalPath = fullPath;
-    originalPath = originalPath.substr(4);
-
-    // prufe ob im Cache
-    if (!(cashePfade.find(fullPath) != cashePfade.end())) {
-        if (readNextCache(handle, buffer, length, bytesTransferred, overlapped)) {
-            return true;
-        }
-        if (!ShouldHadelCache(handle)) {
-            return false;
-        }
-        if (!ShouldCachePath(fullPath)) {
-            return false;
-        }
-        // add zum Cache
-        if (!AddFile(originalPath, handle, fullPath)) {
-            std::wcout << "Read: Fehler beim hinzufugen der Datei: " << fullPath << std::endl;
-            return false;
-        }
-
-    } else {
-        // fullPath ist bereits in cashePfade
-        // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
-    }
-
-    // von ReadCash lesen
-    BOOL result = readFromRam(originalPath, buffer, length, bytesTransferred, overlapped);
-    if (!result) {
-        std::wcout << L"Read: Fehler beim laden von RamCashe : " << originalPath << std::endl;
-        return false;
-    }
-    // std::wcout << L"ReadCash: Datei von Cashe geladen : " << fullPath << std::endl;
-    return result;
-}
-
-bool RamCache::Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    RemoveHandle(handle);
-    return false;
-};
-
 void RamCache::Remove(const std::wstring &fullPath) {
     auto it = cashePfade.find(fullPath);
     if (it != cashePfade.end()) {
@@ -80,55 +36,6 @@ void RamCache::Remove(const std::wstring &fullPath) {
 };
 
 // private Funktioen
-
-bool RamCache::AddFile(std::wstring &originalPath, HANDLE handle, WCHAR fullPath[1284]) {
-    // add Datei zum ReadCash
-    // std::wcout << L"AddFile: fullPath NICHT vorhanden, kopiere: " << originalPath << L" zu : " << cachePath << std::endl;
-
-    // add Dateigroesse
-    BY_HANDLE_FILE_INFORMATION handleFileInfo;
-    if (!GetFileInformationByHandle(handle, &handleFileInfo)) {
-        std::cout << "AddFile: Fehler bei der handleFileInfo" << std::endl;
-        return false;
-    }
-    UINT64 FileSize = ((UINT64)handleFileInfo.nFileSizeHigh << 32) | (UINT64)handleFileInfo.nFileSizeLow;
-    if (!AddFileSize(FileSize)) {
-        std::cout << "AddFile: Fehler bei der dateirgoesse: " << FileSize << std::endl;
-        return false;
-    }
-
-    // Sicherstellen, dass die Zielverzeichnisse existieren
-    // Datei kopieren
-    if (!storeInRam(originalPath)) {
-        std::wcout << L"AddFile: Fehler beim Kopieren in Cache: " << originalPath << std::endl;
-        return false;
-    }
-
-    // Merke das Datei vorhanden
-    // std::wcout << L"AddFile: fullPath insert : " << fullPath << std::endl;
-    cashePfade.insert(fullPath);
-    return true;
-};
-
-bool RamCache::AddFileSize(const UINT64 &fileSize) {
-    UINT64 neueSize = currentCacheSize + fileSize;
-    if (neueSize > maxCacheSize) {
-        if (fileSize > maxCacheSize) {
-            std::cout << "AddFileSize: Fehler Datei grosser als Cache: " << fileSize << " / " << maxCacheSize << std::endl;
-            return false;
-        } else {
-            UINT64 diff = neueSize - maxCacheSize;
-            UINT64 realClear = Clear(diff);
-            currentCacheSize += fileSize;
-            // std::cout << "AddFileSize: " << diff << " Speicher freigemacht" << std::endl;
-            // std::cout << diff << " / " << realClear << std::endl;
-        }
-    } else {
-        currentCacheSize = neueSize;
-    }
-    // std::cout << "AddFileSize: Cache: " << currentCacheSize << " / " << maxCacheSize << std::endl;
-    return true;
-}
 
 bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei im Binarmodus oeffnen und an das Ende springen
@@ -152,7 +59,7 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Bloecke in Cache eintragen
     ramCache[fullPath] = std::move(buffer);
 
-    std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
+    // std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
 
     return true;
 }
@@ -189,4 +96,12 @@ bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWOR
     *bytesTransferred = dataLength;
 
     return true;
+}
+
+bool RamCache::readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
+    return readFromRam(fullPath, buffer, length, bytesTransferred, overlapped);
+}
+
+bool RamCache::storeInCache(const std::wstring &fullPath, HANDLE handle) {
+    return storeInRam(fullPath);
 }
