@@ -53,7 +53,7 @@ public:
      *
      * @param cache der Cache auf den der Pointers gesetzt wird.
      */
-    void setNextCache(CacheInterface *cache);
+    virtual void setNextCache(CacheInterface *cache);
 
     /**
      * @brief Read ist die Grundfunktion fur den Cache.

@@ -1,10 +1,10 @@
 RamCache rc 8 2
 SsdCache sc E: 8 10
 Cache c rc sc
-RamCache rc1 6 2
+RamCache rc1 1 0
 RamCache rc2 2 1
-RamCache rc3 1 0
+RamCache rc3 4 2
 Cache c1 rc1 rc2
 Cache c2 c1 rc3
-Vhdd F: G: rc
-Vhdd D: H: rc
+Vhdd F: G: c2
+Vhdd D: H: c2

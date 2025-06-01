@@ -133,9 +133,9 @@ void ConfigLoader::erstelleCache(std::string zeile) {
     std::stringstream ss(zeile);
     std::string cacheTyp, cacheName, cacheName1, cacheName2;
     if (ss >> cacheTyp >> cacheName >> cacheName1 >> cacheName2) {
-        CacheInterface &ssdCache = *cacheMap[cacheName1];
-        CacheInterface &ramCache = *cacheMap[cacheName2];
-        cacheMap.emplace(cacheName, std::make_shared<Cache>(Cache(ssdCache, ramCache)));
+        CacheInterface &ramCache = *cacheMap[cacheName1];
+        CacheInterface &ssdCache = *cacheMap[cacheName2];
+        cacheMap.emplace(cacheName, std::make_shared<Cache>(Cache(ramCache, ssdCache)));
     } else {
         std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
     }

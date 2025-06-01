@@ -14,4 +14,5 @@ public:
     bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void Remove(const std::wstring &fullPath);
     void Clear();
+    void setNextCache(CacheInterface *cache);
 };

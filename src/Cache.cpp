@@ -2,7 +2,7 @@
 #include "Cache.h"
 
 Cache::Cache(CacheInterface &ramCache, CacheInterface &ssdCache) : ramCache(ramCache), ssdCache(ssdCache) {
-    ssdCache.setNextCache(&ramCache);
+    ramCache.setNextCache(&ssdCache);
 }
 
 bool Cache::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
@@ -27,4 +27,8 @@ void Cache::Remove(const std::wstring &fullPath) {
 void Cache::Clear() {
     ramCache.Clear();
     ssdCache.Clear();
+}
+
+void Cache::setNextCache(CacheInterface *cache) {
+    ssdCache.setNextCache(cache);
 }
