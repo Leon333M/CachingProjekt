@@ -26,12 +26,12 @@ void RamCache::Remove(const std::wstring &fullPath) {
         auto itCache = ramCache.find(fullPath);
         if (itCache != ramCache.end()) {
             ramCache.erase(itCache);
-            std::wcout << L"Remove: Datei entfernt aus Cache: " << fullPath << std::endl;
+            PLOG_DEBUG << L"Remove: Datei entfernt aus Cache: " << fullPath;
         } else {
-            // std::wcout << L"Remove: Datei nicht im Cache: " << fullPath << std::endl;
+            PLOG_ERROR << L"Remove: Datei nicht im Cache: " << fullPath;
         }
     } else {
-        // std::wcout << L"Remove: Pfad nicht im Cache gefunden: " << fullPath << std::endl;
+        // PLOG_DEBUG << L"Remove: Pfad nicht im Cache gefunden: " << fullPath;
     }
 };
 
@@ -41,7 +41,7 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei im Binarmodus oeffnen und an das Ende springen
     std::ifstream file(fullPath, std::ios::binary | std::ios::ate);
     if (!file) {
-        std::wcerr << L"storeInRam: Fehler beim Oeffnen der Datei: " << fullPath << std::endl;
+        PLOG_ERROR << L"storeInRam: Fehler beim Oeffnen der Datei: " << fullPath;
         return false;
     }
 
@@ -52,14 +52,14 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei einlesen
     std::vector<char> buffer(fileSize);
     if (!file.read(buffer.data(), fileSize)) {
-        std::wcerr << L"storeInRam: Fehler beim Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
+        PLOG_ERROR << L"storeInRam: Fehler beim Lesen der Datei: " << fileSize << L" " << fullPath;
         return false;
     }
 
     // Bloecke in Cache eintragen
     ramCache[fullPath] = std::move(buffer);
 
-    // std::wcout << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath << std::endl;
+    // PLOG_DEBUG << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath;
 
     return true;
 }
@@ -71,7 +71,7 @@ bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWOR
     // Datei im Cache suchen
     auto itFile = ramCache.find(originalPath);
     if (itFile == ramCache.end()) {
-        std::wcerr << L"readFromRam: Fehler: Datei nicht im Cache: " << originalPath << std::endl;
+        PLOG_ERROR << L"readFromRam: Fehler: Datei nicht im Cache: " << originalPath;
         return false;
     }
 
@@ -84,9 +84,9 @@ bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWOR
             // Gehe davon aus, dass die Anfrage uber das Dateilimit geht, und korrigiere die Anfrage.
             dataLength = block.size() - requestOffset;
         } else {
-            std::wcerr << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath << std::endl;
-            std::wcout << L"readFromRam: requestOffset length block.size(): "
-                       << requestOffset << L" " << dataLength << L" " << requestOffset + dataLength << L" " << block.size() << std::endl;
+            PLOG_ERROR << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath;
+            PLOG_ERROR << L"readFromRam: requestOffset length block.size(): "
+                       << requestOffset << L" " << dataLength << L" " << requestOffset + dataLength << L" " << block.size();
             return false;
         }
     }

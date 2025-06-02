@@ -11,7 +11,7 @@ std::shared_mutex pfadHistorieMutex; // sperre fur Thread sicherheits
 void CacheInterface::RemoveHandle(HANDLE handle) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
-    // std::wcout << L"RemoveHandle : " << fullPath << std::endl;
+    // PLOG_DEBUG << L"RemoveHandle : " << fullPath;
     Remove(fullPath);
 }
 
@@ -49,7 +49,8 @@ UINT64 CacheInterface::Clear(const UINT64 &size) {
 UINT64 CacheInterface::SizeFromPath(const std::wstring &Path) {
     WIN32_FILE_ATTRIBUTE_DATA fileInfo;
     if (!GetFileAttributesExW(Path.c_str(), GetFileExInfoStandard, &fileInfo)) {
-        return 0; // oder ggf. Fehlerbehandlung
+        PLOG_ERROR << "SizeFromPath: fehler fileInfo nicht gefunden. " << Path;
+        return 0;
     }
 
     ULARGE_INTEGER size;
@@ -104,15 +105,15 @@ int CacheInterface::countPathInHistory(const std::wstring &fullPath) {
 
 void CacheInterface::removePathFromHistory(const std::wstring &fullPath) {
     std::lock_guard<std::shared_mutex> sperre(pfadHistorieMutex); // fur Thread sicherheit
-    // - Alle Vorkommen aus pfadHistorie entfernen.
+    // Alle Vorkommen aus pfadHistorie entfernen.
     pfadHistorie.erase(std::remove(pfadHistorie.begin(), pfadHistorie.end(), fullPath), pfadHistorie.end());
 }
 
 void CacheInterface::addPathToHistory(const std::wstring &fullPath) {
     std::lock_guard<std::shared_mutex> sperre(pfadHistorieMutex); // fur Thread sicherheit
-    //  - Fuge den Pfad hinten in pfadHistorie ein.
+    // Fuge den Pfad hinten in pfadHistorie ein.
     pfadHistorie.push_back(fullPath);
-    // - Wenn recentPaths.size() > maxRecentPaths, entferne das vorderste Element.
+    // Wenn recentPaths.size() > maxRecentPaths, entferne das vorderste Element.
     if (pfadHistorie.size() > maxPfadHistorie) {
         pfadHistorie.pop_front();
     }
@@ -128,7 +129,7 @@ bool CacheInterface::readNextCache(HANDLE handle, LPVOID buffer, DWORD length, L
 bool CacheInterface::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
-    // std::wcout << L"Read : " << fullPath << std::endl;
+    // PLOG_DEBUG << L"Read : " << fullPath;
 
     // prufe ob im Cache
     if (!(cashePfade.find(fullPath) != cashePfade.end())) {
@@ -143,22 +144,22 @@ bool CacheInterface::Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD by
         }
         // add zum Cache
         if (!AddFile(fullPath, handle)) {
-            std::wcout << "Read: Fehler beim hinzufugen der Datei: " << fullPath << std::endl;
+            PLOG_ERROR << "Read: Fehler beim hinzufugen der Datei: " << fullPath;
             return false;
         }
 
     } else {
         // fullPath ist bereits in cashePfade
-        // std::wcout << L"Read: fullPath vorhanden : " << fullPath << std::endl;
+        // PLOG_DEBUG << L"Read: fullPath vorhanden : " << fullPath;
     }
 
     // von ReadCash lesen
     BOOL result = readCache(fullPath, handle, buffer, length, bytesTransferred, overlapped);
     if (!result) {
-        std::wcout << L"Read: Fehler beim laden von Cashe : " << fullPath << std::endl;
+        PLOG_ERROR << L"Read: Fehler beim laden von Cashe : " << fullPath;
         return false;
     }
-    // std::wcout << L"Read: Datei von Cashe geladen : " << fullPath << std::endl;
+    // PLOG_DEBUG << L"Read: Datei von Cashe geladen : " << fullPath;
     return result;
 }
 
@@ -171,47 +172,47 @@ bool CacheInterface::AddFileSize(const UINT64 &fileSize) {
     UINT64 neueSize = currentCacheSize + fileSize;
     if (neueSize > maxCacheSize) {
         if (fileSize > maxCacheSize) {
-            std::cout << "AddFileSize: Fehler Datei grosser als Cache: " << fileSize << " / " << maxCacheSize << std::endl;
+            PLOG_DEBUG << "AddFileSize: Fehler Datei grosser als Cache: " << fileSize << " / " << maxCacheSize;
             return false;
         } else {
             UINT64 diff = neueSize - maxCacheSize;
             UINT64 realClear = Clear(diff);
             currentCacheSize += fileSize;
-            // std::cout << "AddFileSize: " << diff << " Speicher freigemacht" << std::endl;
-            // std::cout << diff << " / " << realClear << std::endl;
+            // PLOG_DEBUG << "AddFileSize: " << diff << " Speicher freigemacht";
+            // PLOG_DEBUG << diff << " / " << realClear;
         }
     } else {
         currentCacheSize = neueSize;
     }
-    // std::cout << "AddFileSize: Cache: " << currentCacheSize << " / " << maxCacheSize << std::endl;
+    // PLOG_DEBUG << "AddFileSize: Cache: " << currentCacheSize << " / " << maxCacheSize;
     return true;
 }
 
 bool CacheInterface::AddFile(const std::wstring &fullPath, HANDLE handle) {
     // add Datei zum ReadCash
-    // std::wcout << L"AddFile: fullPath NICHT vorhanden, kopiere: " << fullPath << L" zu : " << cachePath << std::endl;
+    // PLOG_DEBUG << L"AddFile: fullPath NICHT vorhanden, kopiere: " << fullPath << L" zu : " << cachePath;
 
     // add Dateigroesse
     BY_HANDLE_FILE_INFORMATION handleFileInfo;
     if (!GetFileInformationByHandle(handle, &handleFileInfo)) {
-        std::cout << "AddFile: Fehler bei der handleFileInfo" << std::endl;
+        PLOG_ERROR << "AddFile: Fehler bei der handleFileInfo";
         return false;
     }
     UINT64 fileSize = ((UINT64)handleFileInfo.nFileSizeHigh << 32) | (UINT64)handleFileInfo.nFileSizeLow;
     if (!AddFileSize(fileSize)) {
-        std::cout << "AddFile: Fehler bei der dateirgoesse: " << fileSize << std::endl;
+        PLOG_ERROR << "AddFile: Fehler bei der dateirgoesse: " << fileSize;
         return false;
     }
 
     // Sicherstellen, dass die Zielverzeichnisse existieren
     // Datei kopieren
     if (!storeInCache(fullPath, handle)) {
-        std::wcout << L"AddFile: Fehler beim Kopieren in Cache: " << fullPath << std::endl;
+        PLOG_ERROR << L"AddFile: Fehler beim Kopieren in Cache: " << fullPath;
         return false;
     }
 
     // Merke das Datei vorhanden
-    std::wcout << L"AddFile: Datei gespeichert: " << fileSize << L" " << fullPath << std::endl;
+    PLOG_DEBUG << L"AddFile: Datei gespeichert: " << fileSize << L" " << fullPath;
     cashePfade.insert(fullPath);
     return true;
 };

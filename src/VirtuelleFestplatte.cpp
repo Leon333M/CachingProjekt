@@ -134,7 +134,7 @@ VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstrin
 
 void VirtuelleFestplatte::start() {
     if (!NT_SUCCESS(FspLoad(0))) {
-        std::cout << "Fehler beim starten der vhdd." << std::endl;
+        PLOG_DEBUG << "Fehler beim starten der vhdd.";
         return;
     }
     if (!fspStartet) {
@@ -143,7 +143,7 @@ void VirtuelleFestplatte::start() {
         PWSTR ServiceName = PWSTR(L"" PROGNAME);
         vhdd = this;
         NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, 0);
-        std::cout << "FspServiceRun status = " << (int)status << std::endl;
+        PLOG_DEBUG << "FspServiceRun status = " << (int)status;
     } else {
         erstelleVhdd();
     }
@@ -170,12 +170,12 @@ void VirtuelleFestplatte::erstelleVhdd() {
 
     NTSTATUS Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags, &Ptfs);
     if (isFail(Result, Ptfs)) {
-        std::cout << "erstellung der Vhdd ist fehlgeschlagen bei PtfsCreate." << std::endl;
+        PLOG_DEBUG << "erstellung der Vhdd ist fehlgeschlagen bei PtfsCreate.";
         return;
     }
     Result = FspFileSystemStartDispatcher(Ptfs->FileSystem, 0);
     if (isFail(Result, Ptfs)) {
-        std::cout << "erstellung der Vhdd ist fehlgeschlagen bei FspFileSystem." << std::endl;
+        PLOG_DEBUG << "erstellung der Vhdd ist fehlgeschlagen bei FspFileSystem.";
         return;
     }
     MountPoint = FspFileSystemMountPoint(Ptfs->FileSystem);
@@ -411,15 +411,6 @@ NTSTATUS VirtuelleFestplatte::GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem, FSP_FSC
     VolumeInfo->TotalSize = TotalSize.QuadPart;
     VolumeInfo->FreeSize = FreeSize.QuadPart;
 
-    /*
-    printf("Passthrough-Pfad : %ls\n", Ptfs->Path);
-    printf("VolumeInfo pointer: %p\n", (void*)VolumeInfo);
-    printf("TotalSize        : %llu\n",
-        (unsigned long long) VolumeInfo->TotalSize);
-    printf("FreeSize         : %llu\n",
-        (unsigned long long) VolumeInfo->FreeSize);
-    */
-
     return STATUS_SUCCESS;
 }
 
@@ -574,7 +565,7 @@ NTSTATUS VirtuelleFestplatte::Open(FSP_FILE_SYSTEM *FileSystem,
 
     *PFileContext = FileContext;
 
-    // std::wcout << L"Open Pfad : " << FileName << std::endl;
+    // PLOG_DEBUG << L"Open Pfad : " << FileName;
 
     return GetFileInfoInternal(FileContext->Handle, FileInfo);
 }
@@ -652,7 +643,7 @@ NTSTATUS VirtuelleFestplatte::Read(FSP_FILE_SYSTEM *FileSystem,
             return FspNtStatusFromWin32(GetLastError());
         }
     } else {
-        // std::cout << "Read : von cash " << std::endl;
+        // PLOG_DEBUG << "Read : von cash ";
     }
     return STATUS_SUCCESS;
 }
@@ -897,7 +888,7 @@ NTSTATUS VirtuelleFestplatte::ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
 
     FspFileSystemReadDirectoryBuffer(&FileContext->DirBuffer, Marker, Buffer, BufferLength, PBytesTransferred);
 
-    // std::wcout << "ReadDirectory : " << FullPath << std::endl;
+    // PLOG_DEBUG << "ReadDirectory : " << FullPath;
 
     return STATUS_SUCCESS;
 }
