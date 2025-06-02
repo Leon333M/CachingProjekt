@@ -152,6 +152,10 @@ void ConfigLoader::erstelleVhdd(std::string zeile) {
     }
 }
 
+int ConfigLoader::getLogLevel() {
+    return LogLevel;
+}
+
 std::wstring ConfigLoader::stringToWString(const std::string &str) {
     return std::wstring(str.begin(), str.end());
 }

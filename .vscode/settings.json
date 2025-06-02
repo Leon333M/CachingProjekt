@@ -76,6 +76,9 @@
     "codecvt": "cpp",
     "*.rh": "cpp",
     "condition_variable": "cpp",
-    "shared_mutex": "cpp"
+    "shared_mutex": "cpp",
+    "array": "cpp",
+    "cstdarg": "cpp",
+    "set": "cpp"
   }
 }

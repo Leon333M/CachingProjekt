@@ -1,6 +1,7 @@
 // CacheInterface.h
 #pragma once
 #include <deque>
+#include <plog/Log.h>
 #include <shared_mutex>
 #include <string>
 #include <unordered_set>

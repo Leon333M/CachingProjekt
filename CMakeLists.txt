@@ -33,6 +33,7 @@ add_executable(CachingProjekt
      src/Cache.cpp
      src/ConfigLoader.cpp
      src/SymbolHandler.cpp
+     src/LogManager.cpp
 )
 
 # === plog mit dem Executable linken ===
