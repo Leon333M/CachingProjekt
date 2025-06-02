@@ -1,29 +1,13 @@
 // main.cpp
 #include "ConfigLoader.h"
+#include "LogManager.h"
 #include "SymbolHandler.h"
 #include <filesystem>
 #include <iostream>
 #include <windows.h>
 
-#include <plog/Appenders/ConsoleAppender.h>
-#include <plog/Initializers/RollingFileInitializer.h>
-#include <plog/Log.h>
-
 int main(int argc, char *argv[]) {
     try {
-        // init plog
-        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-        plog::init(plog::debug, &consoleAppender);
-        PLOG_INFO << L"Programmstart";
-        // Hole das Konsolenfenster des aktuellen Prozesses
-        HWND hwnd = GetConsoleWindow();
-        // Verberge das Konsolenfenster
-        ShowWindow(hwnd, SW_HIDE);
-        // init Config
-        ConfigLoader configLoader;
-        // init exit symbol
-        SymbolHandler symbolHandler = SymbolHandler(&configLoader);
-
         // Init Argumente
         std::cout << "Init Argumente" << std::endl;
         std::cout << "Argumente : " << argc << " " << argv << std::endl;
@@ -47,13 +31,30 @@ int main(int argc, char *argv[]) {
             MessageBox(NULL, "Fehler config nicht gefuden", "Fehler", MB_OK);
             return 0;
         }
-        std::cout << "Init virtuelles Laufwerk, das Hdd spiegelt." << std::endl;
-        std::cout << "lade config" << std::endl;
+
+        // init Config
+        ConfigLoader configLoader;
         configLoader.loadFromFile(configLoader.stringToWString(file));
-        std::cout << "lade symbolHandler" << std::endl;
-        std::cout << "starte virtuelles Laufwerk:, das Hdd spiegelt." << std::endl;
+        int loglevel = configLoader.getLogLevel();
+        loglevel = 6;
+
+        // init plog
+        LogManager logManager(loglevel);
+
+        // Verberge das Konsolenfenster
+        if (loglevel == 0) {
+            // Hole das Konsolenfenster des aktuellen Prozesses
+            HWND hwnd = GetConsoleWindow();
+            // Verberge das Konsolenfenster
+            ShowWindow(hwnd, SW_HIDE);
+            // init exit symbol
+            SymbolHandler symbolHandler = SymbolHandler(&configLoader);
+        }
+
+        // Starte virtuelles Laufwerk
+        PLOG_DEBUG << "starte virtuelles Laufwerk:, das Hdd spiegelt.";
         configLoader.start();
-        std::cout << "ende main" << std::endl;
+        PLOG_DEBUG << "ende main";
         return 0;
 
     } catch (...) {
