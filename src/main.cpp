@@ -5,8 +5,16 @@
 #include <iostream>
 #include <windows.h>
 
+#include <plog/Appenders/ConsoleAppender.h>
+#include <plog/Initializers/RollingFileInitializer.h>
+#include <plog/Log.h>
+
 int main(int argc, char *argv[]) {
     try {
+        // init plog
+        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+        plog::init(plog::debug, &consoleAppender);
+        PLOG_INFO << L"Programmstart";
         // Hole das Konsolenfenster des aktuellen Prozesses
         HWND hwnd = GetConsoleWindow();
         // Verberge das Konsolenfenster
