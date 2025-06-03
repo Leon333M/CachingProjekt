@@ -18,15 +18,15 @@ protected:
     UINT64 maxCacheSize = 8ULL * 1024 * 1024 * 1024; // 8 GB
     UINT64 currentCacheSize = 0;
     std::unordered_set<std::wstring> cashePfade;
-    int minZugriffsHaufigkeit = 2;
-    const int maxPfadHistorie = 64;
-    std::deque<HANDLE> handleHistorie;
-    const int maxHandleHistorie = 8;
-    CacheInterface *nextCache = nullptr;
 
 private:
-    // std::shared_mutex pfadHistorieMutex; // sperre fur Thread sicherheits // in cpp
+    CacheInterface *nextCache = nullptr;
+    const int maxHandleHistorie = 8;
+    std::deque<HANDLE> handleHistorie;
+    int minZugriffsHaufigkeit = 2;
+    const int maxPfadHistorie = 64;
     std::deque<std::wstring> pfadHistorie; // Todo: std::wstring::reserve() <-- als Array[maxPfadHistorie] fur keine sperren
+    // std::shared_mutex pfadHistorieMutex; // sperre fur Thread sicherheits // in cpp
 
 public:
     /**

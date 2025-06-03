@@ -90,6 +90,11 @@ void ConfigLoader::verarbeiteteDaten() {
                     erstelleVhdd(zeile);
                     break;
                 }
+            case 'L':
+                if (erstesWort == "Log") {
+                    erstelleLog(zeile);
+                    break;
+                }
             default:
                 std::cerr << "Unbekannter Typ: " << zeile << std::endl;
                 break;
@@ -152,8 +157,25 @@ void ConfigLoader::erstelleVhdd(std::string zeile) {
     }
 }
 
+void ConfigLoader::erstelleLog(std::string zeile) {
+    std::stringstream ss(zeile);
+    int logLevel;
+    std::string cacheTyp, logDatei;
+    if (ss >> cacheTyp >> logLevel) {
+        this->logLevel = logLevel;
+        if (ss >> logDatei) {
+            this->logDatei = logDatei;
+        }
+    } else {
+        std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
+    }
+}
+
 int ConfigLoader::getLogLevel() {
-    return LogLevel;
+    return logLevel;
+}
+std::string ConfigLoader::getLogDatei() {
+    return logDatei;
 }
 
 std::wstring ConfigLoader::stringToWString(const std::string &str) {

@@ -33,22 +33,25 @@ int main(int argc, char *argv[]) {
         }
 
         // init Config
+        std::cout << "init ConfigLoader" << std::endl;
         ConfigLoader configLoader;
+        std::cout << "lod Config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
         int loglevel = configLoader.getLogLevel();
-        loglevel = 6;
+        std::string logDatei = configLoader.getLogDatei();
 
         // init plog
-        LogManager logManager(loglevel);
+        std::cout << "init Log" << std::endl;
+        LogManager logManager(loglevel, logDatei);
 
         // Verberge das Konsolenfenster
-        if (loglevel == 0) {
+        if (loglevel == 1) {
             // Hole das Konsolenfenster des aktuellen Prozesses
             HWND hwnd = GetConsoleWindow();
             // Verberge das Konsolenfenster
             ShowWindow(hwnd, SW_HIDE);
             // init exit symbol
-            SymbolHandler symbolHandler = SymbolHandler(&configLoader);
+            // SymbolHandler symbolHandler = SymbolHandler(&configLoader);
         }
 
         // Starte virtuelles Laufwerk

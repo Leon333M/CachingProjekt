@@ -1,10 +1,15 @@
 // LogManager.cpp
 #include "LogManager.h"
 
-LogManager::LogManager(int logLevel) {
+LogManager::LogManager(int logLevel, std::string logDatei) {
     // init plog
     this->logLevel = logLevel;
     plog::init(mapLogLevelToPlogSeverity(this->logLevel), &consoleAppender);
+    if (logDatei != "") {
+        this->logDatei = logDatei;
+        fileAppender.emplace(this->logDatei.c_str(), 8000, 3);
+        plog::get()->addAppender(&fileAppender.value());
+    }
     PLOG_INFO << L"init LogManager";
 }
 
@@ -26,9 +31,7 @@ plog::Severity LogManager::mapLogLevelToPlogSeverity(int level) {
             return plog::error;
         case 1:
             return plog::fatal;
-        case 0:
-            return plog::none;
         default:
-            return plog::none;
+            return plog::verbose;
     }
 }

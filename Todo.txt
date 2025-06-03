@@ -1,5 +1,4 @@
 
 Thrads in Cache ohne speren. 3
-plog stat std::cout 2-3
 QT GUI 2-5
 fix symbolmanager deskunstrukter error 5
