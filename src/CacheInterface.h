@@ -109,10 +109,47 @@ protected:
      */
     UINT64 Clear(const UINT64 &size);
 
+    /**
+     * @brief AddFileSize dient dazu, die Dateigroesse für die interne Verwaltung zu speichern.
+     *
+     * @param fileSize ist die Groesse der Datei in Bytes.
+     * @return true, wenn die Dateigroesse erfolgreich hinzugefuegt wurde.
+     * @return false, wenn ein Fehler aufgetreten ist.
+     */
     bool AddFileSize(const UINT64 &fileSize);
+
+    /**
+     * @brief AddFile registriert eine Datei im Cache anhand ihres Pfads und zugehoerigen Handles.
+     *
+     * @param fullPath ist der Pfad zur Originaldatei, die gecacht werden soll.
+     * @param handle ist der WinFsp-Handle zur geoeffneten Datei.
+     * @return true, wenn die Datei erfolgreich registriert wurde.
+     * @return false, wenn ein Fehler aufgetreten ist.
+     */
     bool AddFile(const std::wstring &fullPath, HANDLE handle);
 
+    /**
+     * @brief readCache versucht, eine Datei direkt aus dem Cache zu lesen.
+     *
+     * @param fullPath ist der Pfad zur Originaldatei, die gelesen werden soll.
+     * @param handle ist der WinFsp-Handle zur Datei.
+     * @param buffer ist der Zielpuffer, in den die Daten gelesen werden.
+     * @param length ist die Anzahl der zu lesenden Bytes.
+     * @param bytesTransferred gibt die tatsachlich gelesene Byteanzahl zurueck.
+     * @param overlapped wird von WinFsp fuer asynchrone Lesevorgaenge bereitgestellt und ist immer gueltig.
+     * @return true, wenn die Datei erfolgreich aus dem Cache gelesen wurde.
+     * @return false, wenn ein Fehler aufgetreten ist oder kein Cache-Eintrag vorliegt.
+     */
     virtual bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+
+    /**
+     * @brief storeInCache legt eine Datei im Cache ab.
+     *
+     * @param fullPath ist der Pfad zur Originaldatei, die gespeichert werden soll.
+     * @param handle ist der WinFsp-Handle zur Datei.
+     * @return true, wenn die Datei erfolgreich im Cache abgelegt wurde.
+     * @return false, wenn ein Fehler aufgetreten ist.
+     */
     virtual bool storeInCache(const std::wstring &fullPath, HANDLE handle) = 0;
 
     /**
@@ -121,7 +158,7 @@ protected:
      * Diese Methode ermittelt, wie viel Speicherplatz der Cache-Eintrag
      * fuer den angegebenen Pfad belegt.
      *
-     * @param Path Der Pfad, dessen Cache-Groesse berechnet werden soll.
+     * @param Path Der Dateipfad, dessen Cache-Groesse berechnet werden soll.
      * @return Die Groesse des Eintrags in Bytes.
      */
     UINT64 SizeFromPath(const std::wstring &Path);
