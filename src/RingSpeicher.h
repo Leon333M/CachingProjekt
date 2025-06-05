@@ -1,6 +1,5 @@
 // RingSpeicher.h
 #pragma once
-#include <deque>
 #include <unordered_set>
 #include <vector>
 
@@ -24,7 +23,7 @@ public:
 
     int count(const Typ &objekt) const {
         int count = 0;
-        for (std::unordered_set<Typ> &data : daten) {
+        for (const std::unordered_set<Typ> &data : daten) {
             if (istVorhanden(data, objekt)) {
                 count++;
             } else {
@@ -35,7 +34,7 @@ public:
     }
 
     void add(const Typ objekt) {
-        int count = count(objekt);
+        int count = this->count(objekt);
         if (count < daten.size()) {
             daten[count].insert(objekt);
         }
@@ -47,9 +46,9 @@ public:
         }
     }
 
-    int size() {
+    int size() const {
         int size = 0;
-        for (std::unordered_set<Typ> &data : daten) {
+        for (const std::unordered_set<Typ> &data : daten) {
             size += data.size();
         }
         return size;
@@ -58,7 +57,7 @@ public:
     void pop_front() {
         if (daten.size() > 0) {
             std::unordered_set<Typ> &data = daten[0];
-            Typ objekt = data.begin();
+            Typ objekt = *data.begin();
             remove(objekt);
         }
     }

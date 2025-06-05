@@ -1,5 +1,6 @@
 // CacheInterface.h
 #pragma once
+#include "RingSpeicher.h"
 #include <deque>
 #include <plog/Log.h>
 #include <shared_mutex>
@@ -22,11 +23,10 @@ protected:
 private:
     CacheInterface *nextCache = nullptr;
     const int maxHandleHistorie = 8;
-    std::deque<HANDLE> handleHistorie;
+    RingSpeicher<HANDLE> handleHistorie; // RingSpeicher
     int minZugriffsHaufigkeit = 2;
     const int maxPfadHistorie = 64;
-    std::deque<std::wstring> pfadHistorie; // Todo: std::wstring::reserve() <-- als Array[maxPfadHistorie] fur keine sperren
-    // std::shared_mutex pfadHistorieMutex; // sperre fur Thread sicherheits // in cpp
+    RingSpeicher<std::wstring> pfadHistorie;
 
 public:
     /**
