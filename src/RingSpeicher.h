@@ -1,30 +1,65 @@
 // RingSpeicher.h
 #pragma once
+#include <deque>
+#include <unordered_set>
+#include <vector>
 
 template <typename Typ>
 
 class RingSpeicher {
 private:
-    std::unique_ptr<Typ[]> daten;
-    int aktullePosition = 0;
-    int size;
+    std::vector<std::unordered_set<Typ>> daten;
 
 public:
-    RingSpeicher(int maxGrosse) : size(maxGrosse), daten(std::make_unique<Typ[]>(size)) {}
-
-    int count(Typ objekt) {
-        std::count(daten, objekt);
-    }
-
-    void add(Typ objekt, int position) {
-        if (position > aktullePosition) {
-            position = 0;
+    RingSpeicher(int depth = 3, int initVectorSize = 64) {
+        daten.resize(depth);
+        for (std::unordered_set<Typ> &data : daten) {
+            data.reserve(initVectorSize);
         }
-        daten[position] = objekt;
     }
 
-    void add(Typ objekt) {
-        add(objekt, aktullePosition);
-        aktullePosition++;
+    bool istVorhanden(const std::unordered_set<Typ> &data, const Typ &objekt) const {
+        return (data.find(objekt) != data.end());
+    }
+
+    int count(const Typ &objekt) const {
+        int count = 0;
+        for (std::unordered_set<Typ> &data : daten) {
+            if (istVorhanden(data, objekt)) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+    }
+
+    void add(const Typ objekt) {
+        int count = count(objekt);
+        if (count < daten.size()) {
+            daten[count].insert(objekt);
+        }
+    }
+
+    void remove(const Typ &objekt) {
+        for (std::unordered_set<Typ> &data : daten) {
+            data.erase(objekt);
+        }
+    }
+
+    int size() {
+        int size = 0;
+        for (std::unordered_set<Typ> &data : daten) {
+            size += data.size();
+        }
+        return size;
+    }
+
+    void pop_front() {
+        if (daten.size() > 0) {
+            std::unordered_set<Typ> &data = daten[0];
+            Typ objekt = data.begin();
+            remove(objekt);
+        }
     }
 };
