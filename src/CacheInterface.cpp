@@ -6,6 +6,10 @@
 
 #define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
+CacheInterface::CacheInterface()
+    : pfadHistorie(minZugriffsHaufigkeit, maxPfadHistorie),
+      handleHistorie(1, maxHandleHistorie) {}
+
 void CacheInterface::RemoveHandle(HANDLE handle) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
@@ -60,6 +64,7 @@ UINT64 CacheInterface::SizeFromPath(const std::wstring &Path) {
 
 void CacheInterface::setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit) {
     this->minZugriffsHaufigkeit = minZugriffsHaufigkeit;
+    pfadHistorie.setDepth(minZugriffsHaufigkeit);
 }
 
 void CacheInterface::setNextCache(CacheInterface *cache) {

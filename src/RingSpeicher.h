@@ -5,9 +5,14 @@
 
 template <typename Typ>
 
+/**
+ * @brief Dient zur Haltung von Daten, ohne Sperren zu brauchen.
+ *
+ */
 class RingSpeicher {
 private:
     std::vector<std::unordered_set<Typ>> daten;
+    int vectorSize;
 
 public:
     RingSpeicher(int depth = 3, int initVectorSize = 64) {
@@ -15,6 +20,7 @@ public:
         for (std::unordered_set<Typ> &data : daten) {
             data.reserve(initVectorSize);
         }
+        vectorSize = initVectorSize;
     }
 
     bool istVorhanden(const std::unordered_set<Typ> &data, const Typ &objekt) const {
@@ -59,6 +65,24 @@ public:
             std::unordered_set<Typ> &data = daten[0];
             Typ objekt = *data.begin();
             remove(objekt);
+        }
+    }
+
+    void setDepth(int depth) {
+        int oldDepth = daten.size();
+        daten.resize(depth);
+        if (oldDepth < depth) {
+            for (int i = oldDepth - 1; i < depth - 1; i++) {
+                std::unordered_set<Typ> &data = daten[0];
+                data.reserve(vectorSize);
+            }
+        }
+    }
+
+    void setVectorSize(int size) {
+        vectorSize = size;
+        for (const std::unordered_set<Typ> &data : daten) {
+            data.reserve(vectorSize);
         }
     }
 };

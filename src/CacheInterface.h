@@ -23,12 +23,18 @@ protected:
 private:
     CacheInterface *nextCache = nullptr;
     const int maxHandleHistorie = 8;
-    RingSpeicher<HANDLE> handleHistorie; // RingSpeicher
+    RingSpeicher<HANDLE> handleHistorie;
     int minZugriffsHaufigkeit = 2;
     const int maxPfadHistorie = 64;
     RingSpeicher<std::wstring> pfadHistorie;
 
 public:
+    /**
+     * @brief Konstruktor fuer CacheInterface. Initialisiert handleHistorie und pfadHistorie.
+     *
+     */
+    CacheInterface();
+
     /**
      * @brief Zerstort das CacheInterface-Objekt
      *
