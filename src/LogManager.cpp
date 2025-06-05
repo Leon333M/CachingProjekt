@@ -32,6 +32,6 @@ plog::Severity LogManager::mapLogLevelToPlogSeverity(int level) {
         case 1:
             return plog::fatal;
         default:
-            return plog::verbose;
+            return plog::fatal;
     }
 }
