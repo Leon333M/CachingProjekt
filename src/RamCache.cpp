@@ -29,7 +29,7 @@ bool RamCache::removeCache(const std::wstring &fullPath) {
         PLOG_DEBUG << L"Remove: Datei entfernt aus Cache: " << fullPath;
         return true;
     } else {
-        PLOG_ERROR << L"Remove: Datei nicht im Cache: " << fullPath;
+        PLOG_WARNING << L"Remove: Datei nicht im Cache: " << fullPath;
         return false;
     }
 }
@@ -38,7 +38,7 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei im Binarmodus oeffnen und an das Ende springen
     std::ifstream file(fullPath, std::ios::binary | std::ios::ate);
     if (!file) {
-        PLOG_ERROR << L"storeInRam: Fehler beim Oeffnen der Datei: " << fullPath;
+        PLOG_WARNING << L"storeInRam: Fehler beim Oeffnen der Datei: " << fullPath;
         return false;
     }
 
@@ -49,14 +49,14 @@ bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei einlesen
     std::vector<char> buffer(fileSize);
     if (!file.read(buffer.data(), fileSize)) {
-        PLOG_ERROR << L"storeInRam: Fehler beim Lesen der Datei: " << fileSize << L" " << fullPath;
+        PLOG_WARNING << L"storeInRam: Fehler beim Lesen der Datei: " << fileSize << L" " << fullPath;
         return false;
     }
 
     // Bloecke in Cache eintragen
     ramCache[fullPath] = std::move(buffer);
 
-    // PLOG_DEBUG << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath;
+    PLOG_VERBOSE << L"storeInRam: Lesen der Datei: " << fileSize << L" " << fullPath;
 
     return true;
 }
@@ -68,7 +68,7 @@ bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWOR
     // Datei im Cache suchen
     auto itFile = ramCache.find(originalPath);
     if (itFile == ramCache.end()) {
-        PLOG_ERROR << L"readFromRam: Fehler: Datei nicht im Cache: " << originalPath;
+        PLOG_WARNING << L"readFromRam: Fehler: Datei nicht im Cache: " << originalPath;
         return false;
     }
 
@@ -81,9 +81,9 @@ bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWOR
             // Gehe davon aus, dass die Anfrage uber das Dateilimit geht, und korrigiere die Anfrage.
             dataLength = block.size() - requestOffset;
         } else {
-            PLOG_ERROR << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath;
-            PLOG_ERROR << L"readFromRam: requestOffset length block.size(): "
-                       << requestOffset << L" " << dataLength << L" " << requestOffset + dataLength << L" " << block.size();
+            PLOG_WARNING << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath;
+            PLOG_WARNING << L"readFromRam: requestOffset length block.size(): "
+                         << requestOffset << L" " << dataLength << L" " << requestOffset + dataLength << L" " << block.size();
             return false;
         }
     }

@@ -10,7 +10,7 @@ LogManager::LogManager(int logLevel, std::string logDatei) {
         fileAppender.emplace(this->logDatei.c_str(), 8000, 3);
         plog::get()->addAppender(&fileAppender.value());
     }
-    PLOG_INFO << L"init LogManager";
+    PLOG_DEBUG << L"init LogManager";
 }
 
 int LogManager::getLogLevel() {

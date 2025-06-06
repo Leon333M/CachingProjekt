@@ -134,7 +134,7 @@ VirtuelleFestplatte::VirtuelleFestplatte(std::wstring orginalVolume, std::wstrin
 
 void VirtuelleFestplatte::start() {
     if (!NT_SUCCESS(FspLoad(0))) {
-        PLOG_DEBUG << "Fehler beim starten der vhdd.";
+        PLOG_WARNING << "Fehler beim starten der vhdd.";
         return;
     }
     if (!fspStartet) {
@@ -170,12 +170,12 @@ void VirtuelleFestplatte::erstelleVhdd() {
 
     NTSTATUS Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags, &Ptfs);
     if (isFail(Result, Ptfs)) {
-        PLOG_DEBUG << "erstellung der Vhdd ist fehlgeschlagen bei PtfsCreate.";
+        PLOG_WARNING << "erstellung der Vhdd ist fehlgeschlagen bei PtfsCreate.";
         return;
     }
     Result = FspFileSystemStartDispatcher(Ptfs->FileSystem, 0);
     if (isFail(Result, Ptfs)) {
-        PLOG_DEBUG << "erstellung der Vhdd ist fehlgeschlagen bei FspFileSystem.";
+        PLOG_WARNING << "erstellung der Vhdd ist fehlgeschlagen bei FspFileSystem.";
         return;
     }
     MountPoint = FspFileSystemMountPoint(Ptfs->FileSystem);
@@ -565,7 +565,7 @@ NTSTATUS VirtuelleFestplatte::Open(FSP_FILE_SYSTEM *FileSystem,
 
     *PFileContext = FileContext;
 
-    // PLOG_DEBUG << L"Open Pfad : " << FileName;
+    PLOG_VERBOSE << L"Open Pfad : " << FileName;
 
     return GetFileInfoInternal(FileContext->Handle, FileInfo);
 }
@@ -642,8 +642,6 @@ NTSTATUS VirtuelleFestplatte::Read(FSP_FILE_SYSTEM *FileSystem,
         if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &Overlapped)) {
             return FspNtStatusFromWin32(GetLastError());
         }
-    } else {
-        // PLOG_DEBUG << "Read : von cash ";
     }
     return STATUS_SUCCESS;
 }
@@ -888,7 +886,7 @@ NTSTATUS VirtuelleFestplatte::ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
 
     FspFileSystemReadDirectoryBuffer(&FileContext->DirBuffer, Marker, Buffer, BufferLength, PBytesTransferred);
 
-    // PLOG_DEBUG << "ReadDirectory : " << FullPath;
+    PLOG_VERBOSE << "ReadDirectory : " << FullPath;
 
     return STATUS_SUCCESS;
 }

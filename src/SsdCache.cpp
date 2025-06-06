@@ -28,16 +28,16 @@ bool SsdCache::storeInCache(const std::wstring &fullPath, HANDLE handle) {
 bool SsdCache::readSsdCache(const std::wstring &cachePath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     HANDLE cacheHandle = CreateFileW(cachePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (cacheHandle == INVALID_HANDLE_VALUE) {
-        PLOG_ERROR << L"readSsdCache: Fehler beim Offnen der Cache-Datei: " << cachePath;
+        PLOG_WARNING << L"readSsdCache: Fehler beim Offnen der Cache-Datei: " << cachePath;
         return false;
     }
     BOOL result = ReadFile(cacheHandle, buffer, length, bytesTransferred, overlapped);
     CloseHandle(cacheHandle);
     if (!result) {
-        PLOG_ERROR << L"readSsdCache: Fehler beim laden von Cashe : " << cachePath;
+        PLOG_WARNING << L"readSsdCache: Fehler beim laden von Cashe : " << cachePath;
         return false;
     }
-    // PLOG_DEBUG << L"readSsdCache: Datei von Cashe geladen : " << cachePath;
+    PLOG_VERBOSE << L"readSsdCache: Datei von Cashe geladen : " << cachePath;
     return result;
 }
 
@@ -52,7 +52,7 @@ bool SsdCache::removeCache(const std::wstring &fullPath) {
             currentCacheSize -= size;
             return true;
         } catch (const std::filesystem::filesystem_error &e) {
-            PLOG_ERROR << L"Remove: Fehler beim Loschen der Datei im Cache: ";
+            PLOG_WARNING << L"Remove: Fehler beim Loschen der Datei im Cache: ";
         }
     } else {
         PLOG_DEBUG << L"Remove: Datei existiert nicht im Cache: " << cachePath;
@@ -75,12 +75,12 @@ std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {
 }
 
 bool SsdCache::storeInSsdCache(const std::wstring &originalPath, std::wstring &cachePath) {
-    // PLOG_DEBUG << L"storeInSsdCache wird aufegrufen " << originalPath << L" " << cachePath;
+    PLOG_VERBOSE << L"storeInSsdCache wird aufegrufen " << originalPath << L" " << cachePath;
     // Sicherstellen, dass die Zielverzeichnisse existieren
     std::filesystem::create_directories(std::filesystem::path(cachePath).parent_path());
     // Datei kopieren
     if (!CopyFileW(originalPath.c_str(), cachePath.c_str(), FALSE)) {
-        PLOG_ERROR << L"storeInSsdCache: Fehler beim Kopieren in Cache: " << originalPath;
+        PLOG_WARNING << L"storeInSsdCache: Fehler beim Kopieren in Cache: " << originalPath;
         return false;
     }
     return true;
@@ -96,6 +96,6 @@ void SsdCache::clearCacheVerzeichnis() {
             }
         }
     } catch (const std::exception &e) {
-        PLOG_ERROR << "Fehler beim Loschen des Cache-Verzeichnisses: " << e.what();
+        PLOG_WARNING << "Fehler beim Loschen des Cache-Verzeichnisses: " << e.what();
     }
 }
