@@ -20,4 +20,5 @@ private:
     // ungenutze Funktionen
     bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) { return false; };
     bool storeInCache(const std::wstring &fullPath, HANDLE handle) { return false; };
+    bool removeCache(const std::wstring &fullPath) { return false; };
 };

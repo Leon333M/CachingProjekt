@@ -216,3 +216,15 @@ bool CacheInterface::AddFile(const std::wstring &fullPath, HANDLE handle) {
     cashePfade.insert(fullPath);
     return true;
 };
+
+void CacheInterface::Remove(const std::wstring &fullPath) {
+    auto it = cashePfade.find(fullPath);
+    if (it != cashePfade.end()) {
+        // entferne aus Liste
+        cashePfade.erase(it);
+        // entferne Datei aus Cache
+        removeCache(fullPath);
+    } else {
+        // PLOG_DEBUG << L"Remove: Pfad nicht im Cache gefunden: " << fullPath;
+    }
+};

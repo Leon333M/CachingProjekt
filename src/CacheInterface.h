@@ -87,7 +87,7 @@ public:
      *
      * @param fullPath ist der gespeicherte Pfad im Cache. Im Normalfall also der Pfad zur Originaldatei.
      */
-    virtual void Remove(const std::wstring &fullPath) = 0;
+    virtual void Remove(const std::wstring &fullPath);
 
     /**
      * @brief RemoveHandle ruft nur die Remove auf, indem es sich den Pfad von handle holt.
@@ -157,6 +157,8 @@ protected:
      * @return false, wenn ein Fehler aufgetreten ist.
      */
     virtual bool storeInCache(const std::wstring &fullPath, HANDLE handle) = 0;
+
+    virtual bool removeCache(const std::wstring &fullPath) = 0;
 
     /**
      * @brief Berechnet die Groesse des Eintrags fuer einen gegebenen Pfad.

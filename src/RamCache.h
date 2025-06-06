@@ -10,11 +10,11 @@ private:
 
 public:
     RamCache(UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 2);
-    void Remove(const std::wstring &fullPath);
 
 private:
     bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     bool storeInCache(const std::wstring &fullPath, HANDLE handle);
+    bool removeCache(const std::wstring &fullPath);
 
     // eigene Funktionen
     bool storeInRam(const std::wstring &fullPath);

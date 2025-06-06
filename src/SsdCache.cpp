@@ -41,32 +41,24 @@ bool SsdCache::readSsdCache(const std::wstring &cachePath, LPVOID buffer, DWORD 
     return result;
 }
 
-void SsdCache::Remove(const std::wstring &fullPath) {
-    auto it = cashePfade.find(fullPath);
-    if (it != cashePfade.end()) {
-        // Hier konnen spater weitere Aktionen hinzugefugt werden
-        // entferne aus Liste
-        cashePfade.erase(it);
-        // entferne Datei aus Cache
-        std::wstring cachePath = GetCachePathFromFullPath(fullPath);
-        if (std::filesystem::exists(cachePath)) {
-            UINT64 size = SizeFromPath(cachePath);
-            try {
-                std::filesystem::remove(cachePath); // Loscht die Datei
-                PLOG_DEBUG << L"Remove: Datei im Cache geloscht: " << cachePath;
-                currentCacheSize -= size;
-            } catch (const std::filesystem::filesystem_error &e) {
-                PLOG_ERROR << L"Remove: Fehler beim Loschen der Datei im Cache: ";
-            }
-        } else {
-            PLOG_DEBUG << L"Remove: Datei existiert nicht im Cache: " << cachePath;
+// private Funktioen
+bool SsdCache::removeCache(const std::wstring &fullPath) {
+    std::wstring cachePath = GetCachePathFromFullPath(fullPath);
+    if (std::filesystem::exists(cachePath)) {
+        UINT64 size = SizeFromPath(cachePath);
+        try {
+            std::filesystem::remove(cachePath);
+            PLOG_DEBUG << L"Remove: Datei im Cache geloscht: " << cachePath;
+            currentCacheSize -= size;
+            return true;
+        } catch (const std::filesystem::filesystem_error &e) {
+            PLOG_ERROR << L"Remove: Fehler beim Loschen der Datei im Cache: ";
         }
     } else {
-        // PLOG_DEBUG << L"Remove: Pfad nicht im Cache gefunden: " << fullPath;
+        PLOG_DEBUG << L"Remove: Datei existiert nicht im Cache: " << cachePath;
     }
-};
-
-// private Funktioen
+    return false;
+}
 
 // Hilfsfunktion, um den Cache-Pfad zu extrahieren
 std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {

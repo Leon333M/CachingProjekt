@@ -17,25 +17,21 @@ RamCache::RamCache(UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit) {
     setMinZugriffsHaufigkeit(minZugriffsHaufigkeit);
 }
 
-void RamCache::Remove(const std::wstring &fullPath) {
-    auto it = cashePfade.find(fullPath);
-    if (it != cashePfade.end()) {
-        // entferne aus Liste
-        cashePfade.erase(it);
-        // entferne Datei aus Cache
-        auto itCache = ramCache.find(fullPath);
-        if (itCache != ramCache.end()) {
-            ramCache.erase(itCache);
-            PLOG_DEBUG << L"Remove: Datei entfernt aus Cache: " << fullPath;
-        } else {
-            PLOG_ERROR << L"Remove: Datei nicht im Cache: " << fullPath;
-        }
-    } else {
-        // PLOG_DEBUG << L"Remove: Pfad nicht im Cache gefunden: " << fullPath;
-    }
-};
-
 // private Funktioen
+
+bool RamCache::removeCache(const std::wstring &fullPath) {
+    auto itCache = ramCache.find(fullPath);
+    if (itCache != ramCache.end()) {
+        ramCache.erase(itCache);
+        UINT64 size = SizeFromPath(fullPath);
+        currentCacheSize -= size;
+        PLOG_DEBUG << L"Remove: Datei entfernt aus Cache: " << fullPath;
+        return true;
+    } else {
+        PLOG_ERROR << L"Remove: Datei nicht im Cache: " << fullPath;
+        return false;
+    }
+}
 
 bool RamCache::storeInRam(const std::wstring &fullPath) {
     // Datei im Binarmodus oeffnen und an das Ende springen
