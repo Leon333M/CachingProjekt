@@ -11,10 +11,6 @@ typedef struct {
     PWSTR Path;
     VirtuelleFestplatte *vhdd;
 } PTFS;
-typedef struct {
-    HANDLE Handle;
-    PVOID DirBuffer;
-} PTFS_FILE_CONTEXT;
 
 class VirtuelleFestplatte {
 private:

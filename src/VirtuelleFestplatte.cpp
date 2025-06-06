@@ -1,10 +1,24 @@
 // VirtuelleFestplatte.cpp
+/*
+ * Diese Datei basiert auf WinFsp passthrough.c und steht nur daher unter der GNU General Public License v3.
+ * Copyright (C) 2015-2022 Bill Zissimopoulos
+ * Eine Kopie der Lizenz ist in Lizenzen/winfsp.txt enthalten.
+ *
+ * Zusaetzliche Aenderungen und Erweiterungen:
+ * Copyright (C) 2025 Leon Zoenrer
+ */
+
 #include "VirtuelleFestplatte.h"
 #include <Windows.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <unordered_set>
+
+typedef struct {
+    HANDLE Handle;
+    PVOID DirBuffer;
+} PTFS_FILE_CONTEXT;
 
 #define PROGNAME "passthrough"
 #define ALLOCATION_UNIT 4096
