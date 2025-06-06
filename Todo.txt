@@ -1,4 +1,4 @@
 
-Thrads in Cache ohne speren. 3
+
+Ordnung, Funktionsreihenfolge der .h optimieren und auch die Funktionsreihenfolge der .cpp der jeweiligen .h angleichen.
 QT GUI 2-5
-fix symbolmanager deskunstrukter error 5
