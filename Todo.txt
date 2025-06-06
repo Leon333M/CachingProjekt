@@ -1,4 +1,4 @@
 
 
-Ordnung, Funktionsreihenfolge der .h optimieren und auch die Funktionsreihenfolge der .cpp der jeweiligen .h angleichen.
+Ordnung, Funktionsreihenfolge der .h optimieren und auch die Funktionsreihenfolge der .cpp der jeweiligen .h angleichen. 5
 QT GUI 2-5
