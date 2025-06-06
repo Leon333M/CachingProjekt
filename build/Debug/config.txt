@@ -1,0 +1,2 @@
+RamCache rc1 8 2
+Vhdd C: G: rc1

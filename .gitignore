@@ -2,4 +2,7 @@
 *.exe
 *.dll
 .idea/
-build/
+build/*
+!build/Debug/
+!build/Debug/CachingProjekt.exe
+build/Debug/CachingProjekt.pdb
