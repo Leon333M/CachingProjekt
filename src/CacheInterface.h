@@ -105,7 +105,6 @@ public:
 protected:
     /**
      * @brief Entfernt Daten aus dem Cache bis zur angegebenen Groesse.
-     *
      * Diese Methode versucht, Speicherplatz im Cache freizugeben,
      * indem sie Daten entfernt, bis mindestens die angegebene Groesse
      * freigegeben wurde.
@@ -158,6 +157,15 @@ protected:
      */
     virtual bool storeInCache(const std::wstring &fullPath, HANDLE handle) = 0;
 
+    /**
+     * @brief Entfernt eine Datei aus dem Cache und aktualisiert den belegten Speicher.
+     * Die Methode loescht die angegebene Datei aus dem Cache-Speicher. Falls vorhanden,
+     * wird zusaetzlich die Dateigroesse vom currentCacheSize abgezogen.
+     *
+     * @param fullPath Der Pfad zur Originaldatei, wie er im Cache gespeichert wurde.
+     * @return true Falls die Datei erfolgreich entfernt wurde.
+     * @return false Falls die Datei nicht im Cache vorhanden oder nicht loeschbar war.
+     */
     virtual bool removeCache(const std::wstring &fullPath) = 0;
 
     /**
