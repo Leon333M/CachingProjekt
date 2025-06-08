@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # === Compiler-Optimierungsflags für max Performance ===
-set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
-set(CMAKE_C_FLAGS_RELEASE "-Ofast")
+set(CMAKE_CXX_FLAGS_RELEASE "/O2 /GL /Ob2 /Oi /Ot /Oy /GF /DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "/O2 /GL /Ob2 /Oi /Ot /Oy /GF /DNDEBUG")
 
 # === plog per FetchContent einbinden ===
 include(FetchContent)
