@@ -1,5 +1,6 @@
 // ConfigLoader.cpp
 #include "ConfigLoader.h"
+#include "SymbolHandler.h"
 #include <codecvt>
 #include <fstream>
 #include <iostream>
@@ -95,6 +96,11 @@ void ConfigLoader::verarbeiteteDaten() {
                     erstelleLog(zeile);
                     break;
                 }
+            case 'H':
+                if (erstesWort == "HideTerminal") {
+                    erstelleHideTerminal(zeile);
+                    break;
+                }
             default:
                 std::cerr << "Unbekannter Typ: " << zeile << std::endl;
                 break;
@@ -165,6 +171,28 @@ void ConfigLoader::erstelleLog(std::string zeile) {
         this->logLevel = logLevel;
         if (ss >> logDatei) {
             this->logDatei = logDatei;
+        }
+    } else {
+        std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
+    }
+}
+
+void ConfigLoader::erstelleHideTerminal(std::string zeile) {
+    std::stringstream ss(zeile);
+    bool hide = true;
+    std::string typ, hideString;
+    if (ss >> typ >> hideString) {
+        if (hideString == "true") {
+            // Hole das Konsolenfenster des aktuellen Prozesses
+            HWND hwnd = GetConsoleWindow();
+            // Verberge das Konsolenfenster
+            ShowWindow(hwnd, SW_HIDE);
+            // init exit symbol
+            symbolHandler = std::make_unique<SymbolHandler>(this);
+        } else if (hideString == "false") {
+            // Verberge das Konsolenfenster nicht
+        } else {
+            std::cerr << "Unbekanntes Wort " << hideString << " in Zeile " << zeile << std::endl;
         }
     } else {
         std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;

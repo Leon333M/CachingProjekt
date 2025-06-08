@@ -34,3 +34,7 @@ Vhdd D: H: rc1
 Log 1 log.txt
 # Log-Level: 1–6 (1 = kein Logging, 6 = sehr ausführlich).
 # 2. Argument (optional): Dateiname für Log-Ausgabe. Wenn angegeben, wird dort geloggt, sonst nur Konsole.
+
+# Konfiguration für Terminalanzeige
+HideTerminal true
+# true: Terminalfenster wird beim Programmstart ausgeblendet. false: Terminal bleibt sichtbar.

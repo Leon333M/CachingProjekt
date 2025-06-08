@@ -44,17 +44,6 @@ int main(int argc, char *argv[]) {
         std::cout << "init Log" << std::endl;
         LogManager logManager(loglevel, logDatei);
 
-        // Verberge das Konsolenfenster
-        std::unique_ptr<SymbolHandler> symbolHandler;
-        if (loglevel == 1) {
-            // Hole das Konsolenfenster des aktuellen Prozesses
-            HWND hwnd = GetConsoleWindow();
-            // Verberge das Konsolenfenster
-            ShowWindow(hwnd, SW_HIDE);
-            // init exit symbol
-            symbolHandler = std::make_unique<SymbolHandler>(&configLoader);
-        }
-
         // Starte virtuelles Laufwerk
         PLOG_DEBUG << "starte virtuelles Laufwerk:, das Hdd spiegelt.";
         configLoader.start();

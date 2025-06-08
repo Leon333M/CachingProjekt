@@ -1,3 +1,4 @@
+HideTerminal true
 Log 5
 RamCache rc 8 2
 SsdCache sc E: 8 10

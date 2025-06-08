@@ -1,16 +1,20 @@
 // ConfigLoader.h
 #pragma once
 #include "VirtuelleFestplatte.h"
+#include <memory>
 #include <thread>
+
+class SymbolHandler;
 
 class ConfigLoader {
 private:
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> cacheMap;
+    std::unique_ptr<SymbolHandler> symbolHandler;
     std::vector<VirtuelleFestplatte> vhdds;
     std::vector<std::string> configData;
     std::vector<std::thread> threads;
-    int logLevel = 1;
     std::string logDatei = "";
+    int logLevel = 1;
 
 public:
     bool loadFromFile(const std::wstring &filename);
@@ -44,4 +48,5 @@ private:
     void erstelleCache(std::string zeile);
     void erstelleVhdd(std::string zeile);
     void erstelleLog(std::string zeile);
+    void erstelleHideTerminal(std::string zeile);
 };
