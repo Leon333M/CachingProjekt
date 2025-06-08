@@ -20,5 +20,5 @@ private:
     bool readSsdCache(const std::wstring &cachePath, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     bool storeInSsdCache(const std::wstring &originalPath, std::wstring &cachePath);
     void clearCacheVerzeichnis();
-    std::wstring GetCachePathFromFullPath(const std::wstring &fullPath);
+    std::wstring getCachePathFromFullPath(const std::wstring &fullPath);
 };

@@ -26,10 +26,10 @@ bool RamCache::removeCache(const std::wstring &fullPath) {
         const std::vector<char> &block = itCache->second;
         UINT64 size = block.size();
         currentCacheSize -= size;
-        PLOG_DEBUG << L"Remove: Datei entfernt aus Cache: " << fullPath;
+        PLOG_DEBUG << L"remove: Datei entfernt aus Cache: " << fullPath;
         return true;
     } else {
-        PLOG_WARNING << L"Remove: Datei nicht im Cache: " << fullPath;
+        PLOG_WARNING << L"remove: Datei nicht im Cache: " << fullPath;
         return false;
     }
 }

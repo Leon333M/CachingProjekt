@@ -63,7 +63,7 @@ public:
     virtual void setNextCache(CacheInterface *cache);
 
     /**
-     * @brief Read ist die Grundfunktion fur den Cache.
+     * @brief read ist die Grundfunktion fur den Cache.
      * Hier wird gepruft, ob die Datei im Cache liegt. Wenn nicht,
      * wird entschieden, ob diese Datei dann gecacht wird.
      *
@@ -71,36 +71,36 @@ public:
      * @return true Wenn erfolgreich vom Cache gelesen.
      * @return false Wenn der Pfad nicht im Cache ist und somit nicht eingelesen wurde.
      */
-    virtual bool Read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
+    virtual bool read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 
     /**
-     * @brief Write dient der Handhabung eines potenziellen WriteCaches und der Information, dass die Datei geaendert wurde.
+     * @brief write dient der Handhabung eines potenziellen WriteCaches und der Information, dass die Datei geaendert wurde.
      *
      * @param Alle Parameter sind die WinAPI-Parameter, die nur durchgereicht werden.
      * @return true wenn kein Schreiben im Originalpfad mehr noetig ist.
      * @return false wenn die Datei noch gespeichert werden muss.
      */
-    virtual bool Write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
+    virtual bool write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 
     /**
-     * @brief Remove dient der Entfernung einer Datei aus dem Cache. Nuetzlich bei einem Write oder zum Aufraeumen.
+     * @brief remove dient der Entfernung einer Datei aus dem Cache. Nuetzlich bei einem write oder zum Aufraeumen.
      *
      * @param fullPath ist der gespeicherte Pfad im Cache. Im Normalfall also der Pfad zur Originaldatei.
      */
-    virtual void Remove(const std::wstring &fullPath);
+    virtual void remove(const std::wstring &fullPath);
 
     /**
-     * @brief RemoveHandle ruft nur die Remove auf, indem es sich den Pfad von handle holt.
+     * @brief removeHandle ruft nur die remove auf, indem es sich den Pfad von handle holt.
      *
      * @param handle ist der Winfsp-Handle, von dem nur der Pfad zur Datei extrahiert wird.
      */
-    void RemoveHandle(HANDLE handle);
+    void removeHandle(HANDLE handle);
 
     /**
-     * @brief Clear leert den Cache, indem es Remove von allen gecachten Pfaden aufruft.
+     * @brief clear leert den Cache, indem es remove von allen gecachten Pfaden aufruft.
      *
      */
-    virtual void Clear();
+    virtual void clear();
 
 protected:
     /**
@@ -112,26 +112,26 @@ protected:
      * @param size Die gewuenschte Freigabegroesse in Bytes.
      * @return Die tatsaechlich freigegebene Groesse in Bytes.
      */
-    UINT64 Clear(const UINT64 &size);
+    UINT64 clear(const UINT64 &size);
 
     /**
-     * @brief AddFileSize dient dazu, die Dateigroesse für die interne Verwaltung zu speichern.
+     * @brief addFileSize dient dazu, die Dateigroesse für die interne Verwaltung zu speichern.
      *
      * @param fileSize ist die Groesse der Datei in Bytes.
      * @return true, wenn die Dateigroesse erfolgreich hinzugefuegt wurde.
      * @return false, wenn ein Fehler aufgetreten ist.
      */
-    bool AddFileSize(const UINT64 &fileSize);
+    bool addFileSize(const UINT64 &fileSize);
 
     /**
-     * @brief AddFile registriert eine Datei im Cache anhand ihres Pfads und zugehoerigen Handles.
+     * @brief addFile registriert eine Datei im Cache anhand ihres Pfads und zugehoerigen Handles.
      *
      * @param fullPath ist der Pfad zur Originaldatei, die gecacht werden soll.
      * @param handle ist der WinFsp-Handle zur geoeffneten Datei.
      * @return true, wenn die Datei erfolgreich registriert wurde.
      * @return false, wenn ein Fehler aufgetreten ist.
      */
-    bool AddFile(const std::wstring &fullPath, HANDLE handle);
+    bool addFile(const std::wstring &fullPath, HANDLE handle);
 
     /**
      * @brief readCache versucht, eine Datei direkt aus dem Cache zu lesen.
@@ -177,25 +177,25 @@ protected:
      * @param Path Der Dateipfad, dessen Cache-Groesse berechnet werden soll.
      * @return Die Groesse des Eintrags in Bytes.
      */
-    UINT64 SizeFromPath(const std::wstring &Path);
+    UINT64 sizeFromPath(const std::wstring &Path);
 
     /**
-     * @brief ShouldCachePath dient zur Strukturierung des Caches, in dem es abfragt, ob die Datei gecacht werden soll.
+     * @brief shouldCachePath dient zur Strukturierung des Caches, in dem es abfragt, ob die Datei gecacht werden soll.
      *
      * @param fullPath ist der Pfad zur Originaldatei, der zur eindeutigen Identifikation der Datei genutzt wird.
      * @return true, wenn die Datei gecacht werden soll.
      * @return false, wenn die Datei nicht gecacht werden soll.
      */
-    bool ShouldCachePath(const std::wstring &fullPath);
+    bool shouldCachePath(const std::wstring &fullPath);
 
     /**
-     * @brief ShouldHandleCache dient dazu, um zu verhindern, dass bei Einlesen einer Datei nicht mehrmals ShouldCachePath aufgerufen wird.
+     * @brief ShouldHandleCache dient dazu, um zu verhindern, dass bei Einlesen einer Datei nicht mehrmals shouldCachePath aufgerufen wird.
      *
      * @param handle Standard-Winfsp-Handle, der gespeichert wird, wenn nicht vorhanden.
-     * @return true, wenn der Handle und somit der Read nicht schon einmal weitergeleitet wurde (also true zuruckgegeben wurde).
+     * @return true, wenn der Handle und somit der read nicht schon einmal weitergeleitet wurde (also true zuruckgegeben wurde).
      * @return false, wenn der Handle bereits vorhanden ist, was bedeutet, dass der Pfad zur Datei schon an den Cache weitergeleitet wurde.
      */
-    bool ShouldHadelCache(const HANDLE handle);
+    bool shouldHadelCache(const HANDLE handle);
 
     /**
      * @brief countPathInHistory zaehlt, wie oft fullPath in pfadHistorie auftaucht.
@@ -220,7 +220,7 @@ protected:
     void addPathToHistory(const std::wstring &fullPath);
 
     /**
-     * @brief readNextCache ruft Read von nachsten Cache auf wenn gesetzt.
+     * @brief readNextCache ruft read von nachsten Cache auf wenn gesetzt.
      *
      * @param Alle Parameter sind die WinAPI-Parameter, die nur durchgereicht werden.
      * @return true Wenn erfolgreich vom Cache gelesen.

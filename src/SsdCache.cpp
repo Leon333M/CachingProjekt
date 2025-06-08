@@ -17,12 +17,12 @@ SsdCache::SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCach
 }
 
 bool SsdCache::readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    std::wstring cachePath = GetCachePathFromFullPath(fullPath);
+    std::wstring cachePath = getCachePathFromFullPath(fullPath);
     return readSsdCache(cachePath, buffer, length, bytesTransferred, overlapped);
 }
 
 bool SsdCache::storeInCache(const std::wstring &fullPath, HANDLE handle) {
-    std::wstring cachePath = GetCachePathFromFullPath(fullPath);
+    std::wstring cachePath = getCachePathFromFullPath(fullPath);
     return storeInSsdCache(fullPath, cachePath);
 }
 
@@ -44,25 +44,25 @@ bool SsdCache::readSsdCache(const std::wstring &cachePath, LPVOID buffer, DWORD 
 
 // private Funktioen
 bool SsdCache::removeCache(const std::wstring &fullPath) {
-    std::wstring cachePath = GetCachePathFromFullPath(fullPath);
+    std::wstring cachePath = getCachePathFromFullPath(fullPath);
     if (std::filesystem::exists(cachePath)) {
-        UINT64 size = SizeFromPath(cachePath);
+        UINT64 size = sizeFromPath(cachePath);
         try {
             std::filesystem::remove(cachePath);
-            PLOG_DEBUG << L"Remove: Datei im Cache geloscht: " << cachePath;
+            PLOG_DEBUG << L"remove: Datei im Cache geloscht: " << cachePath;
             currentCacheSize -= size;
             return true;
         } catch (const std::filesystem::filesystem_error &e) {
-            PLOG_WARNING << L"Remove: Fehler beim Loschen der Datei im Cache: ";
+            PLOG_WARNING << L"remove: Fehler beim Loschen der Datei im Cache: ";
         }
     } else {
-        PLOG_DEBUG << L"Remove: Datei existiert nicht im Cache: " << cachePath;
+        PLOG_DEBUG << L"remove: Datei existiert nicht im Cache: " << cachePath;
     }
     return false;
 }
 
 // Hilfsfunktion, um den Cache-Pfad zu extrahieren
-std::wstring SsdCache::GetCachePathFromFullPath(const std::wstring &fullPath) {
+std::wstring SsdCache::getCachePathFromFullPath(const std::wstring &fullPath) {
     // Der vollstandige Pfad wird bearbeitet, um den relativen Cache-Pfad zu erhalten
     std::wstring originalPath = fullPath;
     originalPath = originalPath.substr(4); // Entferne \\?\ 

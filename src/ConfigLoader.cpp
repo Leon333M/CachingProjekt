@@ -28,11 +28,11 @@ void ConfigLoader::start() {
 
 void ConfigLoader::clear() {
     for (const auto &cacheM : cacheMap) {
-        cacheM.second->Clear();
+        cacheM.second->clear();
     }
     threads.clear();
     for (const auto &cacheM : cacheMap) {
-        cacheM.second->Clear();
+        cacheM.second->clear();
     }
 }
 
