@@ -6,6 +6,21 @@
 #include <iostream>
 #include <windows.h>
 
+ConfigLoader *cf = nullptr;
+
+// nur wenn HideTerminal false
+BOOL WINAPI ShutdownHandler(DWORD dwCtrlType) {
+    PLOG_DEBUG << "Shutdown-Signal empfangen!";
+    PLOG_DEBUG << dwCtrlType;
+    if (cf != nullptr) {
+        cf->clear();
+        PLOG_DEBUG << "Cache clear erfolgreich";
+    }
+    // Bei FALSE wird das Herunterfahren abgebrochen
+    // Bei TRUE wird das Herunterfahren fortgesetzt
+    return TRUE;
+}
+
 int main(int argc, char *argv[]) {
     try {
         // Init Argumente
@@ -37,12 +52,19 @@ int main(int argc, char *argv[]) {
         ConfigLoader configLoader;
         std::cout << "lod Config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
+        cf = &configLoader;
         int loglevel = configLoader.getLogLevel();
         std::string logDatei = configLoader.getLogDatei();
 
         // init plog
         std::cout << "init Log" << std::endl;
         LogManager logManager(loglevel, logDatei);
+
+        // Registriere den Shutdown-Handler (nur wenn HideTerminal false)
+        if (!SetConsoleCtrlHandler(ShutdownHandler, TRUE)) {
+            PLOG_DEBUG << "Fehler beim Registrieren des Shutdown-Handlers!" << std::endl;
+            return 1;
+        }
 
         // Starte virtuelles Laufwerk
         PLOG_DEBUG << "starte virtuelles Laufwerk:, das Hdd spiegelt.";

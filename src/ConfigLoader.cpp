@@ -179,7 +179,6 @@ void ConfigLoader::erstelleLog(std::string zeile) {
 
 void ConfigLoader::erstelleHideTerminal(std::string zeile) {
     std::stringstream ss(zeile);
-    bool hide = true;
     std::string typ, hideString;
     if (ss >> typ >> hideString) {
         if (hideString == "true") {
