@@ -4,11 +4,12 @@
 
 class SsdCache : public CacheInterface {
 private:
+    std::wstring cacheName = L"sc1";
     std::wstring cacheVolume = L"E:";
-    std::wstring cacheStammVerzeichnis = cacheVolume + L"/Cashe/";
+    std::wstring cacheStammVerzeichnis = cacheVolume + L"/Cashe/" + cacheName + L"/";
 
 public:
-    SsdCache(std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 10);
+    SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 10);
 
 private:
     bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);

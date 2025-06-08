@@ -115,9 +115,9 @@ void ConfigLoader::erstelleSsdCache(std::string zeile) {
     if (ss >> cacheTyp >> cacheName >> cacheValueName >> cacheSize) {
         if (ss >> minZugriffsHaufigkeit) {
             // 2. Zahl existirt und ist geladen
-            cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheValueName), cacheSize, minZugriffsHaufigkeit)));
+            cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheName), stringToWString(cacheValueName), cacheSize, minZugriffsHaufigkeit)));
         } else {
-            cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheValueName), cacheSize)));
+            cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheName), stringToWString(cacheValueName), cacheSize)));
         }
     } else {
         std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
