@@ -63,7 +63,6 @@ int main(int argc, char *argv[]) {
         // Registriere den Shutdown-Handler (nur wenn HideTerminal false)
         if (!SetConsoleCtrlHandler(ShutdownHandler, TRUE)) {
             PLOG_DEBUG << "Fehler beim Registrieren des Shutdown-Handlers!" << std::endl;
-            return 1;
         }
 
         // Starte virtuelles Laufwerk
