@@ -79,6 +79,26 @@
     "shared_mutex": "cpp",
     "array": "cpp",
     "cstdarg": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "cwctype": "cpp",
+    "bitset": "cpp",
+    "complex": "cpp",
+    "functional": "cpp",
+    "memory_resource": "cpp",
+    "numeric": "cpp",
+    "random": "cpp",
+    "source_location": "cpp",
+    "string_view": "cpp",
+    "future": "cpp",
+    "numbers": "cpp",
+    "semaphore": "cpp",
+    "span": "cpp",
+    "stdfloat": "cpp",
+    "cfenv": "cpp",
+    "cinttypes": "cpp",
+    "typeindex": "cpp",
+    "variant": "cpp",
+    "queue": "cpp",
+    "qapplication": "cpp"
   }
 }
