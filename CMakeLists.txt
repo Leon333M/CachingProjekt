@@ -56,13 +56,14 @@ target_link_libraries(CachingProjekt PRIVATE "F:/Users/Leon/Desktop/HA-Schule/Un
 target_link_libraries(CachingProjekt PRIVATE "F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/lib/Qt6Widgets.lib")
 
 # === Qt-DLLs und Plugins automatisch ins Build-Verzeichnis kopieren ===
-#add_custom_command(TARGET CachingProjekt POST_BUILD
-#    COMMAND "F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/bin/windeployqt6.exe"
-#            "$<TARGET_FILE:CachingProjekt>"
-#            --no-translations
-#            >NUL
-#    COMMENT "Qt-Runtime (DLLs, Plugins) wird via windeployqt in das Build-Verzeichnis kopiert..."
-#)
+add_custom_command(TARGET CachingProjekt POST_BUILD
+    COMMAND "F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/bin/windeployqt6.exe"
+            "$<TARGET_FILE:CachingProjekt>"
+            --release
+            --no-translations
+            >NUL
+    COMMENT "Qt-Runtime (DLLs, Plugins) wird via windeployqt in das Build-Verzeichnis kopiert..."
+)
 
 # === Build-Typ auf Debug setzen, falls nicht gesetzt ===
 if(NOT CMAKE_BUILD_TYPE)
