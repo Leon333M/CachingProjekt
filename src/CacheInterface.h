@@ -134,41 +134,6 @@ protected:
     bool addFile(const std::wstring &fullPath, HANDLE handle);
 
     /**
-     * @brief readCache versucht, eine Datei direkt aus dem Cache zu lesen.
-     *
-     * @param fullPath ist der Pfad zur Originaldatei, die gelesen werden soll.
-     * @param handle ist der WinFsp-Handle zur Datei.
-     * @param buffer ist der Zielpuffer, in den die Daten gelesen werden.
-     * @param length ist die Anzahl der zu lesenden Bytes.
-     * @param bytesTransferred gibt die tatsachlich gelesene Byteanzahl zurueck.
-     * @param overlapped wird von WinFsp fuer asynchrone Lesevorgaenge bereitgestellt und ist immer gueltig.
-     * @return true, wenn die Datei erfolgreich aus dem Cache gelesen wurde.
-     * @return false, wenn ein Fehler aufgetreten ist oder kein Cache-Eintrag vorliegt.
-     */
-    virtual bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
-
-    /**
-     * @brief storeInCache legt eine Datei im Cache ab.
-     *
-     * @param fullPath ist der Pfad zur Originaldatei, die gespeichert werden soll.
-     * @param handle ist der WinFsp-Handle zur Datei.
-     * @return true, wenn die Datei erfolgreich im Cache abgelegt wurde.
-     * @return false, wenn ein Fehler aufgetreten ist.
-     */
-    virtual bool storeInCache(const std::wstring &fullPath, HANDLE handle) = 0;
-
-    /**
-     * @brief Entfernt eine Datei aus dem Cache und aktualisiert den belegten Speicher.
-     * Die Methode loescht die angegebene Datei aus dem Cache-Speicher. Falls vorhanden,
-     * wird zusaetzlich die Dateigroesse vom currentCacheSize abgezogen.
-     *
-     * @param fullPath Der Pfad zur Originaldatei, wie er im Cache gespeichert wurde.
-     * @return true Falls die Datei erfolgreich entfernt wurde.
-     * @return false Falls die Datei nicht im Cache vorhanden oder nicht loeschbar war.
-     */
-    virtual bool removeCache(const std::wstring &fullPath) = 0;
-
-    /**
      * @brief Berechnet die Groesse des Eintrags fuer einen gegebenen Pfad.
      *
      * Diese Methode ermittelt, wie viel Speicherplatz der Cache-Eintrag
@@ -227,4 +192,39 @@ protected:
      * @return false Wenn der Pfad nicht im Cache ist und somit nicht eingelesen wurde.
      */
     bool readNextCache(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
+
+    /**
+     * @brief readCache versucht, eine Datei direkt aus dem Cache zu lesen.
+     *
+     * @param fullPath ist der Pfad zur Originaldatei, die gelesen werden soll.
+     * @param handle ist der WinFsp-Handle zur Datei.
+     * @param buffer ist der Zielpuffer, in den die Daten gelesen werden.
+     * @param length ist die Anzahl der zu lesenden Bytes.
+     * @param bytesTransferred gibt die tatsachlich gelesene Byteanzahl zurueck.
+     * @param overlapped wird von WinFsp fuer asynchrone Lesevorgaenge bereitgestellt und ist immer gueltig.
+     * @return true, wenn die Datei erfolgreich aus dem Cache gelesen wurde.
+     * @return false, wenn ein Fehler aufgetreten ist oder kein Cache-Eintrag vorliegt.
+     */
+    virtual bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) = 0;
+
+    /**
+     * @brief storeInCache legt eine Datei im Cache ab.
+     *
+     * @param fullPath ist der Pfad zur Originaldatei, die gespeichert werden soll.
+     * @param handle ist der WinFsp-Handle zur Datei.
+     * @return true, wenn die Datei erfolgreich im Cache abgelegt wurde.
+     * @return false, wenn ein Fehler aufgetreten ist.
+     */
+    virtual bool storeInCache(const std::wstring &fullPath, HANDLE handle) = 0;
+
+    /**
+     * @brief Entfernt eine Datei aus dem Cache und aktualisiert den belegten Speicher.
+     * Die Methode loescht die angegebene Datei aus dem Cache-Speicher. Falls vorhanden,
+     * wird zusaetzlich die Dateigroesse vom currentCacheSize abgezogen.
+     *
+     * @param fullPath Der Pfad zur Originaldatei, wie er im Cache gespeichert wurde.
+     * @return true Falls die Datei erfolgreich entfernt wurde.
+     * @return false Falls die Datei nicht im Cache vorhanden oder nicht loeschbar war.
+     */
+    virtual bool removeCache(const std::wstring &fullPath) = 0;
 };
