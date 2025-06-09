@@ -1,5 +1,5 @@
 HideTerminal false
-Log 5
+Log 3
 RamCache rc 8 2
 SsdCache sc E: 8 10
 Cache c rc sc

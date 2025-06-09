@@ -81,10 +81,11 @@ bool RamCache::readFromRam(const std::wstring &originalPath, LPVOID buffer, DWOR
             // Gehe davon aus, dass die Anfrage uber das Dateilimit geht, und korrigiere die Anfrage.
             dataLength = block.size() - requestOffset;
         } else {
-            PLOG_WARNING << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath;
-            PLOG_WARNING << L"readFromRam: requestOffset length block.size(): "
+            PLOG_VERBOSE << L"readFromRam: Fehler: Offset ausserhalb der Blockgroesse. " << originalPath;
+            PLOG_VERBOSE << L"readFromRam: requestOffset length block.size(): "
                          << requestOffset << L" " << dataLength << L" " << requestOffset + dataLength << L" " << block.size();
-            return false;
+            bytesTransferred = 0;
+            return true;
         }
     }
 
