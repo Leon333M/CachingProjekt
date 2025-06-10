@@ -1,7 +1,4 @@
 *.obj
-*.exe
-*.dll
-.idea/
 log*.txt
 build/*
 !build/Debug/
