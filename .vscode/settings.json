@@ -102,6 +102,7 @@
     "qapplication": "cpp",
     "qtabwidget": "cpp",
     "qgridlayout": "cpp",
-    "qmenubar": "cpp"
+    "qmenubar": "cpp",
+    "qmainwindow": "cpp"
   }
 }

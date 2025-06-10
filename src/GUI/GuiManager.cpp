@@ -4,11 +4,15 @@
 
 GuiManager::GuiManager(int argc, char *argv[], ConfigLoader *controller)
     : configLoader(controller) {
-    startGui(argc, argv);
+    qtThread = std::thread(&GuiManager::startGui, this, argc, argv);
+}
+
+GuiManager::~GuiManager() {
+    qtThread.join();
 }
 
 void GuiManager::startGui(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    new MainWindow(configLoader);
+    MainWindow mw = MainWindow(configLoader);
     app.exec();
 }

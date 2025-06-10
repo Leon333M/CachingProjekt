@@ -10,6 +10,7 @@ private:
 
 public:
     GuiManager(int argc, char *argv[], ConfigLoader *controller);
+    ~GuiManager();
 
 private:
     void startGui(int argc, char *argv[]);
