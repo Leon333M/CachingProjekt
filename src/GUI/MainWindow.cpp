@@ -1,5 +1,6 @@
 // MainWindow.cpp
 #include "MainWindow.h"
+#include "CacheWindow.h"
 
 MainWindow::MainWindow(ConfigLoader *controller)
     : configLoader(controller) {

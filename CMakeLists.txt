@@ -48,6 +48,7 @@ add_executable(CachingProjekt
      src/LogManager.cpp
      src/GUI/GuiManager.cpp
      src/GUI/MainWindow.cpp
+     src/GUI/CacheWindow.cpp
 )
 
 # === plog mit dem Executable linken ===

@@ -36,6 +36,9 @@ public:
      */
     int getLogLevel();
     std::string getLogDatei();
+    std::vector<std::string> getConfigData() { return configData; };
+    std::vector<VirtuelleFestplatte> *getVhdds() { return &vhdds; };
+    std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *getCacheMap() { return &cacheMap; };
     std::wstring stringToWString(const std::string &str);
     std::string wstringToString(const std::wstring &wstr);
 
