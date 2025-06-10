@@ -99,6 +99,9 @@
     "typeindex": "cpp",
     "variant": "cpp",
     "queue": "cpp",
-    "qapplication": "cpp"
+    "qapplication": "cpp",
+    "qtabwidget": "cpp",
+    "qgridlayout": "cpp",
+    "qmenubar": "cpp"
   }
 }

@@ -4,6 +4,11 @@ project(CachingProjekt)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+# === Build-Typ auf Debug setzen, falls nicht gesetzt ===
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
+
 # === Compiler-Optimierungsflags für max Performance ===
 set(CMAKE_CXX_FLAGS_RELEASE "/O2 /GL /Ob2 /Oi /Ot /Oy /GF /DNDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "/O2 /GL /Ob2 /Oi /Ot /Oy /GF /DNDEBUG")
@@ -41,6 +46,8 @@ add_executable(CachingProjekt
      src/ConfigLoader.cpp
      src/SymbolHandler.cpp
      src/LogManager.cpp
+     src/GUI/GuiManager.cpp
+     src/GUI/MainWindow.cpp
 )
 
 # === plog mit dem Executable linken ===
@@ -64,8 +71,3 @@ add_custom_command(TARGET CachingProjekt POST_BUILD
             >NUL
     COMMENT "Qt-Runtime (DLLs, Plugins) wird via windeployqt in das Build-Verzeichnis kopiert..."
 )
-
-# === Build-Typ auf Debug setzen, falls nicht gesetzt ===
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
-endif()

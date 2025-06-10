@@ -6,8 +6,7 @@
 #include <iostream>
 #include <windows.h>
 
-#include <QApplication>
-#include <QWidget>
+#include "GUI/GuiManager.h"
 
 ConfigLoader *cf = nullptr;
 
@@ -26,17 +25,8 @@ BOOL WINAPI ShutdownHandler(DWORD dwCtrlType) {
 
 int main(int argc, char *argv[]) {
     try {
-        std::cout << "anfang" << std::endl;
-
-        QApplication app(argc, argv);
-        QWidget window;
-        window.resize(400, 300);
-        window.setWindowTitle("Testfenster");
-        window.show();
-        std::cout << "ende" << std::endl;
-        app.exec();
-
         // Init Argumente
+        GuiManager gm(argc, argv, nullptr);
         std::cout << "Init Argumente" << std::endl;
         std::cout << "Argumente : " << argc << " " << argv << std::endl;
         std::string file = "";
