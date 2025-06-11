@@ -23,6 +23,8 @@ void CacheInterface::setNextCache(CacheInterface *cache) {
     nextCache = cache;
 }
 
+const std::string CacheInterface::getCacheTyp() const { return "CacheInterface"; }
+
 bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);

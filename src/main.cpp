@@ -26,7 +26,6 @@ BOOL WINAPI ShutdownHandler(DWORD dwCtrlType) {
 int main(int argc, char *argv[]) {
     try {
         // Init Argumente
-        GuiManager gm(argc, argv, nullptr);
         std::cout << "Init Argumente" << std::endl;
         std::cout << "Argumente : " << argc << " " << argv << std::endl;
         std::string file = "";
@@ -62,6 +61,9 @@ int main(int argc, char *argv[]) {
         // init plog
         std::cout << "init Log" << std::endl;
         LogManager logManager(loglevel, logDatei);
+
+        // erstelle Qt Gui
+        GuiManager gm(argc, argv, &configLoader);
 
         // Registriere den Shutdown-Handler (nur wenn HideTerminal false)
         if (!SetConsoleCtrlHandler(ShutdownHandler, TRUE)) {

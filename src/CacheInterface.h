@@ -47,6 +47,7 @@ public:
      * @param maxCacheSizeInGb Maximale Cache-Grosse in Gigabyte.
      */
     void setMaxCacheSize(UINT64 maxCacheSizeInGb);
+    UINT64 getMaxCacheSize() { return maxCacheSize; };
 
     /**
      * @brief Setzt die minimale Zugriffs-Haufigkeit.
@@ -61,6 +62,21 @@ public:
      * @param cache der Cache auf den der Pointers gesetzt wird.
      */
     virtual void setNextCache(CacheInterface *cache);
+    virtual CacheInterface *getNextCache() { return nextCache; };
+
+    /**
+     * @brief Gibt den Typ des Caches als lesbaren String zuruck.
+     *
+     * @return const std::string Der Cache-Typ.
+     */
+    virtual const std::string getCacheTyp() const;
+
+    /**
+     * @brief Gibt die aktuelle Groesse des Caches in Byte zurueck.
+     *
+     * @return UINT64 Aktuelle Cache-Groesse.
+     */
+    virtual const UINT64 getCurrentCacheSize() const { return currentCacheSize; };
 
     /**
      * @brief read ist die Grundfunktion fur den Cache.
