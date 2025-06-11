@@ -15,8 +15,10 @@ class MainWindow : public QMainWindow {
     // Q_OBJECT
 public:
     ConfigLoader *configLoader;
+    QWidget window;
+    QGridLayout windowLayout;
     QWidget vhddsWidget;
-    QWidget CachesWidget;
+    QWidget cachesWidget;
 
 public:
     MainWindow(ConfigLoader *controller);
