@@ -30,6 +30,9 @@ public:
      */
     VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, CacheInterface &cache);
     void start();
+    std::wstring getOrginalVolume() { return orginalVolume; };
+    std::wstring getNeuesVolume() { return neuesVolume; };
+    CacheInterface &getCache() { return cache; };
 
 private:
     LPCWSTR konvertExW(LPCWSTR path);

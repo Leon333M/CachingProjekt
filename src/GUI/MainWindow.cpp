@@ -1,6 +1,7 @@
 // MainWindow.cpp
 #include "MainWindow.h"
 #include "CacheWindow.h"
+#include "VhddWindow.h"
 #include <plog/Log.h>
 
 MainWindow::MainWindow(ConfigLoader *controller)
@@ -26,14 +27,16 @@ MainWindow::MainWindow(ConfigLoader *controller)
     }
 
     // Vhdd's
-    leftLayout->addWidget(new QLabel("test leftLayout"));
+    std::vector<VirtuelleFestplatte> *vhdds = controller->getVhdds();
+    for (VirtuelleFestplatte &vhdd : *vhdds) {
+        leftLayout->addWidget(new VhddWindow(&vhdd));
+    }
 
     // Cache's
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *cachesM = controller->getCacheMap();
     for (const auto &[name, cachePtr] : *cachesM) {
         // name (std::string), cache (std::shared_ptr<CacheInterface>)
         CacheInterface *cache = cachePtr.get();
-        PLOG_DEBUG << name;
         reigthtLayout->addWidget(new CacheWindow(name, cache));
     }
 }

@@ -16,14 +16,21 @@ CacheWindow::CacheWindow(std::string name, CacheInterface *cacheInterface)
 }
 
 void CacheWindow::refresh() {
-    PLOG_VERBOSE << "refresh " << cacheName;
     labelCacheTyp.setText(QString::fromUtf8(cache->getCacheTyp()));
-    labelCurrentCacheSize.setText(QString::number(cache->getCurrentCacheSize()));
-    labelMaxCacheSize.setText(QString::number(cache->getMaxCacheSize()));
+    labelCurrentCacheSize.setText(QString::number(byteToGbyte(cache->getCurrentCacheSize())));
+    labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));
 }
 
 void CacheWindow::paintEvent(QPaintEvent *event) {
     bool oldSignal = this->blockSignals(true);
     refresh();
     this->blockSignals(oldSignal);
+}
+
+const double CacheWindow::byteToGbyte(const UINT64 &byte) const {
+    const UINT64 m = 1024;
+    UINT64 kByte = byte / m;
+    double mByte = kByte / m;
+    double gByte = mByte / m;
+    return gByte;
 }

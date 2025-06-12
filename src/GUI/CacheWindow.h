@@ -19,4 +19,7 @@ public:
     CacheWindow(std::string name, CacheInterface *cacheInterface);
     void refresh();
     void paintEvent(QPaintEvent *event);
+
+private:
+    const double byteToGbyte(const UINT64 &byte) const;
 };
