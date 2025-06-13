@@ -73,6 +73,8 @@ int main(int argc, char *argv[]) {
         // Starte virtuelles Laufwerk
         PLOG_DEBUG << "starte virtuelles Laufwerk:, das Hdd spiegelt.";
         configLoader.start();
+        PLOG_DEBUG << "virtuelles Laufwerk bendet, warte auf GUI.";
+        gm.~GuiManager();
         PLOG_DEBUG << "ende main";
         return 0;
 
