@@ -22,9 +22,9 @@ RamCache::RamCache(UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit) {
 bool RamCache::removeCache(const std::wstring &fullPath) {
     auto itCache = ramCache.find(fullPath);
     if (itCache != ramCache.end()) {
-        ramCache.erase(itCache);
         const std::vector<char> &block = itCache->second;
         UINT64 size = block.size();
+        ramCache.erase(itCache);
         currentCacheSize -= size;
         PLOG_DEBUG << L"remove: Datei entfernt aus Cache: " << fullPath;
         return true;

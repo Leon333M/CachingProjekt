@@ -74,6 +74,7 @@ void CacheInterface::remove(const std::wstring &fullPath) {
         cashePfade.erase(it);
         // entferne Datei aus Cache
         removeCache(fullPath);
+        benachrichtigeListenerAsync();
     } else {
         PLOG_VERBOSE << L"remove: Pfad nicht im Cache gefunden: " << fullPath;
     }
@@ -158,6 +159,7 @@ bool CacheInterface::addFile(const std::wstring &fullPath, HANDLE handle) {
     // Merke das Datei vorhanden
     PLOG_DEBUG << L"addFile: Datei gespeichert: " << fileSize << L" " << fullPath;
     cashePfade.insert(fullPath);
+    benachrichtigeListenerAsync();
     return true;
 }
 

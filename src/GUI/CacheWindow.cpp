@@ -13,9 +13,13 @@ CacheWindow::CacheWindow(std::string name, CacheInterface *cacheInterface)
     windowLayout.addWidget(&labelCurrentCacheSize, 0, i++);
     windowLayout.addWidget(&labelMaxCacheSize, 0, i++);
     refresh();
+    cache->registriereListener([this]() {
+        QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
+    });
 }
 
 void CacheWindow::refresh() {
+    PLOG_DEBUG << cacheName;
     labelCacheTyp.setText(QString::fromUtf8(cache->getCacheTyp()));
     labelCurrentCacheSize.setText(QString::number(byteToGbyte(cache->getCurrentCacheSize())));
     labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));
