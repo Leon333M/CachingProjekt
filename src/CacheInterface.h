@@ -1,5 +1,6 @@
 // CacheInterface.h
 #pragma once
+#include "Benachrichtiger.h"
 #include "RingSpeicher.h"
 #include <deque>
 #include <plog/Log.h>
@@ -14,7 +15,7 @@
  * nur die Funktionen dieses Interfaces nutzen muss und somit modularer gestaltet werden kann.
  *
  */
-class CacheInterface {
+class CacheInterface : Benachrichtiger {
 protected:
     UINT64 maxCacheSize = 8ULL * 1024 * 1024 * 1024; // 8 GB
     UINT64 currentCacheSize = 0;

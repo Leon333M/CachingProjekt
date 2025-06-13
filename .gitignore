@@ -1,5 +1,6 @@
 *.obj
 log*.txt
+Todo.txt
 build/*
 !build/Debug/
 !build/Debug/CachingProjekt.exe
