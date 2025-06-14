@@ -3,12 +3,11 @@
 #include <QLabel>
 #include <plog/Log.h>
 
-CacheWindow::CacheWindow(std::string name, CacheInterface *cacheInterface)
+CacheWindow::CacheWindow(CacheInterface *cacheInterface)
     : windowLayout(QGridLayout(this)) {
-    cacheName = name;
     cache = cacheInterface;
     int i = 0;
-    windowLayout.addWidget(new QLabel(QString::fromUtf8(name)), 0, i++);
+    windowLayout.addWidget(new QLabel(QString::fromWCharArray(cacheInterface->getCacheName().c_str())), 0, i++);
     windowLayout.addWidget(&labelCacheTyp, 0, i++);
     windowLayout.addWidget(&labelCurrentCacheSize, 0, i++);
     windowLayout.addWidget(&labelMaxCacheSize, 0, i++);
@@ -19,7 +18,6 @@ CacheWindow::CacheWindow(std::string name, CacheInterface *cacheInterface)
 }
 
 void CacheWindow::refresh() {
-    PLOG_DEBUG << cacheName;
     labelCacheTyp.setText(QString::fromWCharArray(cache->getCacheTyp().c_str()));
     labelCurrentCacheSize.setText(QString::number(byteToGbyte(cache->getCurrentCacheSize())));
     labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));

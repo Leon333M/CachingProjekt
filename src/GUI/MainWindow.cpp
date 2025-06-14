@@ -12,29 +12,46 @@ MainWindow::MainWindow(ConfigLoader *controller)
       cachesWidget(&window),
       overlay(&window) {
     this->setCentralWidget(&window);
-
-    windowLayout.addWidget(&vhddsWidget, 0, 0);
-    windowLayout.addWidget(&cachesWidget, 0, 1);
-
-    QGridLayout *leftLayout = new QGridLayout(&vhddsWidget);
-    QGridLayout *reigthtLayout = new QGridLayout(&cachesWidget);
-
     this->resize(400, 300);
     this->setWindowTitle("Testfenster");
     this->show();
 
+    // windowLayout.addWidget(&vhddsWidget, 0, 0);
+    // windowLayout.addWidget(&cachesWidget, 0, 1);
+
     if (controller == nullptr) {
         return;
     }
+    // Vhdd's
+    std::vector<QWidget *> vhddsWidgets;
+    std::vector<VirtuelleFestplatte> *vhdds = controller->getVhdds();
+    for (VirtuelleFestplatte &vhdd : *vhdds) {
+    }
+    for (int i = 0; i < vhdds->size(); i++) {
+        VirtuelleFestplatte &vhdd = vhdds->at(i);
+        VhddWindow *vhddWidget = new VhddWindow(&vhdd);
+        vhddWidget->setParent(&window);
+        vhddsWidgets.push_back(vhddWidget);
+        windowLayout.addWidget(vhddWidget, i, 0);
+    }
+    // Cache's
+    std::vector<QWidget *> cachesWidgets;
+    std::vector<CacheInterface *> caches;
+    std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *cachesM = controller->getCacheMap();
+    for (const auto &[name, cachePtr] : *cachesM) {
+        // name (std::string), cache (std::shared_ptr<CacheInterface>)
+        CacheInterface *cache = cachePtr.get();
+        caches.push_back(cache);
+    }
+    for (int i = 0; i < caches.size(); i++) {
+        CacheInterface *cache = caches.at(i);
+        CacheWindow *cacheWidget = new CacheWindow(cache);
+        cacheWidget->setParent(&window);
+        cachesWidgets.push_back(cacheWidget);
+        windowLayout.addWidget(cacheWidget, i, 1);
+    }
 
-    // leftLayout
-    leftLayout->setHorizontalSpacing(100);          // Abstand horizontal zwischen den Widgets
-    leftLayout->setVerticalSpacing(100);            // Abstand vertikal zwischen den Widgets
-    leftLayout->setContentsMargins(10, 10, 10, 10); // Außenabstand: links, oben, rechts, unten
-    // leftLayout->setColumnStretch(0, 1);             // Spalte 0 kann wachsen
-    // leftLayout->setColumnStretch(1, 1);             // Spalte 1 auch
-    //  Je hoher der Wert, desto mehr Platz bekommt die Spalte
-
+    /*
     // Vhdd's
     std::vector<QWidget *> vhddsWidgets;
     std::vector<VirtuelleFestplatte> *vhdds = controller->getVhdds();
@@ -56,9 +73,24 @@ MainWindow::MainWindow(ConfigLoader *controller)
         reigthtLayout->addWidget(cacheWidget);
         cachesWidgets.push_back(cacheWidget);
     }
+    */
+
+    // windowLayout
+    // windowLayout->setHorizontalSpacing(100);          // Abstand horizontal zwischen den Widgets
+    // windowLayout->setVerticalSpacing(100);            // Abstand vertikal zwischen den Widgets
+    // windowLayout->setContentsMargins(10, 10, 10, 10); // Außenabstand: links, oben, rechts, unten
+    // windowLayout->setColumnStretch(0, 1);             // Spalte 0 kann wachsen
+    // windowLayout->setColumnStretch(1, 1);             // Spalte 1 auch
+    //  Je hoher der Wert, desto mehr Platz bekommt die Spalte
 
     // layout
+    windowLayout.setHorizontalSpacing(100);          // Abstand horizontal zwischen den Widgets
+    windowLayout.setVerticalSpacing(100);            // Abstand vertikal zwischen den Widgets
+    windowLayout.setContentsMargins(10, 10, 10, 10); // Außenabstand: links, oben, rechts, unten
     for (QWidget *widget : vhddsWidgets) {
+        widget->setMaximumSize(200, 50);
+    }
+    for (QWidget *widget : cachesWidgets) {
         widget->setMaximumSize(200, 50);
     }
 

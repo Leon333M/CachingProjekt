@@ -16,7 +16,7 @@ private:
     QLabel labelMaxCacheSize;
 
 public:
-    CacheWindow(std::string name, CacheInterface *cacheInterface);
+    CacheWindow(CacheInterface *cacheInterface);
     void refresh();
     void paintEvent(QPaintEvent *event);
 
