@@ -1,7 +1,9 @@
 // MainWindow.h
 #pragma once
 #include "../ConfigLoader.h"
+#include "CacheWindow.h"
 #include "LinienOverlay.h"
+#include "VhddWindow.h"
 #include <QApplication>
 #include <QGridLayout>
 #include <QLabel>
@@ -11,6 +13,18 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QWidget>
+
+struct CachePair {
+    CacheInterface *cache = nullptr;
+    CacheWindow *cacheWidget = nullptr;
+    CachePair(CacheInterface *c, CacheWindow *w) : cache(c), cacheWidget(w) {}
+};
+
+struct VhddPair {
+    VirtuelleFestplatte *vhdd = nullptr;
+    VhddWindow *vhddWidget = nullptr;
+    VhddPair(VirtuelleFestplatte *v, VhddWindow *w) : vhdd(v), vhddWidget(w) {}
+};
 
 class MainWindow : public QMainWindow {
     // Q_OBJECT
@@ -25,4 +39,7 @@ public:
 public:
     MainWindow(ConfigLoader *controller);
     void resizeEvent(QResizeEvent *event);
+
+private:
+    CachePair findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &vhddPairs);
 };
