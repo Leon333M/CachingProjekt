@@ -8,6 +8,8 @@ bool Cache::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransf
         if (!ssdCache.read(handle, buffer, length, bytesTransferred, overlapped)) {
             return ramCache.read(handle, buffer, length, bytesTransferred, overlapped);
         }
+    } else {
+        return ramCache.read(handle, buffer, length, bytesTransferred, overlapped);
     }
     return true;
 }

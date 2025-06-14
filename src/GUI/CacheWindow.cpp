@@ -25,11 +25,7 @@ void CacheWindow::refresh() {
     labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));
 }
 
-void CacheWindow::paintEvent(QPaintEvent *event) {
-    bool oldSignal = this->blockSignals(true);
-    refresh();
-    this->blockSignals(oldSignal);
-}
+void CacheWindow::paintEvent(QPaintEvent *event) {}
 
 const double CacheWindow::byteToGbyte(const UINT64 &byte) const {
     const UINT64 m = 1024;

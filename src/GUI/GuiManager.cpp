@@ -8,7 +8,9 @@ GuiManager::GuiManager(int argc, char *argv[], ConfigLoader *controller)
 }
 
 GuiManager::~GuiManager() {
-    qtThread.join();
+    if (qtThread.joinable()) {
+        qtThread.join();
+    }
 }
 
 void GuiManager::startGui(int argc, char *argv[]) {
