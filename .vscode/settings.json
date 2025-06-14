@@ -105,6 +105,7 @@
     "qmenubar": "cpp",
     "qmainwindow": "cpp",
     "qpushbutton": "cpp",
-    "qwidget": "cpp"
+    "qwidget": "cpp",
+    "qpainter": "cpp"
   }
 }

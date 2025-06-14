@@ -6,10 +6,11 @@
 
 MainWindow::MainWindow(ConfigLoader *controller)
     : configLoader(controller),
-      window(),
+      window(this),
       windowLayout(QGridLayout(&window)),
-      vhddsWidget(),
-      cachesWidget() {
+      vhddsWidget(&window),
+      cachesWidget(&window),
+      overlay(&window) {
     this->setCentralWidget(&window);
 
     windowLayout.addWidget(&vhddsWidget, 0, 0);
@@ -27,16 +28,37 @@ MainWindow::MainWindow(ConfigLoader *controller)
     }
 
     // Vhdd's
+    std::vector<QWidget *> vhddsWidgets;
     std::vector<VirtuelleFestplatte> *vhdds = controller->getVhdds();
     for (VirtuelleFestplatte &vhdd : *vhdds) {
-        leftLayout->addWidget(new VhddWindow(&vhdd));
+        VhddWindow *vhddWidget = new VhddWindow(&vhdd);
+        vhddWidget->setParent(&vhddsWidget);
+        leftLayout->addWidget(vhddWidget);
+        vhddsWidgets.push_back(vhddWidget);
+        PLOG_DEBUG << "vhddWidget->parent(): " << vhddWidget->parentWidget();
     }
 
     // Cache's
+    std::vector<QWidget *> cachesWidgets;
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *cachesM = controller->getCacheMap();
     for (const auto &[name, cachePtr] : *cachesM) {
         // name (std::string), cache (std::shared_ptr<CacheInterface>)
         CacheInterface *cache = cachePtr.get();
-        reigthtLayout->addWidget(new CacheWindow(name, cache));
+        CacheWindow *cacheWidget = new CacheWindow(name, cache);
+        cacheWidget->setParent(&cachesWidget);
+        reigthtLayout->addWidget(cacheWidget);
+        cachesWidgets.push_back(cacheWidget);
     }
+
+    // Zeiche pfeile.
+    overlay.setGeometry(window.rect());
+    overlay.raise();
+    overlay.verbindungen.push_back({vhddsWidgets.at(0), vhddsWidgets.at(1)});
+    overlay.show();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    overlay.resize(window.size());
+    overlay.update();
 }

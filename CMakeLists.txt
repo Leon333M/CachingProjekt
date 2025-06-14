@@ -34,6 +34,8 @@ add_compile_options(/Zc:__cplusplus)
 include_directories("F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/include")
 include_directories("F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/include/QtCore")
 include_directories("F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/include/QtWidgets")
+include_directories("F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/include/QtGui")
+
 
 # === Quellcode-Dateien ===
 add_executable(CachingProjekt
@@ -64,6 +66,7 @@ target_link_libraries(CachingProjekt PRIVATE "E:/Code/WinFsp/lib/winfsp-x64.lib"
 link_directories("F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/lib")
 target_link_libraries(CachingProjekt PRIVATE "F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/lib/Qt6Core.lib")
 target_link_libraries(CachingProjekt PRIVATE "F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/lib/Qt6Widgets.lib")
+target_link_libraries(CachingProjekt PRIVATE "F:/Users/Leon/Desktop/HA-Schule/Uni/Softwareprojekt/qt/6.5.1/msvc2019_64/lib/Qt6Gui.lib")
 
 # === Qt-DLLs und Plugins automatisch ins Build-Verzeichnis kopieren ===
 add_custom_command(TARGET CachingProjekt POST_BUILD

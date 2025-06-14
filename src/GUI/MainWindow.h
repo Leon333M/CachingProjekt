@@ -1,6 +1,7 @@
 // MainWindow.h
 #pragma once
 #include "../ConfigLoader.h"
+#include "LinienOverlay.h"
 #include <QApplication>
 #include <QGridLayout>
 #include <QLabel>
@@ -19,7 +20,9 @@ public:
     QGridLayout windowLayout;
     QWidget vhddsWidget;
     QWidget cachesWidget;
+    LinienOverlay overlay;
 
 public:
     MainWindow(ConfigLoader *controller);
+    void resizeEvent(QResizeEvent *event);
 };
