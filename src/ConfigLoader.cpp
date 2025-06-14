@@ -131,9 +131,9 @@ void ConfigLoader::erstelleRamCache(std::string zeile) {
     if (ss >> cacheTyp >> cacheName >> cacheSize) {
         if (ss >> minZugriffsHaufigkeit) {
             // 2. Zahl existirt und ist geladen
-            cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(cacheSize, minZugriffsHaufigkeit)));
+            cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(stringToWString(cacheName), cacheSize, minZugriffsHaufigkeit)));
         } else {
-            cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(cacheSize)));
+            cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(stringToWString(cacheName), cacheSize)));
         }
     } else {
         std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
@@ -146,7 +146,7 @@ void ConfigLoader::erstelleCache(std::string zeile) {
     if (ss >> cacheTyp >> cacheName >> cacheName1 >> cacheName2) {
         CacheInterface &ramCache = *cacheMap[cacheName1];
         CacheInterface &ssdCache = *cacheMap[cacheName2];
-        cacheMap.emplace(cacheName, std::make_shared<Cache>(Cache(ramCache, ssdCache)));
+        cacheMap.emplace(cacheName, std::make_shared<Cache>(Cache(stringToWString(cacheName), ramCache, ssdCache)));
     } else {
         std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
     }

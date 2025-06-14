@@ -9,6 +9,7 @@
 
 SsdCache::SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit) {
     cacheName = name;
+    cacheTyp = L"SsdCache";
     cacheVolume = ssdCacheValue;
     cacheStammVerzeichnis = cacheVolume + L"/Cashe/" + cacheName + L"/";
     setMaxCacheSize(maxCacheSizeInGb);

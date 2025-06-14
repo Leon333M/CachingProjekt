@@ -1,7 +1,11 @@
 // Cache.cpp
 #include "Cache.h"
 
-Cache::Cache(CacheInterface &ramCache, CacheInterface &ssdCache) : ramCache(ramCache), ssdCache(ssdCache) {}
+Cache::Cache(std::wstring name, CacheInterface &ramCache, CacheInterface &ssdCache) : ramCache(ramCache), ssdCache(ssdCache) {
+    cacheName = name;
+    cacheTyp = L"Cache";
+    maxCacheSize = 0;
+}
 
 bool Cache::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     if (!ramCache.isCached(pathFromHandle(handle))) {

@@ -4,7 +4,6 @@
 
 class SsdCache : public CacheInterface {
 private:
-    std::wstring cacheName = L"sc1";
     std::wstring cacheVolume = L"E:";
     std::wstring cacheStammVerzeichnis = cacheVolume + L"/Cashe/" + cacheName + L"/";
 
