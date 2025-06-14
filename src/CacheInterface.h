@@ -20,6 +20,8 @@ protected:
     UINT64 maxCacheSize = 8ULL * 1024 * 1024 * 1024; // 8 GB
     UINT64 currentCacheSize = 0;
     std::unordered_set<std::wstring> cashePfade;
+    std::wstring cacheTyp = L"CacheInterface";
+    std::wstring cacheName = L"Name";
 
 private:
     CacheInterface *nextCache = nullptr;
@@ -58,19 +60,18 @@ public:
     void setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit);
 
     /**
-     * @brief Setzt den Pointer auf den cache.
+     * @brief Gibt den Typ des Caches als lesbaren String zuruck.
      *
-     * @param cache der Cache auf den der Pointers gesetzt wird.
+     * @return const std::wstring Der Cache-Typ.
      */
-    virtual void setNextCache(CacheInterface *cache);
-    virtual CacheInterface *getNextCache() { return nextCache; };
+    const std::wstring getCacheTyp() const;
 
     /**
      * @brief Gibt den Typ des Caches als lesbaren String zuruck.
      *
-     * @return const std::string Der Cache-Typ.
+     * @return const std::wstring Der Cache-Name.
      */
-    virtual const std::string getCacheTyp() const;
+    const std::wstring getCacheName() const;
 
     /**
      * @brief Gibt die aktuelle Groesse des Caches in Byte zurueck.
@@ -89,8 +90,6 @@ public:
      * @return false Wenn der Pfad nicht im Cache ist und somit nicht eingelesen wurde.
      */
     virtual bool read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
-
-    bool isCached(const std::wstring &fullPath) const;
 
     /**
      * @brief write dient der Handhabung eines potenziellen WriteCaches und der Information, dass die Datei geaendert wurde.
@@ -114,6 +113,10 @@ public:
      * @param handle ist der Winfsp-Handle, von dem nur der Pfad zur Datei extrahiert wird.
      */
     void removeHandle(HANDLE handle);
+
+    bool isCached(const std::wstring &fullPath) const;
+
+    std::wstring pathFromHandle(HANDLE handle);
 
     /**
      * @brief clear leert den Cache, indem es remove von allen gecachten Pfaden aufruft.
@@ -202,15 +205,6 @@ protected:
      * @param fullPath Der Pfad, der zur Historie hinzugefuegt werden soll.
      */
     void addPathToHistory(const std::wstring &fullPath);
-
-    /**
-     * @brief readNextCache ruft read von nachsten Cache auf wenn gesetzt.
-     *
-     * @param Alle Parameter sind die WinAPI-Parameter, die nur durchgereicht werden.
-     * @return true Wenn erfolgreich vom Cache gelesen.
-     * @return false Wenn der Pfad nicht im Cache ist und somit nicht eingelesen wurde.
-     */
-    bool readNextCache(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 
     /**
      * @brief readCache versucht, eine Datei direkt aus dem Cache zu lesen.

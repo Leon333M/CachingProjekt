@@ -19,11 +19,13 @@ void CacheInterface::setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit) {
     pfadHistorie.setDepth(minZugriffsHaufigkeit);
 }
 
-void CacheInterface::setNextCache(CacheInterface *cache) {
-    nextCache = cache;
+const std::wstring CacheInterface::getCacheTyp() const {
+    return cacheTyp;
 }
 
-const std::string CacheInterface::getCacheTyp() const { return "CacheInterface"; }
+const std::wstring CacheInterface::getCacheName() const {
+    return cacheName;
+}
 
 bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     WCHAR fullPath[FULLPATH_SIZE];
@@ -32,9 +34,6 @@ bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD by
 
     // prufe ob im Cache
     if (!(isCached(fullPath))) {
-        if (readNextCache(handle, buffer, length, bytesTransferred, overlapped)) {
-            return true;
-        }
         if (!shouldHadelCache(handle)) {
             return false;
         }
@@ -62,10 +61,6 @@ bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD by
     return result;
 }
 
-bool CacheInterface::isCached(const std::wstring &fullPath) const {
-    return cashePfade.find(fullPath) != cashePfade.end();
-}
-
 bool CacheInterface::write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     removeHandle(handle);
     return false;
@@ -89,6 +84,16 @@ void CacheInterface::removeHandle(HANDLE handle) {
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
     // PLOG_DEBUG << L"removeHandle : " << fullPath;
     remove(fullPath);
+}
+
+bool CacheInterface::isCached(const std::wstring &fullPath) const {
+    return cashePfade.find(fullPath) != cashePfade.end();
+}
+
+std::wstring CacheInterface::pathFromHandle(HANDLE handle) {
+    WCHAR fullPath[FULLPATH_SIZE];
+    GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);
+    return fullPath;
 }
 
 void CacheInterface::clear() {
@@ -227,11 +232,4 @@ void CacheInterface::addPathToHistory(const std::wstring &fullPath) {
     if (pfadHistorie.size() > maxPfadHistorie) {
         pfadHistorie.pop_front();
     }
-}
-
-bool CacheInterface::readNextCache(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    if (nextCache != nullptr) {
-        return nextCache->read(handle, buffer, length, bytesTransferred, overlapped);
-    }
-    return false;
 }

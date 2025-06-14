@@ -1,12 +1,15 @@
 // Cache.cpp
 #include "Cache.h"
 
-Cache::Cache(CacheInterface &ramCache, CacheInterface &ssdCache) : ramCache(ramCache), ssdCache(ssdCache) {
-    ramCache.setNextCache(&ssdCache);
-}
+Cache::Cache(CacheInterface &ramCache, CacheInterface &ssdCache) : ramCache(ramCache), ssdCache(ssdCache) {}
 
 bool Cache::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    return ramCache.read(handle, buffer, length, bytesTransferred, overlapped);
+    if (!ramCache.isCached(pathFromHandle(handle))) {
+        if (!ssdCache.read(handle, buffer, length, bytesTransferred, overlapped)) {
+            return ramCache.read(handle, buffer, length, bytesTransferred, overlapped);
+        }
+    }
+    return true;
 }
 
 bool Cache::write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
@@ -22,8 +25,4 @@ bool Cache::write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTran
 void Cache::remove(const std::wstring &fullPath) {
     ramCache.remove(fullPath);
     ssdCache.remove(fullPath);
-}
-
-void Cache::setNextCache(CacheInterface *cache) {
-    ssdCache.setNextCache(cache);
 }

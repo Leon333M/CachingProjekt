@@ -20,7 +20,7 @@ CacheWindow::CacheWindow(std::string name, CacheInterface *cacheInterface)
 
 void CacheWindow::refresh() {
     PLOG_DEBUG << cacheName;
-    labelCacheTyp.setText(QString::fromUtf8(cache->getCacheTyp()));
+    labelCacheTyp.setText(QString::fromWCharArray(cache->getCacheTyp().c_str()));
     labelCurrentCacheSize.setText(QString::number(byteToGbyte(cache->getCurrentCacheSize())));
     labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));
 }
