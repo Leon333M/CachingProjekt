@@ -13,7 +13,7 @@ public:
     bool read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     bool write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void remove(const std::wstring &fullPath);
-    void setNextCache(CacheInterface *cache);
+    bool isCached(const std::wstring &fullPath) const;
 
 private:
     // eigene Funktionen

@@ -114,7 +114,7 @@ public:
      */
     void removeHandle(HANDLE handle);
 
-    bool isCached(const std::wstring &fullPath) const;
+    virtual bool isCached(const std::wstring &fullPath) const;
 
     std::wstring pathFromHandle(HANDLE handle);
 

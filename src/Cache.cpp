@@ -32,3 +32,10 @@ void Cache::remove(const std::wstring &fullPath) {
     ramCache.remove(fullPath);
     ssdCache.remove(fullPath);
 }
+
+bool Cache::isCached(const std::wstring &fullPath) const {
+    if (!ramCache.isCached(fullPath)) {
+        return ssdCache.isCached(fullPath);
+    }
+    return true;
+}
