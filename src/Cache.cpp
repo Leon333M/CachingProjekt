@@ -39,3 +39,10 @@ bool Cache::isCached(const std::wstring &fullPath) const {
     }
     return true;
 }
+
+CacheInterface &Cache::getRamCache() {
+    return ramCache;
+}
+CacheInterface &Cache::getSsdCache() {
+    return ssdCache;
+}

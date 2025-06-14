@@ -42,4 +42,5 @@ public:
 
 private:
     CachePair findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &vhddPairs);
+    void baueCacheRekursivAuf(CachePair &cp, int &zeile, int spalte, std::vector<CachePair> &alleCachePairs);
 };

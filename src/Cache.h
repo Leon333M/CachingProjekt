@@ -5,8 +5,8 @@
 
 class Cache : public CacheInterface {
 private:
-    CacheInterface &ssdCache;
     CacheInterface &ramCache;
+    CacheInterface &ssdCache;
 
 public:
     Cache(std::wstring name, CacheInterface &ramCache, CacheInterface &ssdCache);
@@ -14,6 +14,8 @@ public:
     bool write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
     void remove(const std::wstring &fullPath);
     bool isCached(const std::wstring &fullPath) const;
+    CacheInterface &getRamCache();
+    CacheInterface &getSsdCache();
 
 private:
     // eigene Funktionen
