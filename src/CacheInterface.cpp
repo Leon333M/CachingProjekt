@@ -31,7 +31,7 @@ bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD by
     // PLOG_DEBUG << L"read : " << fullPath;
 
     // prufe ob im Cache
-    if (!(cashePfade.find(fullPath) != cashePfade.end())) {
+    if (!(isCached(fullPath))) {
         if (readNextCache(handle, buffer, length, bytesTransferred, overlapped)) {
             return true;
         }
@@ -60,6 +60,10 @@ bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD by
     }
     // PLOG_DEBUG << L"read: Datei von Cashe geladen : " << fullPath;
     return result;
+}
+
+bool CacheInterface::isCached(const std::wstring &fullPath) const {
+    return cashePfade.find(fullPath) != cashePfade.end();
 }
 
 bool CacheInterface::write(HANDLE handle, LPCVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {

@@ -90,6 +90,8 @@ public:
      */
     virtual bool read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
 
+    bool isCached(const std::wstring &fullPath) const;
+
     /**
      * @brief write dient der Handhabung eines potenziellen WriteCaches und der Information, dass die Datei geaendert wurde.
      *
