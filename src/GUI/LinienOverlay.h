@@ -19,13 +19,11 @@ public:
     }
 
     void paintEvent(QPaintEvent *event) {
-        PLOG_DEBUG << "Zeichne LinienOverlay anfang";
+        // PLOG_DEBUG << "Zeichne LinienOverlay anfang";
         QPainter p(this);
         p.fillRect(rect(), QColor(0, 255, 0, 100));
         p.setRenderHint(QPainter::Antialiasing);
         p.setPen(QPen(Qt::black, 2));
-
-        PLOG_DEBUG << "Zeichne LinienOverlay 2";
 
         for (auto &[von, nach] : verbindungen) {
             if (!von || !nach)
@@ -35,17 +33,23 @@ public:
             if (!von->parentWidget() || !nach->parentWidget())
                 continue;
             if (!isAncestorOf(von) || !isAncestorOf(nach)) {
-                PLOG_DEBUG << "WARNUNG: von/nach nicht Teil des Widget-Baums!" << isAncestorOf(von) << " " << isAncestorOf(nach);
-                QPoint start = this->mapFromGlobal(von->mapToGlobal(von->rect().center()));
-                QPoint end = this->mapFromGlobal(nach->mapToGlobal(nach->rect().center()));
-                drawArrow(p, start, end);
-            } else {
-                QPoint start = von->mapTo(this, von->rect().center());
-                QPoint end = nach->mapTo(this, nach->rect().center());
-                drawArrow(p, start, end);
+                // PLOG_DEBUG << "WARNUNG: von/nach nicht Teil des Widget-Baums!" << isAncestorOf(von) << " " << isAncestorOf(nach);
             }
+            // QPoint start = this->mapFromGlobal(von->mapToGlobal(von->rect().center()));
+            // QPoint end = this->mapFromGlobal(nach->mapToGlobal(nach->rect().center()));
+
+            QPointF vonCenter = von->mapToGlobal(von->rect().center());
+            QPointF nachCenter = nach->mapToGlobal(nach->rect().center());
+
+            QPointF startGlobal = borderPoint(von, nachCenter);
+            QPointF endGlobal = borderPoint(nach, vonCenter);
+
+            QPoint start = this->mapFromGlobal(startGlobal.toPoint());
+            QPoint end = this->mapFromGlobal(endGlobal.toPoint());
+
+            drawArrow(p, start, end);
         }
-        PLOG_DEBUG << "Zeichne LinienOverlay ende";
+        // PLOG_DEBUG << "Zeichne LinienOverlay ende";
     }
 
 private:
@@ -60,5 +64,29 @@ private:
         QPolygonF head;
         head << end << arrowP1 << arrowP2;
         p.drawPolygon(head);
+    }
+
+    QPointF borderPoint(const QWidget *widget, const QPointF &targetGlobal) {
+        QRectF rect = widget->rect();
+        QPointF centerGlobal = widget->mapToGlobal(rect.center());
+
+        QPointF dir = targetGlobal - centerGlobal;
+
+        if (dir == QPointF(0, 0))
+            return centerGlobal;
+
+        // Verhältnis für X- und Y-Rand bestimmen (distance to border along x- and y-axis)
+        double halfWidth = rect.width() / 2.0;
+        double halfHeight = rect.height() / 2.0;
+
+        // Skaliere den Vektor so, dass er an den Rand des Rechtecks stößt
+        double scaleX = halfWidth / std::abs(dir.x());
+        double scaleY = halfHeight / std::abs(dir.y());
+
+        double scale = std::min(scaleX, scaleY);
+
+        QPointF border = centerGlobal + dir * scale;
+
+        return border;
     }
 };

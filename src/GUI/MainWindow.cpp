@@ -27,6 +27,14 @@ MainWindow::MainWindow(ConfigLoader *controller)
         return;
     }
 
+    // leftLayout
+    leftLayout->setHorizontalSpacing(100);          // Abstand horizontal zwischen den Widgets
+    leftLayout->setVerticalSpacing(100);            // Abstand vertikal zwischen den Widgets
+    leftLayout->setContentsMargins(10, 10, 10, 10); // Außenabstand: links, oben, rechts, unten
+    // leftLayout->setColumnStretch(0, 1);             // Spalte 0 kann wachsen
+    // leftLayout->setColumnStretch(1, 1);             // Spalte 1 auch
+    //  Je hoher der Wert, desto mehr Platz bekommt die Spalte
+
     // Vhdd's
     std::vector<QWidget *> vhddsWidgets;
     std::vector<VirtuelleFestplatte> *vhdds = controller->getVhdds();
@@ -35,7 +43,6 @@ MainWindow::MainWindow(ConfigLoader *controller)
         vhddWidget->setParent(&vhddsWidget);
         leftLayout->addWidget(vhddWidget);
         vhddsWidgets.push_back(vhddWidget);
-        PLOG_DEBUG << "vhddWidget->parent(): " << vhddWidget->parentWidget();
     }
 
     // Cache's
@@ -50,10 +57,16 @@ MainWindow::MainWindow(ConfigLoader *controller)
         cachesWidgets.push_back(cacheWidget);
     }
 
+    // layout
+    for (QWidget *widget : vhddsWidgets) {
+        widget->setMaximumSize(200, 50);
+    }
+
     // Zeiche pfeile.
     overlay.setGeometry(window.rect());
     overlay.raise();
     overlay.verbindungen.push_back({vhddsWidgets.at(0), vhddsWidgets.at(1)});
+    overlay.verbindungen.push_back({vhddsWidgets.at(0), cachesWidgets.at(0)});
     overlay.show();
 }
 
