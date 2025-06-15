@@ -1,6 +1,7 @@
 // MainWindow.h
 #pragma once
 #include "../ConfigLoader.h"
+#include "AutoRowGridLayout.h"
 #include "CacheWindow.h"
 #include "LinienOverlay.h"
 #include "VhddWindow.h"
@@ -25,19 +26,6 @@ struct VhddPair {
     VirtuelleFestplatte *vhdd = nullptr;
     VhddWindow *vhddWidget = nullptr;
     VhddPair(VirtuelleFestplatte *v, VhddWindow *w) : vhdd(v), vhddWidget(w) {}
-};
-
-class AutoRowGridLayout : public QGridLayout {
-    std::map<int, int> currentRowPerColumn;
-
-public:
-    AutoRowGridLayout(QWidget *parent = nullptr)
-        : QGridLayout(parent) {}
-
-    void addWidgetAutoRow(QWidget *widget, int column = 0) {
-        int row = currentRowPerColumn[column]++;
-        addWidget(widget, row, column);
-    }
 };
 
 class MainWindow : public QMainWindow {

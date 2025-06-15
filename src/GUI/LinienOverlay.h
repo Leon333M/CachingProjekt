@@ -5,11 +5,18 @@
 #include <cmath>
 #include <vector>
 
-#include <plog/Log.h>
+struct Verbindung {
+    QWidget *von;
+    QWidget *nach;
+    QColor farbe;
+
+    Verbindung(QWidget *v, QWidget *n, QColor f = Qt::black)
+        : von(v), nach(n), farbe(f) {}
+};
 
 class LinienOverlay : public QWidget {
 public:
-    std::vector<std::pair<QWidget *, QWidget *>> verbindungen;
+    std::vector<Verbindung> verbindungen;
 
     LinienOverlay(QWidget *parent) : QWidget(parent) {
         setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -19,24 +26,24 @@ public:
     }
 
     void paintEvent(QPaintEvent *event) {
-        // PLOG_DEBUG << "Zeichne LinienOverlay anfang";
         QPainter p(this);
         p.fillRect(rect(), QColor(0, 255, 0, 100));
         p.setRenderHint(QPainter::Antialiasing);
         p.setPen(QPen(Qt::black, 2));
 
-        for (auto &[von, nach] : verbindungen) {
-            if (!von || !nach)
+        for (const auto &v : verbindungen) {
+            QWidget *von = v.von;
+            QWidget *nach = v.nach;
+
+            if (!von || !nach) {
                 continue;
-            if (!von->isVisible() || !nach->isVisible())
-                continue;
-            if (!von->parentWidget() || !nach->parentWidget())
-                continue;
-            if (!isAncestorOf(von) || !isAncestorOf(nach)) {
-                // PLOG_DEBUG << "WARNUNG: von/nach nicht Teil des Widget-Baums!" << isAncestorOf(von) << " " << isAncestorOf(nach);
             }
-            // QPoint start = this->mapFromGlobal(von->mapToGlobal(von->rect().center()));
-            // QPoint end = this->mapFromGlobal(nach->mapToGlobal(nach->rect().center()));
+            if (!von->isVisible() || !nach->isVisible()) {
+                continue;
+            }
+            if (!von->parentWidget() || !nach->parentWidget()) {
+                continue;
+            }
 
             QPointF vonCenter = von->mapToGlobal(von->rect().center());
             QPointF nachCenter = nach->mapToGlobal(nach->rect().center());
@@ -47,9 +54,9 @@ public:
             QPoint start = this->mapFromGlobal(startGlobal.toPoint());
             QPoint end = this->mapFromGlobal(endGlobal.toPoint());
 
+            p.setPen(QPen(v.farbe, 2));
             drawArrow(p, start, end);
         }
-        // PLOG_DEBUG << "Zeichne LinienOverlay ende";
     }
 
 private:
