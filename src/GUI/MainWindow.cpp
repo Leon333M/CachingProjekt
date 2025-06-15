@@ -47,9 +47,9 @@ MainWindow::MainWindow(ConfigLoader *controller)
     windowLayout.setHorizontalSpacing(100);          // Abstand horizontal zwischen den Widgets
     windowLayout.setVerticalSpacing(100);            // Abstand vertikal zwischen den Widgets
     windowLayout.setContentsMargins(10, 10, 10, 10); // Außenabstand: links, oben, rechts, unten
-    // windowLayout.setColumnStretch(0, 1);             // Spalte 0 kann wachsen
-    // windowLayout.setColumnStretch(1, 1);             // Spalte 1 auch
-    //  Je hoher der Wert, desto mehr Platz bekommt die Spalte
+    // windowLayout.setColumnStretch(0, 1);          // Spalte 0 kann wachsen
+    // windowLayout.setColumnStretch(1, 1);          // Spalte 1 auch
+    // Je hoher der Wert, desto mehr Platz bekommt die Spalte
 
     // erstelle stuktur von vhdd
     for (int i = 0; i < vhddPair.size(); i++) {
@@ -66,15 +66,14 @@ MainWindow::MainWindow(ConfigLoader *controller)
     }
 
     // erstelle stuktur von Caches
-    int t = 2;
+    int spalte = 2;
     int z = 0;
     int zeile = 0;
     for (int i = 0; i < firstCachePair.size(); i++) {
         CachePair cp = firstCachePair.at(i);
         std::wstring cacheTyp = cp.cache->getCacheTyp();
         if (cacheTyp == L"Cache") {
-            int spalte = t + 1;
-            baueCacheRekursivAuf(cp, zeile, spalte - 1, cachePair);
+            baueCacheRekursivAuf(cp, spalte, cachePair);
         }
     }
 }
@@ -96,7 +95,7 @@ CachePair &MainWindow::findeCachePairMitCacheName(const std::wstring &cacheName,
     return cachePairs.at(0);
 }
 
-void MainWindow::baueCacheRekursivAuf(CachePair &cp, int &zeile, int spalte, std::vector<CachePair> &alleCachePairs) {
+void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte, std::vector<CachePair> &alleCachePairs) {
     // Widget platzieren
     if (!cp.isAdded) {
         cp.isAdded = true;
@@ -127,8 +126,7 @@ void MainWindow::baueCacheRekursivAuf(CachePair &cp, int &zeile, int spalte, std
         overlay.verbindungen.push_back({cp.cacheWidget, ssdPair.cacheWidget});
 
         // Rekursiv weiter (in nachster spalte)
-        int z = 0;
-        baueCacheRekursivAuf(ramPair, z, spalte + 1, alleCachePairs);
-        baueCacheRekursivAuf(ssdPair, z, spalte + 1, alleCachePairs);
+        baueCacheRekursivAuf(ramPair, spalte + 1, alleCachePairs);
+        baueCacheRekursivAuf(ssdPair, spalte + 1, alleCachePairs);
     }
 }

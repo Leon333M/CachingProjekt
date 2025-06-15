@@ -14,8 +14,6 @@
 #include <QTabWidget>
 #include <QWidget>
 
-#include <plog/Log.h>
-
 struct CachePair {
     CacheInterface *cache = nullptr;
     CacheWindow *cacheWidget = nullptr;
@@ -38,8 +36,6 @@ public:
 
     void addWidgetAutoRow(QWidget *widget, int column = 0) {
         int row = currentRowPerColumn[column]++;
-
-        PLOG_DEBUG << "Spalte: " << column << " Zeile: " << row;
         addWidget(widget, row, column);
     }
 };
@@ -58,5 +54,5 @@ public:
 
 private:
     CachePair &findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &vhddPairs);
-    void baueCacheRekursivAuf(CachePair &cp, int &zeile, int spalte, std::vector<CachePair> &alleCachePairs);
+    void baueCacheRekursivAuf(CachePair &cp, int spalte, std::vector<CachePair> &alleCachePairs);
 };
