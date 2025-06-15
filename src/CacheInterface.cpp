@@ -42,7 +42,7 @@ bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD by
         }
         // add zum Cache
         if (!addFile(fullPath, handle)) {
-            PLOG_WARNING << "read: Fehler beim hinzufugen der Datei: " << fullPath;
+            PLOG_WARNING << "read: Fehler beim Hinzufugen der Datei: " << fullPath;
             return false;
         }
 
