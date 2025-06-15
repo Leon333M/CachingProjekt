@@ -58,6 +58,7 @@ public:
      * @param minZugriffsHaufigkeit Minimale Anzahl an Zugriffen, ab der eine Datei im Cache verbleibt.
      */
     void setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit);
+    int getMinZugriffsHaufigkeit() { return minZugriffsHaufigkeit; };
 
     /**
      * @brief Gibt den Typ des Caches als lesbaren String zuruck.

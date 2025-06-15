@@ -29,8 +29,6 @@ MainWindow::MainWindow(ConfigLoader *controller)
     // init Cache's
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *cachesM = controller->getCacheMap();
     std::vector<CacheInterface *> caches;
-    std::vector<CachePair> firstCachePair;
-    std::vector<CachePair> cachePair;
     for (const auto &[name, cachePtr] : *cachesM) {
         // name (std::string), cache (std::shared_ptr<CacheInterface>)
         CacheInterface *cache = cachePtr.get();
@@ -56,21 +54,15 @@ MainWindow::MainWindow(ConfigLoader *controller)
         VhddPair vp = vhddPair.at(i);
         windowLayout.addWidgetAutoRow(vp.vhddWidget, 0);
         std::wstring cachName = vp.vhdd->getCache().getCacheName();
-        CachePair cp = findeCachePairMitCacheName(cachName, cachePair);
+        CachePair &cp = findeCachePairMitCacheName(cachName);
         if (!cp.isAdded) {
             cp.isAdded = true;
             windowLayout.addWidgetAutoRow(cp.cacheWidget, 1);
         }
         overlay.verbindungen.push_back({vp.vhddWidget, cp.cacheWidget});
-        firstCachePair.push_back(cp);
-    }
-
-    // erstelle stuktur von Caches
-    for (int i = 0; i < firstCachePair.size(); i++) {
-        CachePair cp = firstCachePair.at(i);
         std::wstring cacheTyp = cp.cache->getCacheTyp();
         if (cacheTyp == L"Cache") {
-            baueCacheRekursivAuf(cp, 2, cachePair);
+            baueCacheRekursivAuf(cp, 2);
         }
     }
 }
@@ -81,18 +73,18 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     overlay.update();
 }
 
-CachePair &MainWindow::findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &cachePairs) {
-    for (CachePair &pair : cachePairs) {
+CachePair &MainWindow::findeCachePairMitCacheName(const std::wstring &cacheName) {
+    for (CachePair &pair : cachePair) {
         CacheInterface *ci = pair.cache;
         if (ci->getCacheName() == cacheName) {
             return pair;
         }
     }
     // nie
-    return cachePairs.at(0);
+    return cachePair.at(0);
 }
 
-void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte, std::vector<CachePair> &alleCachePairs) {
+void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte) {
     // Widget platzieren
     if (!cp.isAdded) {
         cp.isAdded = true;
@@ -106,15 +98,15 @@ void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte, std::vector<Cac
         CacheInterface &ramRef = komplexerCache->getRamCache();
         CacheInterface &ssdRef = komplexerCache->getSsdCache();
 
-        CachePair &ramPair = findeCachePairMitCacheName(ramRef.getCacheName(), alleCachePairs);
-        CachePair &ssdPair = findeCachePairMitCacheName(ssdRef.getCacheName(), alleCachePairs);
+        CachePair &ramPair = findeCachePairMitCacheName(ramRef.getCacheName());
+        CachePair &ssdPair = findeCachePairMitCacheName(ssdRef.getCacheName());
 
         // Widget platzieren
         if (!ramPair.isAdded) {
             ramPair.isAdded = true;
             windowLayout.addWidgetAutoRow(ramPair.cacheWidget, spalte);
         }
-        if (ssdPair.isAdded) {
+        if (!ssdPair.isAdded) {
             ssdPair.isAdded = true;
             windowLayout.addWidgetAutoRow(ssdPair.cacheWidget, spalte);
         }
@@ -123,7 +115,7 @@ void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte, std::vector<Cac
         overlay.verbindungen.push_back({cp.cacheWidget, ssdPair.cacheWidget, Qt::yellow});
 
         // Rekursiv weiter (in nachster spalte)
-        baueCacheRekursivAuf(ramPair, spalte + 1, alleCachePairs);
-        baueCacheRekursivAuf(ssdPair, spalte + 1, alleCachePairs);
+        baueCacheRekursivAuf(ramPair, spalte + 1);
+        baueCacheRekursivAuf(ssdPair, spalte + 1);
     }
 }

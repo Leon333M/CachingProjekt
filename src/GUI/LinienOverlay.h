@@ -82,11 +82,11 @@ private:
         if (dir == QPointF(0, 0))
             return centerGlobal;
 
-        // Verhältnis für X- und Y-Rand bestimmen (distance to border along x- and y-axis)
+        // Verhaltnis für X- und Y-Rand bestimmen (distance to border along x- and y-axis)
         double halfWidth = rect.width() / 2.0;
         double halfHeight = rect.height() / 2.0;
 
-        // Skaliere den Vektor so, dass er an den Rand des Rechtecks stößt
+        // Skaliere den Vektor so, dass er an den Rand des Rechtecks stosst
         double scaleX = halfWidth / std::abs(dir.x());
         double scaleY = halfHeight / std::abs(dir.y());
 

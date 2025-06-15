@@ -20,14 +20,15 @@ CacheWindow::CacheWindow(CacheInterface *cacheInterface)
     int i = 0;
     windowLayout.addWidget(new QLabel(QString::fromWCharArray(cacheInterface->getCacheName().c_str())), 0, i++);
     windowLayout.addWidget(&labelCacheTyp, 0, i++);
+    windowLayout.addWidget(&labelMinZugriffsHaufigkeit, 0, i++);
     windowLayout.addWidget(&labelCurrentCacheSize, 0, i++);
-    windowLayout.addWidget(&labelMaxCacheSize, 0, i++);
     windowLayout.addWidget(&labelMaxCacheSize, 0, i++);
     refresh();
     if (cache->getCacheTyp() == L"Cache") {
         Cache *cache0 = static_cast<Cache *>(cache);
         labelCurrentCacheSize.setText(QString::fromWCharArray(cache0->getRamCache().getCacheName().c_str()));
         labelMaxCacheSize.setText(QString::fromWCharArray(cache0->getSsdCache().getCacheName().c_str()));
+        labelMinZugriffsHaufigkeit.hide();
     } else {
         cache->registriereListener([this]() {
             QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
@@ -36,6 +37,7 @@ CacheWindow::CacheWindow(CacheInterface *cacheInterface)
 }
 
 void CacheWindow::refresh() {
+    labelMinZugriffsHaufigkeit.setText(QString::number(cache->getMinZugriffsHaufigkeit()));
     labelCacheTyp.setText(QString::fromWCharArray(cache->getCacheTyp().c_str()));
     labelCurrentCacheSize.setText(QString::number(byteToGbyte(cache->getCurrentCacheSize())));
     labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));

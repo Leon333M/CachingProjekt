@@ -35,12 +35,13 @@ public:
     QWidget window;
     AutoRowGridLayout windowLayout;
     LinienOverlay overlay;
+    std::vector<CachePair> cachePair;
 
 public:
     MainWindow(ConfigLoader *controller);
     void resizeEvent(QResizeEvent *event);
 
 private:
-    CachePair &findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &vhddPairs);
-    void baueCacheRekursivAuf(CachePair &cp, int spalte, std::vector<CachePair> &alleCachePairs);
+    CachePair &findeCachePairMitCacheName(const std::wstring &cacheName);
+    void baueCacheRekursivAuf(CachePair &cp, int spalte);
 };
