@@ -8,12 +8,14 @@ Cache::Cache(std::wstring name, CacheInterface &ramCache, CacheInterface &ssdCac
 }
 
 bool Cache::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
-    if (!ramCache.isCached(pathFromHandle(handle))) {
-        if (!ssdCache.read(handle, buffer, length, bytesTransferred, overlapped)) {
-            return ramCache.read(handle, buffer, length, bytesTransferred, overlapped);
+    // Prufen, ob die Datei bereits im SSD-Cache liegt.
+    // Dadurch wird verhindert, dass dieselbe Datei mehrfach in verschiedenen Caches zwischengespeichert wird.
+    if (!ssdCache.isCached(pathFromHandle(handle))) {
+        if (!ramCache.read(handle, buffer, length, bytesTransferred, overlapped)) {
+            return ssdCache.read(handle, buffer, length, bytesTransferred, overlapped);
         }
     } else {
-        return ramCache.read(handle, buffer, length, bytesTransferred, overlapped);
+        return ssdCache.read(handle, buffer, length, bytesTransferred, overlapped);
     }
     return true;
 }

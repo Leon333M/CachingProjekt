@@ -23,6 +23,12 @@ SsdCache sc1 E: 8 10
 Cache c1 rc1 sc1
 # c1: Kombination von rc1 (RamCache) und sc1 (SsdCache)
 
+# Wichtig:
+# Wenn bei einem Cache die Anzahl der Lesezugriffe auf 0 gesetzt wird,
+# wird jeder Zugriff sofort zwischengespeichert.
+# Steht dieser Cache vorne in der Kombination,
+# werden alle nachfolgenden Caches ignoriert und nicht mehr verwendet.
+
 # Virtuelle Festplatten-Konfiguration
 Vhdd F: G: rc1
 # F: ist die originale Festplatte, die auf G: gespiegelt wird. Der Cache (rc1) wird auf G: angewendet.
