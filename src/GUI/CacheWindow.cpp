@@ -1,7 +1,18 @@
 // CacheWindow.cpp
 #include "CacheWindow.h"
+#include "../Cache.h"
 #include <QLabel>
 #include <plog/Log.h>
+
+class AutoRowGridLayout : public QGridLayout {
+    std::map<int, int> currentRowPerColumn;
+
+public:
+    void addWidgetAutoRow(QWidget *widget, int column = 0) {
+        int row = currentRowPerColumn[column]++;
+        addWidget(widget, row, column);
+    }
+};
 
 CacheWindow::CacheWindow(CacheInterface *cacheInterface)
     : windowLayout(QGridLayout(this)) {
@@ -11,10 +22,17 @@ CacheWindow::CacheWindow(CacheInterface *cacheInterface)
     windowLayout.addWidget(&labelCacheTyp, 0, i++);
     windowLayout.addWidget(&labelCurrentCacheSize, 0, i++);
     windowLayout.addWidget(&labelMaxCacheSize, 0, i++);
+    windowLayout.addWidget(&labelMaxCacheSize, 0, i++);
     refresh();
-    cache->registriereListener([this]() {
-        QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
-    });
+    if (cache->getCacheTyp() == L"Cache") {
+        Cache *cache0 = static_cast<Cache *>(cache);
+        labelCurrentCacheSize.setText(QString::fromWCharArray(cache0->getRamCache().getCacheName().c_str()));
+        labelMaxCacheSize.setText(QString::fromWCharArray(cache0->getSsdCache().getCacheName().c_str()));
+    } else {
+        cache->registriereListener([this]() {
+            QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
+        });
+    }
 }
 
 void CacheWindow::refresh() {

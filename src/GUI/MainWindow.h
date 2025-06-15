@@ -14,9 +14,12 @@
 #include <QTabWidget>
 #include <QWidget>
 
+#include <plog/Log.h>
+
 struct CachePair {
     CacheInterface *cache = nullptr;
     CacheWindow *cacheWidget = nullptr;
+    bool isAdded = false;
     CachePair(CacheInterface *c, CacheWindow *w) : cache(c), cacheWidget(w) {}
 };
 
@@ -26,14 +29,27 @@ struct VhddPair {
     VhddPair(VirtuelleFestplatte *v, VhddWindow *w) : vhdd(v), vhddWidget(w) {}
 };
 
+class AutoRowGridLayout : public QGridLayout {
+    std::map<int, int> currentRowPerColumn;
+
+public:
+    AutoRowGridLayout(QWidget *parent = nullptr)
+        : QGridLayout(parent) {}
+
+    void addWidgetAutoRow(QWidget *widget, int column = 0) {
+        int row = currentRowPerColumn[column]++;
+
+        PLOG_DEBUG << "Spalte: " << column << " Zeile: " << row;
+        addWidget(widget, row, column);
+    }
+};
+
 class MainWindow : public QMainWindow {
     // Q_OBJECT
 public:
     ConfigLoader *configLoader;
     QWidget window;
-    QGridLayout windowLayout;
-    QWidget vhddsWidget;
-    QWidget cachesWidget;
+    AutoRowGridLayout windowLayout;
     LinienOverlay overlay;
 
 public:
@@ -41,6 +57,6 @@ public:
     void resizeEvent(QResizeEvent *event);
 
 private:
-    CachePair findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &vhddPairs);
+    CachePair &findeCachePairMitCacheName(const std::wstring &cacheName, std::vector<CachePair> &vhddPairs);
     void baueCacheRekursivAuf(CachePair &cp, int &zeile, int spalte, std::vector<CachePair> &alleCachePairs);
 };

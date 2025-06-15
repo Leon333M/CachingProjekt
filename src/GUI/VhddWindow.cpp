@@ -14,5 +14,5 @@ VhddWindow::VhddWindow(VirtuelleFestplatte *vhd)
 void VhddWindow::refresh() {
     labelVhddOrginalVolume.setText(QString::fromWCharArray(vhdd->getOrginalVolume().c_str()));
     labelVhddVolume.setText(QString::fromWCharArray(vhdd->getNeuesVolume().c_str()));
-    labelCacheName.setText(QString::fromWCharArray(vhdd->getCache().getCacheTyp().c_str()));
+    labelCacheName.setText(QString::fromWCharArray(vhdd->getCache().getCacheName().c_str()));
 }

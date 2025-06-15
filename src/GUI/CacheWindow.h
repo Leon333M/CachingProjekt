@@ -14,6 +14,7 @@ private:
     QLabel labelCacheTyp;
     QLabel labelCurrentCacheSize;
     QLabel labelMaxCacheSize;
+    QLabel labelMinZugriffsHaufigkeit;
 
 public:
     CacheWindow(CacheInterface *cacheInterface);
