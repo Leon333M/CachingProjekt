@@ -16,6 +16,7 @@ private:
 
 public:
     RingSpeicher(int depth = 3, int initVectorSize = 64) {
+        setVectorSize(initVectorSize);
         daten.resize(depth);
         for (std::unordered_set<Typ> &data : daten) {
             data.reserve(initVectorSize);
@@ -72,17 +73,16 @@ public:
         int oldDepth = daten.size();
         daten.resize(depth);
         if (oldDepth < depth) {
-            for (int i = oldDepth - 1; i < depth - 1; i++) {
-                std::unordered_set<Typ> &data = daten[0];
-                data.reserve(vectorSize);
-            }
+            setVectorSize(vectorSize);
         }
     }
 
     void setVectorSize(int size) {
         vectorSize = size;
-        for (const std::unordered_set<Typ> &data : daten) {
-            data.reserve(vectorSize);
+        for (int i = 0; i < daten.size(); i++) {
+            std::unordered_set<Typ> &data = daten.at(i);
+            int maxUsedSize = (vectorSize / (i + 1.0)) + 1; // +1 == aufrunden
+            data.reserve(maxUsedSize);
         }
     }
 };

@@ -14,6 +14,6 @@ public:
     void addWidgetAutoRow(QWidget *widget, int column = 0) {
         int row = currentRowPerColumn[column]++;
         addWidget(widget, row, column);
-        PLOG_DEBUG << "Saplate: " << column << " Zeile: " << row;
+        // PLOG_DEBUG << "Saplate: " << column << " Zeile: " << row;
     }
 };
