@@ -65,6 +65,26 @@ MainWindow::MainWindow(ConfigLoader *controller)
             baueCacheRekursivAuf(cp, 2);
         }
     }
+
+    // Liste ungenutze Caches auf
+    std::vector<CachePair> unusedCachePairs;
+    for (CachePair &pair : cachePair) {
+        if (!pair.isAdded) {
+            unusedCachePairs.emplace_back(pair);
+        }
+    }
+
+    // zeige ungenutzte caches an
+    for (CachePair &pair : unusedCachePairs) {
+        CacheInterface *cacheI = pair.cache;
+        if (cacheI->getCacheTyp() == L"Cache") {
+            baueCacheRekursivAuf(findeCachePairMitCacheName(cacheI->getCacheName()), 0);
+        }
+    }
+    for (CachePair &pair : unusedCachePairs) {
+        CacheInterface *cacheI = pair.cache;
+        baueCacheRekursivAuf(findeCachePairMitCacheName(cacheI->getCacheName()), 0);
+    }
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
@@ -85,6 +105,9 @@ CachePair &MainWindow::findeCachePairMitCacheName(const std::wstring &cacheName)
 }
 
 void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte) {
+    if (spalte < 1) {
+        spalte = 1;
+    }
     // Widget platzieren
     if (!cp.isAdded) {
         cp.isAdded = true;

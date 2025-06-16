@@ -53,6 +53,7 @@ add_executable(CachingProjekt
      src/GUI/CacheWindow.cpp
      src/GUI/VhddWindow.cpp
      src/Benachrichtiger.cpp
+     src/GUI/KreisWidget.cpp
 )
 
 # === plog mit dem Executable linken ===

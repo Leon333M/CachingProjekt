@@ -2,7 +2,7 @@ HideTerminal false
 Log 5
 RamCache rc 8 2
 SsdCache sc E: 8 10
-Cache c rc sc
+Cache c sc rc
 RamCache rc1 1 0
 RamCache rc2 2 1
 RamCache rc3 4 2
