@@ -4,11 +4,6 @@ https://winfsp.dev/rel/
 Wenn ihr es im Standardpfad installiert habt, ist die winfsp-x64.dll dort zu finden:
 C:\Code\WinFsp\bin\winfsp-x64.dll
 
-Jetzt habt ihr zwei Optionen:
-Entweder ihr kopiert die winfsp-x64.dll in den Ordner, in dem sich die CachingProjekt.exe befindet,
-oder
-ihr bindet den Pfad C:\Code\WinFsp\bin\ in die Systemumgebungsvariablen ein.
-
 Hier eine Anleitung für die config.txt:
 
 # Konfiguration für RamCache
@@ -20,8 +15,8 @@ SsdCache sc1 E: 8 10
 # sc1: SsdCache auf Laufwerk E: mit 8 GB und caching nach 10 Lesezugriffen
 
 # Kombination der Caches
-Cache c1 rc1 sc1
-# c1: Kombination von rc1 (RamCache) und sc1 (SsdCache)
+Cache c1 sc1 rc1
+# c1: Kombination von sc1 (SsdCache) und rc1 (RamCache)
 
 # Wichtig:
 # Wenn bei einem Cache die Anzahl der Lesezugriffe auf 0 gesetzt wird,
