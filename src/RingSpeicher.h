@@ -81,7 +81,7 @@ public:
         vectorSize = size;
         for (int i = 0; i < daten.size(); i++) {
             std::unordered_set<Typ> &data = daten.at(i);
-            int maxUsedSize = (vectorSize / (i + 1.0)) + 1; // +1 == aufrunden
+            int maxUsedSize = (vectorSize / (i + 1)) + 1; // +1 == aufrunden
             data.reserve(maxUsedSize);
         }
     }
