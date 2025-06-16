@@ -15,6 +15,7 @@ private:
     std::vector<std::thread> threads;
     std::string logDatei = "";
     int logLevel = 1;
+    bool hideGui = true;
 
 public:
     bool loadFromFile(const std::wstring &filename);
@@ -39,6 +40,7 @@ public:
     std::vector<std::string> getConfigData() { return configData; };
     std::vector<VirtuelleFestplatte> *getVhdds() { return &vhdds; };
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *getCacheMap() { return &cacheMap; };
+    bool getHideGui() { return hideGui; };
     std::wstring stringToWString(const std::string &str);
     std::string wstringToString(const std::wstring &wstr);
 
@@ -52,4 +54,5 @@ private:
     void erstelleVhdd(std::string zeile);
     void erstelleLog(std::string zeile);
     void erstelleHideTerminal(std::string zeile);
+    void erstelleHideGui(std::string zeile);
 };

@@ -1,3 +1,5 @@
-Log 2
-RamCache rc1 8 2
+HideTerminal false
+HideGui false
+Log 5
+RamCache rc1 8 0
 Vhdd C: G: rc1

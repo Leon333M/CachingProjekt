@@ -100,6 +100,9 @@ void ConfigLoader::verarbeiteteDaten() {
                 if (erstesWort == "HideTerminal") {
                     erstelleHideTerminal(zeile);
                     break;
+                } else if (erstesWort == "HideGui") {
+                    erstelleHideGui(zeile);
+                    break;
                 }
             default:
                 std::cerr << "Unbekannter Typ: " << zeile << std::endl;
@@ -213,4 +216,20 @@ std::string ConfigLoader::wstringToString(const std::wstring &wstr) {
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     std::string str = converter.to_bytes(wstr);
     return str;
+}
+
+void ConfigLoader::erstelleHideGui(std::string zeile) {
+    std::stringstream ss(zeile);
+    std::string typ, hideString;
+    if (ss >> typ >> hideString) {
+        if (hideString == "true") {
+            hideGui = true;
+        } else if (hideString == "false") {
+            hideGui = false;
+        } else {
+            std::cerr << "Unbekanntes Wort " << hideString << " in Zeile " << zeile << std::endl;
+        }
+    } else {
+        std::cerr << "Unbekannter Zeilen inhalt: " << zeile << std::endl;
+    }
 }

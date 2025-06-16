@@ -10,7 +10,6 @@ MainWindow::MainWindow(ConfigLoader *controller)
     this->setCentralWidget(&window);
     this->resize(400, 300);
     this->setWindowTitle("CachingProjekt");
-    this->show();
 
     if (controller == nullptr) {
         return;
@@ -22,7 +21,7 @@ MainWindow::MainWindow(ConfigLoader *controller)
     for (VirtuelleFestplatte &vhdd : *vhdds) {
         VhddPair vhd(&vhdd, new VhddWindow(&vhdd));
         vhd.vhddWidget->setParent(&window);
-        vhd.vhddWidget->setMaximumSize(200, 50);
+        vhd.vhddWidget->setMaximumSize(300, 50);
         vhddPair.push_back(vhd);
     }
 
@@ -37,7 +36,7 @@ MainWindow::MainWindow(ConfigLoader *controller)
     for (CacheInterface *cache : caches) {
         CachePair cacheP(cache, new CacheWindow(cache));
         cacheP.cacheWidget->setParent(&window);
-        cacheP.cacheWidget->setMaximumSize(200, 50);
+        cacheP.cacheWidget->setMaximumSize(300, 50);
         cachePair.push_back(cacheP);
     }
 
@@ -84,6 +83,12 @@ MainWindow::MainWindow(ConfigLoader *controller)
     for (CachePair &pair : unusedCachePairs) {
         CacheInterface *cacheI = pair.cache;
         baueCacheRekursivAuf(findeCachePairMitCacheName(cacheI->getCacheName()), 0);
+    }
+
+    if (configLoader->getHideGui()) {
+        this->hide();
+    } else {
+        this->show();
     }
 }
 
