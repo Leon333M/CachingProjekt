@@ -1,5 +1,5 @@
-HideTerminal true
-HideGui true
+HideTerminal false
+HideGui false
 Log 5 log.txt
 RamCache rc 8 2
 SsdCache sc E: 8 10

@@ -1,6 +1,7 @@
 // GuiManager.cpp
 #include "GuiManager.h"
 #include "MainWindow.h"
+#include "QtSymbolHandler.h"
 #include "ShutdownEventFilter.h"
 
 GuiManager::GuiManager(int argc, char *argv[], ConfigLoader *controller)
@@ -18,6 +19,7 @@ void GuiManager::startGui(int argc, char *argv[]) {
     QApplication app(argc, argv);
     ShutdownEventFilter *filter = new ShutdownEventFilter();
     app.installNativeEventFilter(filter);
+    QtSymbolHandler symbol(configLoader);
     MainWindow mw = MainWindow(configLoader);
     app.exec();
 }

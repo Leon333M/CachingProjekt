@@ -106,6 +106,9 @@
     "qmainwindow": "cpp",
     "qpushbutton": "cpp",
     "qwidget": "cpp",
-    "qpainter": "cpp"
+    "qpainter": "cpp",
+    "qmessagebox": "cpp",
+    "qcoreapplication": "cpp",
+    "qstyle": "cpp"
   }
 }
