@@ -15,9 +15,11 @@ private:
     QLabel labelCurrentCacheSize;
     QLabel labelMaxCacheSize;
     QLabel labelMinZugriffsHaufigkeit;
+    int benachrichtigerEventId;
 
 public:
     CacheWindow(CacheInterface *cacheInterface);
+    ~CacheWindow();
     void refresh();
     void paintEvent(QPaintEvent *event);
 

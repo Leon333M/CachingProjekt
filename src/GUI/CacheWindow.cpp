@@ -4,16 +4,6 @@
 #include <QLabel>
 #include <plog/Log.h>
 
-class AutoRowGridLayout : public QGridLayout {
-    std::map<int, int> currentRowPerColumn;
-
-public:
-    void addWidgetAutoRow(QWidget *widget, int column = 0) {
-        int row = currentRowPerColumn[column]++;
-        addWidget(widget, row, column);
-    }
-};
-
 CacheWindow::CacheWindow(CacheInterface *cacheInterface)
     : windowLayout(QGridLayout(this)) {
     cache = cacheInterface;
@@ -30,9 +20,16 @@ CacheWindow::CacheWindow(CacheInterface *cacheInterface)
         labelMaxCacheSize.setText(QString::fromWCharArray(cache0->getSsdCache().getCacheName().c_str()));
         labelMinZugriffsHaufigkeit.hide();
     } else {
-        cache->registriereListener([this]() {
+        benachrichtigerEventId = cache->registriereListener([this]() {
             QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
         });
+    }
+}
+
+CacheWindow::~CacheWindow() {
+    if (cache->getCacheTyp() == L"Cache") {
+    } else {
+        cache->entferneListener(benachrichtigerEventId);
     }
 }
 
