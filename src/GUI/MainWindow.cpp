@@ -24,6 +24,7 @@ MainWindow::MainWindow(ConfigLoader *controller, QIcon icon)
         VhddPair vhd(&vhdd, new VhddWindow(&vhdd));
         vhd.vhddWidget->setParent(&window);
         vhd.vhddWidget->setMaximumSize(300, 50);
+        vhd.vhddWidget->setFixedSize(300, 50);
         vhddPair.push_back(vhd);
     }
 
@@ -39,6 +40,7 @@ MainWindow::MainWindow(ConfigLoader *controller, QIcon icon)
         CachePair cacheP(cache, new CacheWindow(cache));
         cacheP.cacheWidget->setParent(&window);
         cacheP.cacheWidget->setMaximumSize(300, 50);
+        cacheP.cacheWidget->setFixedSize(300, 50);
         cachePair.push_back(cacheP);
     }
 

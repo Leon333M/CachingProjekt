@@ -63,9 +63,10 @@ public:
 
     void pop_front() {
         if (daten.size() > 0) {
-            std::unordered_set<Typ> &data = daten[0];
-            Typ objekt = *data.begin();
-            remove(objekt);
+            if (!daten[0].empty()) {
+                Typ objekt = *daten[0].begin();
+                remove(objekt);
+            }
         }
     }
 
