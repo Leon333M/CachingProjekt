@@ -39,12 +39,22 @@ QtSymbolHandler::~QtSymbolHandler() {
 }
 
 void QtSymbolHandler::shutdown() {
+    if (exitThread.joinable()) {
+        exitThread.join();
+    }
     exitThread = std::thread(&GuiManager ::shutdown, guiManager);
 }
 
 void QtSymbolHandler::handleTrayActivated(QSystemTrayIcon::ActivationReason reason) {
     if (reason == QSystemTrayIcon::Trigger) { // Linksklick
-        QMessageBox::information(nullptr, "Beenden", "Programm wird beendet...");
-        this->shutdown();
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Beenden");
+        msgBox.setText("Programm wirklich beenden?");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        int ret = msgBox.exec();
+        if (ret == QMessageBox::Ok) {
+            this->shutdown();
+        }
     }
 }
