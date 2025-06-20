@@ -90,6 +90,10 @@ bool CacheInterface::isCached(const std::wstring &fullPath) const {
     return cashePfade.find(fullPath) != cashePfade.end();
 }
 
+void CacheInterface::shutdown() {
+    clear();
+}
+
 std::wstring CacheInterface::pathFromHandle(HANDLE handle) {
     WCHAR fullPath[FULLPATH_SIZE];
     GetFinalPathNameByHandleW(handle, fullPath, FULLPATH_SIZE - 1, 0);

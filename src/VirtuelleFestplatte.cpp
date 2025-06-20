@@ -36,7 +36,8 @@ static NTSTATUS staticStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
     return vhdd->svcStart(Service, argc, argv);
 }
 static NTSTATUS staticFspContole(FSP_SERVICE *, ULONG, ULONG, PVOID) {
-    PLOG_DEBUG << " staticFspContole ";
+    // wird nie aufgerufen
+    PLOG_VERBOSE << "staticFspContole wurde aufgerufen";
     return STATUS_SUCCESS;
 }
 static NTSTATUS staticStop(FSP_SERVICE *Service) {
@@ -169,6 +170,15 @@ void VirtuelleFestplatte::start() {
     }
 }
 
+void VirtuelleFestplatte::shutdown() {
+    if (fspService != nullptr) {
+        FspServiceStop(fspService);
+    } else {
+        if (vhdPtfs != nullptr) {
+            ptfsDelete(vhdPtfs);
+        }
+    }
+}
 // private Funktion:
 bool VirtuelleFestplatte::isFail(NTSTATUS result, PTFS *ptfs) {
     if (!NT_SUCCESS(result)) {
@@ -205,7 +215,6 @@ NTSTATUS VirtuelleFestplatte::svcStop(FSP_SERVICE *Service) {
     PTFS *Ptfs = (PTFS *)Service->UserContext;
     FspFileSystemStopDispatcher(Ptfs->FileSystem);
     ptfsDelete(Ptfs);
-    cache.clear();
     return STATUS_SUCCESS;
 }
 
@@ -386,6 +395,7 @@ NTSTATUS VirtuelleFestplatte::ptfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR M
 
     Result = STATUS_SUCCESS;
     Ptfs->vhdd = this;
+    vhdPtfs = Ptfs;
 
 exit:
     if (NT_SUCCESS(Result)) {

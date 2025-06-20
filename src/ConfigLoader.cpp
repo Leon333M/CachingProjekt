@@ -37,16 +37,13 @@ void ConfigLoader::clear() {
 }
 
 void ConfigLoader::shutdown() {
-    // clear();
+    // vhdd herunterfahren
     for (VirtuelleFestplatte &vhdd : vhdds) {
-        FSP_SERVICE *fspService = vhdd.fspService;
-        if (fspService != nullptr) {
-            FspServiceStop(fspService);
-        }
+        vhdd.shutdown();
     }
-    // lere Cache
+    // Cache herunterfahren
     for (const auto &cacheM : cacheMap) {
-        cacheM.second->clear();
+        cacheM.second->shutdown();
     }
 }
 

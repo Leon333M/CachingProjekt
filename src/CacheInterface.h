@@ -117,6 +117,12 @@ public:
 
     virtual bool isCached(const std::wstring &fullPath) const;
 
+    /**
+     * @brief shutdown signalisiert den Cache dass er sich beenden soll.
+     *
+     */
+    virtual void shutdown();
+
     std::wstring pathFromHandle(HANDLE handle);
 
     /**

@@ -19,9 +19,8 @@ private:
     CacheInterface &cache;
     FSP_FILE_SYSTEM_INTERFACE PtfsInterface;
     WCHAR volumeRoot[4];
-
-public:
     FSP_SERVICE *fspService = nullptr;
+    PTFS *vhdPtfs = nullptr;
 
 public:
     /**
@@ -33,6 +32,7 @@ public:
      */
     VirtuelleFestplatte(std::wstring orginalVolume, std::wstring neuesVolume, CacheInterface &cache);
     void start();
+    void shutdown();
     std::wstring getOrginalVolume() { return orginalVolume; };
     std::wstring getNeuesVolume() { return neuesVolume; };
     CacheInterface &getCache() { return cache; };
