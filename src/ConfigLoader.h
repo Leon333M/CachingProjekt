@@ -4,12 +4,9 @@
 #include <memory>
 #include <thread>
 
-class SymbolHandler;
-
 class ConfigLoader {
 private:
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> cacheMap;
-    std::unique_ptr<SymbolHandler> symbolHandler;
     std::vector<VirtuelleFestplatte> vhdds;
     std::vector<std::string> configData;
     std::vector<std::thread> threads;

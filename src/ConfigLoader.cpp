@@ -1,6 +1,5 @@
 // ConfigLoader.cpp
 #include "ConfigLoader.h"
-#include "SymbolHandler.h"
 #include <codecvt>
 #include <fstream>
 #include <iostream>
@@ -200,8 +199,6 @@ void ConfigLoader::erstelleHideTerminal(std::string zeile) {
             HWND hwnd = GetConsoleWindow();
             // Verberge das Konsolenfenster
             ShowWindow(hwnd, SW_HIDE);
-            // init exit symbol
-            symbolHandler = std::make_unique<SymbolHandler>(this);
         } else if (hideString == "false") {
             // Verberge das Konsolenfenster nicht
         } else {

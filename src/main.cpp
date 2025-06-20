@@ -1,22 +1,21 @@
 // main.cpp
 #include "ConfigLoader.h"
 #include "LogManager.h"
-#include "SymbolHandler.h"
 #include <filesystem>
 #include <iostream>
 #include <windows.h>
 
 #include "GUI/GuiManager.h"
 
-ConfigLoader *cf = nullptr;
+GuiManager *gm = nullptr;
 
 // nur wenn HideTerminal false
 BOOL WINAPI ShutdownHandler(DWORD dwCtrlType) {
     PLOG_DEBUG << "Shutdown-Signal empfangen!";
     PLOG_DEBUG << dwCtrlType;
-    if (cf != nullptr) {
-        cf->clear();
-        PLOG_DEBUG << "Cache clear erfolgreich";
+    if (gm != nullptr) {
+        gm->shutdown();
+        PLOG_DEBUG << "Shutdown erfolgreich";
     }
     // Bei FALSE wird das Herunterfahren abgebrochen
     // Bei TRUE wird das Herunterfahren fortgesetzt
@@ -54,7 +53,6 @@ int main(int argc, char *argv[]) {
         ConfigLoader configLoader;
         std::cout << "lod Config" << std::endl;
         configLoader.loadFromFile(configLoader.stringToWString(file));
-        cf = &configLoader;
         int loglevel = configLoader.getLogLevel();
         std::string logDatei = configLoader.getLogDatei();
 
@@ -63,7 +61,8 @@ int main(int argc, char *argv[]) {
         LogManager logManager(loglevel, logDatei);
 
         // erstelle Qt Gui
-        GuiManager gm(argc, argv, &configLoader);
+        GuiManager guiManager(argc, argv, &configLoader);
+        gm = &guiManager;
 
         // Registriere den Shutdown-Handler (nur wenn HideTerminal false)
         if (!SetConsoleCtrlHandler(ShutdownHandler, TRUE)) {
@@ -74,7 +73,7 @@ int main(int argc, char *argv[]) {
         PLOG_DEBUG << "starte virtuelles Laufwerk:, das Hdd spiegelt.";
         configLoader.start();
         PLOG_DEBUG << "virtuelles Laufwerk bendet, warte auf GUI.";
-        gm.~GuiManager();
+        guiManager.~GuiManager();
         PLOG_DEBUG << "ende main";
         return 0;
 
