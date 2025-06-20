@@ -14,7 +14,7 @@ private:
     std::thread exitThread;
 
 public:
-    QtSymbolHandler(GuiManager *guiManager);
+    QtSymbolHandler(GuiManager *guiManager, QIcon icon);
     ~QtSymbolHandler();
     void shutdown();
 

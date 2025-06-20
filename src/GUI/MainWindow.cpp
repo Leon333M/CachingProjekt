@@ -2,14 +2,16 @@
 #include "MainWindow.h"
 #include <plog/Log.h>
 
-MainWindow::MainWindow(ConfigLoader *controller)
+MainWindow::MainWindow(ConfigLoader *controller, QIcon icon)
     : configLoader(controller),
+      icon(icon),
       window(this),
       windowLayout(AutoRowGridLayout(&window)),
       overlay(&window) {
     this->setCentralWidget(&window);
     this->resize(400, 300);
     this->setWindowTitle("CachingProjekt");
+    this->setWindowIcon(icon);
 
     if (controller == nullptr) {
         return;

@@ -6,8 +6,9 @@
 #include <QMessageBox>
 #include <QStyle>
 
-QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager) : guiManager(guiManager) {
-    icon = QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon);
+QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager, QIcon icon)
+    : guiManager(guiManager),
+      icon(icon) {
 
     if (icon.isNull()) {
         PLOG_DEBUG << "Icon konnte nicht geladen werden!";

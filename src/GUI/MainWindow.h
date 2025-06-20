@@ -37,9 +37,10 @@ public:
     AutoRowGridLayout windowLayout;
     LinienOverlay overlay;
     std::vector<CachePair> cachePair;
+    QIcon icon;
 
 public:
-    MainWindow(ConfigLoader *controller);
+    MainWindow(ConfigLoader *controller, QIcon icon);
     void resizeEvent(QResizeEvent *event);
 
 private:

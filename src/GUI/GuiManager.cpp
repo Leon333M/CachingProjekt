@@ -3,6 +3,7 @@
 #include "MainWindow.h"
 #include "QtSymbolHandler.h"
 #include "ShutdownEventFilter.h"
+#include <QStyle>
 
 GuiManager::GuiManager(int argc, char *argv[], ConfigLoader *controller)
     : configLoader(controller) {
@@ -32,7 +33,8 @@ void GuiManager::startGui(int argc, char *argv[]) {
     QApplication app(argc, argv);
     ShutdownEventFilter *filter = new ShutdownEventFilter(this);
     app.installNativeEventFilter(filter);
-    QtSymbolHandler symbol(this);
-    MainWindow mw = MainWindow(configLoader);
+    QIcon icon = QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon);
+    QtSymbolHandler symbol(this, icon);
+    MainWindow mw = MainWindow(configLoader, icon);
     PLOG_DEBUG << "GUI beendet " << app.exec();
 }
