@@ -8,11 +8,11 @@
 
 class AufgabenVerteiler {
 private:
-    std::thread arbeitsThread;                  // Hintergrund-Thread für Aufgaben
-    std::mutex mutex;                           // Schutz für die Warteschlange
-    std::condition_variable bedingung;          // Zum Warten auf neue Aufgaben
-    std::queue<std::function<void()>> aufgaben; // Warteschlange für Aufgaben
-    bool beenden = false;                       // Signal zum Beenden des Threads
+    std::thread arbeitsThread;                                    // Hintergrund-Thread für Aufgaben
+    std::mutex mutex;                                             // Schutz für die Warteschlange
+    std::condition_variable bedingung;                            // Zum Warten auf neue Aufgaben
+    bool beenden = false;                                         // Signal zum Beenden des Threads
+    std::unordered_map<uint64_t, std::function<void()>> aufgaben; // Warteschlange für Aufgaben
 
 public:
     AufgabenVerteiler() {
@@ -29,11 +29,12 @@ public:
                     if (beenden && aufgaben.empty())
                         return;
 
-                    aktuelleAufgabe = std::move(aufgaben.front());
-                    aufgaben.pop();
+                    auto it = aufgaben.begin();
+                    aktuelleAufgabe = std::move(it->second);
+                    aufgaben.erase(it);
                 }
 
-                // Aufgabe ausführen (außerhalb des Locks!)
+                // Aufgabe ausfuhren
                 aktuelleAufgabe();
             }
         });
@@ -50,11 +51,24 @@ public:
         }
     }
 
-    // Neue Aufgabe hinzufügen
+    static uint64_t generiereSlotHash() {
+        thread_local uint64_t lokalerZaehler = 0;
+
+        // Thread-ID zu 64-bit Hash machen
+        std::hash<std::thread::id> hasher;
+        uint64_t threadHash = static_cast<uint64_t>(hasher(std::this_thread::get_id()));
+
+        // Slot-Hash: obere 32 Bit Thread-ID, untere 32 Bit lokaler Zahler
+        uint64_t slotHash = (threadHash << 32) | (lokalerZaehler++);
+        return slotHash;
+    }
+
+    // Neue Aufgabe hinzufugen
     void einreihen(std::function<void()> aufgabe) {
+        uint64_t slotHash = generiereSlotHash();
         {
-            std::lock_guard<std::mutex> schloss(mutex);
-            aufgaben.push(std::move(aufgabe));
+            // std::lock_guard<std::mutex> schloss(mutex); // Rausoptimiert, da ineffizient
+            aufgaben[slotHash] = std::move(aufgabe);
         }
         bedingung.notify_one();
     }

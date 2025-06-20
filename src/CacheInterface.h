@@ -24,7 +24,6 @@ protected:
     std::wstring cacheName = L"Name";
 
 private:
-    CacheInterface *nextCache = nullptr;
     const int maxHandleHistorie = 8;
     RingSpeicher<HANDLE> handleHistorie;
     int minZugriffsHaufigkeit = 2;
