@@ -35,6 +35,10 @@ static VirtuelleFestplatte *vhdd;
 static NTSTATUS staticStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv) {
     return vhdd->svcStart(Service, argc, argv);
 }
+static NTSTATUS staticFspContole(FSP_SERVICE *, ULONG, ULONG, PVOID) {
+    PLOG_DEBUG << " staticFspContole ";
+    return STATUS_SUCCESS;
+}
 static NTSTATUS staticStop(FSP_SERVICE *Service) {
     return ((PTFS *)Service->UserContext)->vhdd->svcStop(Service);
 }
@@ -156,8 +160,10 @@ void VirtuelleFestplatte::start() {
         fspStartet = true;
         PWSTR ServiceName = PWSTR(L"" PROGNAME);
         vhdd = this;
-        NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, 0);
+        NTSTATUS status = FspServiceRun(ServiceName, staticStart, staticStop, staticFspContole);
         PLOG_DEBUG << "FspServiceRun status = " << (int)status;
+        FSP_SERVICE_START;
+        FSP_SERVICE_CONTROL;
     } else {
         erstelleVhdd();
     }
@@ -251,6 +257,8 @@ NTSTATUS VirtuelleFestplatte::svcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *
         return Result;
     }
 
+    fspService = Service;
+
     return Result;
 }
 
@@ -265,7 +273,7 @@ NTSTATUS VirtuelleFestplatte::enableBackupRestorePrivileges(VOID) {
     Privileges.P.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
     Privileges.P.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
 
-    if (!LookupPrivilegeValue(0, SE_BACKUP_NAME, &Privileges.P.Privileges[0].Luid) || // zu LookupPrivilegeValueW aendern bei error
+    if (!LookupPrivilegeValue(0, SE_BACKUP_NAME, &Privileges.P.Privileges[0].Luid) ||
         !LookupPrivilegeValue(0, SE_RESTORE_NAME, &Privileges.P.Privileges[1].Luid)) {
         return FspNtStatusFromWin32(GetLastError());
     }

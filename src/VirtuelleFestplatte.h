@@ -21,6 +21,9 @@ private:
     WCHAR volumeRoot[4];
 
 public:
+    FSP_SERVICE *fspService = nullptr;
+
+public:
     /**
      * @brief ersellt ein neues Vituelles Volume
      *

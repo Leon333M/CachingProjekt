@@ -11,6 +11,8 @@ private:
 public:
     GuiManager(int argc, char *argv[], ConfigLoader *controller);
     ~GuiManager();
+    void shutdown();
+    void guiClose();
 
 private:
     void startGui(int argc, char *argv[]);

@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QStyle>
 
-QtSymbolHandler::QtSymbolHandler(ConfigLoader *configLoader) : configLoader(configLoader) {
+QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager) : guiManager(guiManager) {
     icon = QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon);
 
     if (icon.isNull()) {
@@ -19,24 +19,32 @@ QtSymbolHandler::QtSymbolHandler(ConfigLoader *configLoader) : configLoader(conf
 
     connect(trayIcon, &QSystemTrayIcon::activated, this, &QtSymbolHandler::handleTrayActivated);
 
-    // Optional: Kontextmenü mit "Beenden"
+    // Kontextmenu mit "Beenden"
     QMenu *menu = new QMenu();
     QAction *exitAction = menu->addAction("Beenden");
     connect(exitAction, &QAction::triggered, [this]() {
-        this->configLoader->clear();
+        this->guiManager->shutdown();
     });
     trayIcon->setContextMenu(menu);
+
     trayIcon->show();
 }
 
 QtSymbolHandler::~QtSymbolHandler() {
     trayIcon->hide();
     delete trayIcon;
+    if (exitThread.joinable()) {
+        exitThread.join();
+    }
+}
+
+void QtSymbolHandler::shutdown() {
+    exitThread = std::thread(&GuiManager ::shutdown, guiManager);
 }
 
 void QtSymbolHandler::handleTrayActivated(QSystemTrayIcon::ActivationReason reason) {
     if (reason == QSystemTrayIcon::Trigger) { // Linksklick
         QMessageBox::information(nullptr, "Beenden", "Programm wird beendet...");
-        configLoader->clear();
+        this->shutdown();
     }
 }

@@ -36,6 +36,20 @@ void ConfigLoader::clear() {
     }
 }
 
+void ConfigLoader::shutdown() {
+    // clear();
+    for (VirtuelleFestplatte &vhdd : vhdds) {
+        FSP_SERVICE *fspService = vhdd.fspService;
+        if (fspService != nullptr) {
+            FspServiceStop(fspService);
+        }
+    }
+    // lere Cache
+    for (const auto &cacheM : cacheMap) {
+        cacheM.second->clear();
+    }
+}
+
 void ConfigLoader::starteVhdd(VirtuelleFestplatte &vhdd) {
     std::cout << "Starte vhdd" << std::endl;
     vhdd.start();

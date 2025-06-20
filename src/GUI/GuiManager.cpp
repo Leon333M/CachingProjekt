@@ -15,11 +15,24 @@ GuiManager::~GuiManager() {
     }
 }
 
+void GuiManager::shutdown() {
+    PLOG_DEBUG << "shutdown guiClose";
+    guiClose();
+    Sleep(100); // Gebe Qt Zeit zum beenden
+    PLOG_DEBUG << "shutdown configLoader";
+    configLoader->shutdown();
+    PLOG_DEBUG << "shutdown ende";
+}
+
+void GuiManager::guiClose() {
+    qApp->quit();
+}
+
 void GuiManager::startGui(int argc, char *argv[]) {
     QApplication app(argc, argv);
     ShutdownEventFilter *filter = new ShutdownEventFilter();
     app.installNativeEventFilter(filter);
-    QtSymbolHandler symbol(configLoader);
+    QtSymbolHandler symbol(this);
     MainWindow mw = MainWindow(configLoader);
-    app.exec();
+    PLOG_DEBUG << "GUI beendet " << app.exec();
 }

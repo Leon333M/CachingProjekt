@@ -21,6 +21,7 @@ public:
     bool loadFromFile(const std::wstring &filename);
     void start();
     void clear();
+    void shutdown();
     /**
      * @brief Gibt das geladene Log-Level zuruck.
      *
