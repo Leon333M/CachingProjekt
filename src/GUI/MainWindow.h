@@ -6,6 +6,7 @@
 #include "LinienOverlay.h"
 #include "VhddWindow.h"
 #include <QApplication>
+#include <QCloseEvent>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLayout>
@@ -44,4 +45,5 @@ public:
 private:
     CachePair &findeCachePairMitCacheName(const std::wstring &cacheName);
     void baueCacheRekursivAuf(CachePair &cp, int spalte);
+    void closeEvent(QCloseEvent *event);
 };

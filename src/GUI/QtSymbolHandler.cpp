@@ -12,7 +12,7 @@ QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager) : guiManager(guiManager
     if (icon.isNull()) {
         PLOG_DEBUG << "Icon konnte nicht geladen werden!";
     } else {
-        PLOG_DEBUG << "Icon konnte geladen werden!";
+        // PLOG_DEBUG << "Icon konnte geladen werden!";
     }
     trayIcon = new QSystemTrayIcon(icon, this);
     trayIcon->setToolTip("Caching Programm");

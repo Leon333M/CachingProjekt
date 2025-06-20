@@ -147,3 +147,14 @@ void MainWindow::baueCacheRekursivAuf(CachePair &cp, int spalte) {
         baueCacheRekursivAuf(ssdPair, spalte + 1);
     }
 }
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if (qApp->closingDown()) {
+        // App beendet sich
+        event->accept();
+    } else {
+        // Sonst nur verstecken
+        this->hide();
+        event->ignore();
+    }
+}
