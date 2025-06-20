@@ -23,7 +23,7 @@ QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager) : guiManager(guiManager
     QMenu *menu = new QMenu();
     QAction *exitAction = menu->addAction("Beenden");
     connect(exitAction, &QAction::triggered, [this]() {
-        this->guiManager->shutdown();
+        this->shutdown();
     });
     trayIcon->setContextMenu(menu);
 
