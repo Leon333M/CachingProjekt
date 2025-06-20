@@ -78,3 +78,17 @@ add_custom_command(TARGET CachingProjekt POST_BUILD
             >NUL
     COMMENT "Qt-Runtime (DLLs, Plugins) wird via windeployqt in das Build-Verzeichnis kopiert..."
 )
+
+# === exe Signieren ===
+# Pfad zu signtool.exe
+set(SIGNTOOL "E:/Windows Kits/10/bin/10.0.26100.0/x64/signtool.exe")
+# Pfad zum Zertifikat (PFX)
+set(CERT_PFX "E:/Code/MeinCodeSigningZertifikat.pfx")
+set(CERT_PASS "DrD2jUDvyB")
+# Pfad zur gebauten EXE
+set(EXE_TO_SIGN "$<TARGET_FILE:CachingProjekt>")
+# Signieren nach Build
+add_custom_command(TARGET CachingProjekt POST_BUILD
+    COMMAND "${SIGNTOOL}" sign /f "${CERT_PFX}" /p "${CERT_PASS}" /fd sha256 /tr http://timestamp.digicert.com /td sha256 "${EXE_TO_SIGN}"
+    COMMENT "Signiere CachingProjekt.exe automatisch"
+)
