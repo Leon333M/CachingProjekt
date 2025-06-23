@@ -84,6 +84,8 @@ public:
      */
     virtual const UINT64 getCurrentCacheSize() const { return currentCacheSize; };
 
+    const std::unordered_set<std::wstring> getCashePfade() const { return cashePfade; };
+
     /**
      * @brief read ist die Grundfunktion fur den Cache.
      * Hier wird gepruft, ob die Datei im Cache liegt. Wenn nicht,

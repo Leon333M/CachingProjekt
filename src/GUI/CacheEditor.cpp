@@ -33,8 +33,16 @@ CacheEditor::CacheEditor(CacheInterface *cacheInterface)
         layout6->addWidget(new QLabel(QString::number(cache->getMaxPfadHistorie())), 0, 1);
         windowLayout.addLayout(layout6, 5, 0);
         QGridLayout *layout7 = new QGridLayout();
-        layout7->addWidget(new QLabel("PfadHistorie:"), 0, 0);
-        layout7->addWidget(new QLabel("PfadHistorie:"), 1, 0, 10, 1);
+        layout7->addWidget(new QLabel("CashePfade:"), 0, 0);
+        layout7->addWidget(&cashePfadeTextBlock, 1, 0);
+        cashePfadeTextBlock.setReadOnly(true);
+        cashePfadeTextBlock.setFrameStyle(QFrame::NoFrame);
+        cashePfadeTextBlock.setStyleSheet(
+            "QPlainTextEdit {"
+            "  border: 1px solid black;" // schwarzer Rahmen, 1 Pixel dick
+            "  background: transparent;" // Hintergrund transparent
+            "  color: black;"            // Textfarbe
+            "}");
         windowLayout.addLayout(layout7, 6, 0);
         if (cache->getCacheTyp() == L"SsdCache") {
             int abZeile = 7;
@@ -74,6 +82,12 @@ void CacheEditor::refresh() {
         labelCurrentCacheSize.setText(QString::number(cache->getCurrentCacheSize()));
         labelMaxCacheSize.setText(QString::number(cache->getMaxCacheSize()));
         labelMinZugriffsHaufigkeit.setText(QString::number(cache->getMinZugriffsHaufigkeit()));
+        QString text;
+        std::unordered_set<std::wstring> pfadListe = cache->getCashePfade();
+        for (const std::wstring &pfad : pfadListe) {
+            text += QString::fromWCharArray(pfad.c_str()) + QChar::LineFeed;
+        }
+        cashePfadeTextBlock.setPlainText(text);
     }
 }
 

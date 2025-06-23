@@ -110,6 +110,7 @@
     "qmessagebox": "cpp",
     "qcoreapplication": "cpp",
     "qstyle": "cpp",
-    "qlabel": "cpp"
+    "qlabel": "cpp",
+    "qplaintextedit": "cpp"
   }
 }

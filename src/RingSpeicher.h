@@ -86,4 +86,6 @@ public:
             data.reserve(maxUsedSize);
         }
     }
+
+    std::vector<std::unordered_set<Typ>> getDaten() { return daten; }
 };

@@ -3,6 +3,7 @@
 #include "../CacheInterface.h"
 #include <QGridLayout>
 #include <QLabel>
+#include <QPlainTextEdit>
 #include <QWidget>
 
 class CacheEditor : public QWidget {
@@ -14,6 +15,7 @@ private:
     QLabel labelCurrentCacheSize;
     QLabel labelMaxCacheSize;
     QLabel labelMinZugriffsHaufigkeit;
+    QPlainTextEdit cashePfadeTextBlock;
     int benachrichtigerEventId;
 
 public:
