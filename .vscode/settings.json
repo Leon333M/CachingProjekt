@@ -109,6 +109,7 @@
     "qpainter": "cpp",
     "qmessagebox": "cpp",
     "qcoreapplication": "cpp",
-    "qstyle": "cpp"
+    "qstyle": "cpp",
+    "qlabel": "cpp"
   }
 }

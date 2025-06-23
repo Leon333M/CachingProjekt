@@ -2,11 +2,13 @@
 #include "CacheWindow.h"
 #include "../Cache.h"
 #include <QLabel>
+#include <QMouseEvent>
 #include <plog/Log.h>
 
 CacheWindow::CacheWindow(CacheInterface *cacheInterface)
-    : windowLayout(QGridLayout(this)) {
-    cache = cacheInterface;
+    : cache(cacheInterface),
+      editor(cache),
+      windowLayout(QGridLayout(this)) {
     int i = 0;
     windowLayout.addWidget(new QLabel(QString::fromWCharArray(cacheInterface->getCacheName().c_str())), 0, i++);
     windowLayout.addWidget(&labelCacheTyp, 0, i++);
@@ -48,4 +50,14 @@ const double CacheWindow::byteToGbyte(const UINT64 &byte) const {
     double mByte = kByte / m;
     double gByte = mByte / m;
     return gByte;
+}
+
+void CacheWindow::showCacheEditor() {
+    editor.show();
+}
+
+void CacheWindow::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        showCacheEditor();
+    }
 }

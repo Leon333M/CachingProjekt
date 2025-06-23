@@ -54,6 +54,7 @@ add_executable(CachingProjekt
      src/GUI/VhddWindow.cpp
      src/GUI/KreisWidget.cpp
      src/GUI/QtSymbolHandler.cpp
+     src/GUI/CacheEditor.cpp
 )
 
 # === plog mit dem Executable linken ===

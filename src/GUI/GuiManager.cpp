@@ -25,6 +25,7 @@ void GuiManager::shutdown() {
 }
 
 void GuiManager::guiClose() {
+    qApp->closeAllWindows();
     qApp->quit();
     Sleep(100); // Gebe Qt Zeit zum beenden
 }
