@@ -6,8 +6,9 @@
 #include <QMessageBox>
 #include <QStyle>
 
-QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager, QIcon icon)
+QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager, QIcon icon, MainWindow *mw)
     : guiManager(guiManager),
+      mainWindow(mw),
       icon(icon) {
 
     if (icon.isNull()) {
@@ -26,6 +27,11 @@ QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager, QIcon icon)
     connect(exitAction, &QAction::triggered, [this]() {
         this->shutdown();
     });
+    QAction *showAction = menu->addAction("Gui anzeigen");
+    connect(showAction, &QAction::triggered, [this]() {
+        this->mainWindow->show();
+    });
+
     trayIcon->setContextMenu(menu);
 
     trayIcon->show();
@@ -51,11 +57,13 @@ void QtSymbolHandler::handleTrayActivated(QSystemTrayIcon::ActivationReason reas
         QMessageBox msgBox;
         msgBox.setWindowTitle("Beenden");
         msgBox.setText("Programm wirklich beenden?");
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setStandardButtons(QMessageBox::Open | QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();
         if (ret == QMessageBox::Ok) {
             this->shutdown();
+        } else if (ret == QMessageBox::Open) {
+            mainWindow->show();
         }
     }
 }

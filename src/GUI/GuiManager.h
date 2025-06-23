@@ -13,6 +13,7 @@ public:
     ~GuiManager();
     void shutdown();
     void guiClose();
+    void guiShow();
 
 private:
     void startGui(int argc, char *argv[]);

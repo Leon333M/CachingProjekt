@@ -111,6 +111,7 @@
     "qcoreapplication": "cpp",
     "qstyle": "cpp",
     "qlabel": "cpp",
-    "qplaintextedit": "cpp"
+    "qplaintextedit": "cpp",
+    "qobject": "cpp"
   }
 }

@@ -35,7 +35,7 @@ void GuiManager::startGui(int argc, char *argv[]) {
     ShutdownEventFilter *filter = new ShutdownEventFilter(this);
     app.installNativeEventFilter(filter);
     QIcon icon = QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon);
-    QtSymbolHandler symbol(this, icon);
     MainWindow mw = MainWindow(configLoader, icon);
+    QtSymbolHandler symbol(this, icon, &mw);
     PLOG_DEBUG << "GUI beendet " << app.exec();
 }
