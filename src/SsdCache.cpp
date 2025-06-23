@@ -17,6 +17,14 @@ SsdCache::SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCach
     clearCacheVerzeichnis();
 }
 
+std::wstring SsdCache::getCacheVolume() {
+    return cacheVolume;
+}
+
+std::wstring SsdCache::getCacheStammVerzeichnis() {
+    return cacheStammVerzeichnis;
+}
+
 bool SsdCache::readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {
     std::wstring cachePath = getCachePathFromFullPath(fullPath);
     return readSsdCache(cachePath, buffer, length, bytesTransferred, overlapped);

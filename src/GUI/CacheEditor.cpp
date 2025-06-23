@@ -28,6 +28,26 @@ CacheEditor::CacheEditor(CacheInterface *cacheInterface)
         layout5->addWidget(new QLabel("MinZugriffsHaufigkeit:"), 0, 0);
         layout5->addWidget(&labelMinZugriffsHaufigkeit, 0, 1);
         windowLayout.addLayout(layout5, 4, 0);
+        QGridLayout *layout6 = new QGridLayout();
+        layout6->addWidget(new QLabel("MaxPfadHistorie:"), 0, 0);
+        layout6->addWidget(new QLabel(QString::number(cache->getMaxPfadHistorie())), 0, 1);
+        windowLayout.addLayout(layout6, 5, 0);
+        QGridLayout *layout7 = new QGridLayout();
+        layout7->addWidget(new QLabel("PfadHistorie:"), 0, 0);
+        layout7->addWidget(new QLabel("PfadHistorie:"), 1, 0, 10, 1);
+        windowLayout.addLayout(layout7, 6, 0);
+        if (cache->getCacheTyp() == L"SsdCache") {
+            int abZeile = 7;
+            SsdCache *cache0 = static_cast<SsdCache *>(cache);
+            QGridLayout *layout1 = new QGridLayout();
+            layout1->addWidget(new QLabel("CacheVolume:"), 0, 0);
+            layout1->addWidget(new QLabel(QString::fromWCharArray(cache0->getCacheVolume().c_str())), 0, 1);
+            windowLayout.addLayout(layout1, abZeile++, 0);
+            QGridLayout *layout2 = new QGridLayout();
+            layout2->addWidget(new QLabel("CacheStammVerzeichnis:"), 0, 0);
+            layout2->addWidget(new QLabel(QString::fromWCharArray(cache0->getCacheStammVerzeichnis().c_str())), 0, 1);
+            windowLayout.addLayout(layout2, abZeile++, 0);
+        }
     } else {
         Cache *cache0 = static_cast<Cache *>(cache);
         QGridLayout *layout3 = new QGridLayout();

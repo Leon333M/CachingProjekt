@@ -59,6 +59,10 @@ public:
     void setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit);
     int getMinZugriffsHaufigkeit() { return minZugriffsHaufigkeit; };
 
+    int getMaxPfadHistorie() { return maxPfadHistorie; };
+
+    RingSpeicher<std::wstring> getPfadHistorie() { return pfadHistorie; };
+
     /**
      * @brief Gibt den Typ des Caches als lesbaren String zuruck.
      *

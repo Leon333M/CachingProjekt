@@ -9,6 +9,8 @@ private:
 
 public:
     SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 10);
+    std::wstring getCacheVolume();
+    std::wstring getCacheStammVerzeichnis();
 
 private:
     bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);
