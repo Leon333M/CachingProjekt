@@ -20,8 +20,7 @@ public:
     CacheEditor(CacheInterface *cacheInterface);
     ~CacheEditor();
     void refresh();
-    void showEditor();
-    void hideEditor();
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
+    void paintEvent(QPaintEvent *event);
 };

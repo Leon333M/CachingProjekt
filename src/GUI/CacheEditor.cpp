@@ -1,5 +1,7 @@
 // CacheEditor.cpp
 #include "CacheEditor.h"
+#include "../Cache.h"
+#include <QPainter>
 #include <plog/Log.h>
 
 CacheEditor::CacheEditor(CacheInterface *cacheInterface)
@@ -26,6 +28,16 @@ CacheEditor::CacheEditor(CacheInterface *cacheInterface)
         layout5->addWidget(new QLabel("MinZugriffsHaufigkeit:"), 0, 0);
         layout5->addWidget(&labelMinZugriffsHaufigkeit, 0, 1);
         windowLayout.addLayout(layout5, 4, 0);
+    } else {
+        Cache *cache0 = static_cast<Cache *>(cache);
+        QGridLayout *layout3 = new QGridLayout();
+        layout3->addWidget(new QLabel("priorityCache:"), 0, 0);
+        layout3->addWidget(new QLabel(QString::fromWCharArray(cache0->getRamCache().getCacheName().c_str())), 0, 1);
+        windowLayout.addLayout(layout3, 2, 0);
+        QGridLayout *layout4 = new QGridLayout();
+        layout4->addWidget(new QLabel("secondaryCache:"), 0, 0);
+        layout4->addWidget(new QLabel(QString::fromWCharArray(cache0->getSsdCache().getCacheName().c_str())), 0, 1);
+        windowLayout.addLayout(layout4, 3, 0);
     }
     refresh();
 }
@@ -45,23 +57,6 @@ void CacheEditor::refresh() {
     }
 }
 
-void CacheEditor::showEditor() {
-    if (cache->getCacheTyp() != L"Cache") {
-        benachrichtigerEventId = cache->registriereListener([this]() {
-            QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
-        });
-    }
-    refresh();
-    show();
-}
-
-void CacheEditor::hideEditor() {
-    if (cache->getCacheTyp() != L"Cache") {
-        cache->entferneListener(benachrichtigerEventId);
-    }
-    hide();
-}
-
 void CacheEditor::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     refresh();
@@ -77,4 +72,10 @@ void CacheEditor::hideEvent(QHideEvent *event) {
     if (cache->getCacheTyp() != L"Cache") {
         cache->entferneListener(benachrichtigerEventId);
     }
+}
+
+void CacheEditor::paintEvent(QPaintEvent *event) {
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.fillRect(rect(), QColor(0, 255, 0, 100));
 }
