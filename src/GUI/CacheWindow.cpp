@@ -42,6 +42,23 @@ void CacheWindow::refresh() {
     labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));
 }
 
+void CacheWindow::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    refresh();
+    if (cache->getCacheTyp() != L"Cache") {
+        benachrichtigerEventId = cache->registriereListener([this]() {
+            QMetaObject::invokeMethod(this, [this]() { refresh(); }, Qt::QueuedConnection);
+        });
+    }
+}
+
+void CacheWindow::hideEvent(QHideEvent *event) {
+    QWidget::hideEvent(event);
+    if (cache->getCacheTyp() != L"Cache") {
+        cache->entferneListener(benachrichtigerEventId);
+    }
+}
+
 void CacheWindow::paintEvent(QPaintEvent *event) {}
 
 const double CacheWindow::byteToGbyte(const UINT64 &byte) const {
