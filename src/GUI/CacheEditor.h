@@ -12,6 +12,7 @@ private:
     CacheInterface *cache = nullptr;
     QGridLayout windowLayout;
     QLabel labelCacheTyp;
+    QLabel labelCacheUsage;
     QLabel labelCurrentCacheSize;
     QLabel labelMaxCacheSize;
     QLabel labelMinZugriffsHaufigkeit;

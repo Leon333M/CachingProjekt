@@ -40,8 +40,8 @@ void CacheWindow::refresh() {
     if (cache->getCacheTyp() != L"Cache") {
         labelMinZugriffsHaufigkeit.setText(QString::number(cache->getMinZugriffsHaufigkeit()));
         labelCacheTyp.setText(QString::fromWCharArray(cache->getCacheTyp().c_str()));
-        labelCurrentCacheSize.setText(QString::number(byteToGbyte(cache->getCurrentCacheSize())));
-        labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())));
+        labelCurrentCacheSize.setText(QString::number((cache->getCurrentCacheSize() / (cache->getMaxCacheSize() / 100))) + "%");
+        labelMaxCacheSize.setText(QString::number(byteToGbyte(cache->getMaxCacheSize())) + "GB");
     }
 }
 
