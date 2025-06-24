@@ -4,10 +4,10 @@
 #include <QPainter>
 #include <plog/Log.h>
 
-CacheEditor::CacheEditor(CacheInterface *cacheInterface)
+CacheEditor::CacheEditor(CacheInterface *cacheInterface, QIcon &icon)
     : cache(cacheInterface),
       windowLayout(QGridLayout(this)) {
-    // this->setWindowIcon(icon);
+    this->setWindowIcon(icon);
 
     QGridLayout *layout0 = new QGridLayout();
     layout0->addWidget(new QLabel("CacheName:"), 0, 0);

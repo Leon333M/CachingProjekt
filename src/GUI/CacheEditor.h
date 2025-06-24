@@ -20,7 +20,7 @@ private:
     int benachrichtigerEventId;
 
 public:
-    CacheEditor(CacheInterface *cacheInterface);
+    CacheEditor(CacheInterface *cacheInterface, QIcon &icon);
     ~CacheEditor();
     void refresh();
     void showEvent(QShowEvent *event);

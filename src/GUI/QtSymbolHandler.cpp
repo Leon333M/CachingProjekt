@@ -47,9 +47,10 @@ QtSymbolHandler::~QtSymbolHandler() {
 
 void QtSymbolHandler::shutdown() {
     if (exitThread.joinable()) {
-        exitThread.join();
+        PLOG_DEBUG << "shutdown schon gestartet";
+    } else {
+        exitThread = std::thread(&GuiManager ::shutdown, guiManager);
     }
-    exitThread = std::thread(&GuiManager ::shutdown, guiManager);
 }
 
 void QtSymbolHandler::handleTrayActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -59,6 +60,7 @@ void QtSymbolHandler::handleTrayActivated(QSystemTrayIcon::ActivationReason reas
         msgBox.setText("Programm wirklich beenden?");
         msgBox.setStandardButtons(QMessageBox::Open | QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
+        msgBox.setWindowIcon(icon);
         int ret = msgBox.exec();
         if (ret == QMessageBox::Ok) {
             this->shutdown();

@@ -37,7 +37,7 @@ MainWindow::MainWindow(ConfigLoader *controller, QIcon icon)
         caches.push_back(cache);
     }
     for (CacheInterface *cache : caches) {
-        CachePair cacheP(cache, new CacheWindow(cache));
+        CachePair cacheP(cache, new CacheWindow(cache, icon));
         cacheP.cacheWidget->setParent(&window);
         cacheP.cacheWidget->setMaximumSize(300, 50);
         cacheP.cacheWidget->setFixedSize(300, 50);

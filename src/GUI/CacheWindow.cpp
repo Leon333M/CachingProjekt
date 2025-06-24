@@ -5,9 +5,9 @@
 #include <QMouseEvent>
 #include <plog/Log.h>
 
-CacheWindow::CacheWindow(CacheInterface *cacheInterface)
+CacheWindow::CacheWindow(CacheInterface *cacheInterface, QIcon &icon)
     : cache(cacheInterface),
-      editor(cache),
+      editor(cache, icon),
       windowLayout(QGridLayout(this)) {
     int i = 0;
     windowLayout.addWidget(new QLabel(QString::fromWCharArray(cacheInterface->getCacheName().c_str())), 0, i++);
