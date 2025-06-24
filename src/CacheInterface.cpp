@@ -14,9 +14,26 @@ void CacheInterface::setMaxCacheSize(UINT64 maxCacheSizeInGb) {
     maxCacheSize = maxCacheSizeInGb * 1024 * 1024 * 1024;
 }
 
-void CacheInterface::setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit) {
+void CacheInterface::setMinZugriffsHaufigkeit(const int minZugriffsHaufigkeit) {
     this->minZugriffsHaufigkeit = minZugriffsHaufigkeit;
     pfadHistorie.setDepth(minZugriffsHaufigkeit);
+}
+
+int CacheInterface::getMinZugriffsHaufigkeit() const {
+    return minZugriffsHaufigkeit;
+}
+
+void CacheInterface::setMaxPfadHistorie(const int maxPfadHistorie) {
+    this->maxPfadHistorie = maxPfadHistorie;
+    pfadHistorie.setVectorSize(maxPfadHistorie);
+}
+
+int CacheInterface::getMaxPfadHistorie() const {
+    return maxPfadHistorie;
+}
+
+RingSpeicher<std::wstring> CacheInterface::getPfadHistorie() const {
+    return pfadHistorie;
 }
 
 const std::wstring CacheInterface::getCacheTyp() const {
@@ -25,6 +42,14 @@ const std::wstring CacheInterface::getCacheTyp() const {
 
 const std::wstring CacheInterface::getCacheName() const {
     return cacheName;
+}
+
+const UINT64 CacheInterface::getCurrentCacheSize() const {
+    return currentCacheSize;
+}
+
+const std::unordered_set<std::wstring> CacheInterface::getCashePfade() const {
+    return cashePfade;
 }
 
 bool CacheInterface::read(HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped) {

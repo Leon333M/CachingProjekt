@@ -25,10 +25,10 @@ protected:
 
 private:
     const int maxHandleHistorie = 8;
-    RingSpeicher<HANDLE> handleHistorie;
+    RingSpeicher<HANDLE> handleHistorie = RingSpeicher<HANDLE>(1, maxHandleHistorie);
     int minZugriffsHaufigkeit = 2;
-    const int maxPfadHistorie = 64;
-    RingSpeicher<std::wstring> pfadHistorie;
+    int maxPfadHistorie = 64;
+    RingSpeicher<std::wstring> pfadHistorie = RingSpeicher<std::wstring>(minZugriffsHaufigkeit, maxPfadHistorie);
 
 public:
     /**
@@ -56,12 +56,13 @@ public:
      *
      * @param minZugriffsHaufigkeit Minimale Anzahl an Zugriffen, ab der eine Datei im Cache verbleibt.
      */
-    void setMinZugriffsHaufigkeit(int minZugriffsHaufigkeit);
-    int getMinZugriffsHaufigkeit() { return minZugriffsHaufigkeit; };
+    void setMinZugriffsHaufigkeit(const int minZugriffsHaufigkeit);
+    int getMinZugriffsHaufigkeit() const;
 
-    int getMaxPfadHistorie() { return maxPfadHistorie; };
+    void setMaxPfadHistorie(const int maxPfadHistorie);
+    int getMaxPfadHistorie() const;
 
-    RingSpeicher<std::wstring> getPfadHistorie() { return pfadHistorie; };
+    RingSpeicher<std::wstring> getPfadHistorie() const;
 
     /**
      * @brief Gibt den Typ des Caches als lesbaren String zuruck.
@@ -82,9 +83,9 @@ public:
      *
      * @return UINT64 Aktuelle Cache-Groesse.
      */
-    virtual const UINT64 getCurrentCacheSize() const { return currentCacheSize; };
+    virtual const UINT64 getCurrentCacheSize() const;
 
-    const std::unordered_set<std::wstring> getCashePfade() const { return cashePfade; };
+    const std::unordered_set<std::wstring> getCashePfade() const;
 
     /**
      * @brief read ist die Grundfunktion fur den Cache.

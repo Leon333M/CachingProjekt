@@ -7,22 +7,22 @@ C:\Code\WinFsp\bin\winfsp-x64.dll
 Hier eine Anleitung für die config.txt:
 
 # Konfiguration für RamCache
-RamCache rc1 8 2
-# rc1: RamCache mit 8 GB und caching nach 2 Lesezugriffen
+RamCache rc1 8 2 64
+# rc1: RamCache mit 8 GB und caching nach 2 Lesezugriffen und merken der 64 letzten Pfade zur auswertung
 
 # Konfiguration für SsdCache
-SsdCache sc1 E: 8 10
-# sc1: SsdCache auf Laufwerk E: mit 8 GB und caching nach 10 Lesezugriffen
+SsdCache sc1 E: 8 10 64
+# sc1: SsdCache auf Laufwerk E: mit 8 GB und caching nach 10 Lesezugriffen und merken der 64 letzten Pfade zur auswertung
 
 # Kombination der Caches
 Cache c1 sc1 rc1
-# c1: Kombination von sc1 (SsdCache) und rc1 (RamCache)
+# c1: Kombination von sc1 (Primär Cache) und rc1 (Sekundär Cache)
 
 # Wichtig:
 # Wenn bei einem Cache die Anzahl der Lesezugriffe auf 0 gesetzt wird,
 # wird jeder Zugriff sofort zwischengespeichert.
-# Steht dieser Cache vorne in der Kombination,
-# werden alle nachfolgenden Caches ignoriert und nicht mehr verwendet.
+# Steht dieser Cache vorne (als Primär Cache) in der Kombination,
+# werden alle nachfolgenden Caches (Sekundär Caches) ignoriert und nicht mehr verwendet.
 
 # Virtuelle Festplatten-Konfiguration
 Vhdd F: G: rc1
@@ -39,3 +39,5 @@ Log 1 log.txt
 # Konfiguration für Terminalanzeige
 HideTerminal true
 # true: Terminalfenster wird beim Programmstart ausgeblendet. false: Terminal bleibt sichtbar.
+HideGui false
+# true: Gui wird beim Programmstart ausgeblendet. false: Gui bleibt sichtbar.

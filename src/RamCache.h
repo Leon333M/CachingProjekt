@@ -9,7 +9,7 @@ private:
     std::unordered_map<std::wstring, std::vector<char>> ramCache;
 
 public:
-    RamCache(std::wstring name, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 2);
+    RamCache(std::wstring name, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 2, int maxPfadHistorie = 64);
 
 private:
     bool readCache(const std::wstring &fullPath, HANDLE handle, LPVOID buffer, DWORD length, LPDWORD bytesTransferred, LPOVERLAPPED overlapped);

@@ -8,7 +8,7 @@ private:
     std::wstring cacheStammVerzeichnis = cacheVolume + L"/Cashe/" + cacheName + L"/";
 
 public:
-    SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 10);
+    SsdCache(std::wstring name, std::wstring ssdCacheValue, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit = 10, int maxPfadHistorie = 64);
     std::wstring getCacheVolume();
     std::wstring getCacheStammVerzeichnis();
 

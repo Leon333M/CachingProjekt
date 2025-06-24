@@ -124,11 +124,14 @@ void ConfigLoader::verarbeiteteDaten() {
 void ConfigLoader::erstelleSsdCache(std::string zeile) {
     std::stringstream ss(zeile);
     std::string cacheTyp, cacheName, cacheValueName;
-    int cacheSize, minZugriffsHaufigkeit;
+    int cacheSize, minZugriffsHaufigkeit, maxPfadHistorie;
     if (ss >> cacheTyp >> cacheName >> cacheValueName >> cacheSize) {
         if (ss >> minZugriffsHaufigkeit) {
-            // 2. Zahl existirt und ist geladen
-            cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheName), stringToWString(cacheValueName), cacheSize, minZugriffsHaufigkeit)));
+            if (ss >> maxPfadHistorie) {
+                cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheName), stringToWString(cacheValueName), cacheSize, minZugriffsHaufigkeit, maxPfadHistorie)));
+            } else {
+                cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheName), stringToWString(cacheValueName), cacheSize, minZugriffsHaufigkeit)));
+            }
         } else {
             cacheMap.emplace(cacheName, std::make_shared<SsdCache>(SsdCache(stringToWString(cacheName), stringToWString(cacheValueName), cacheSize)));
         }
@@ -140,11 +143,14 @@ void ConfigLoader::erstelleSsdCache(std::string zeile) {
 void ConfigLoader::erstelleRamCache(std::string zeile) {
     std::stringstream ss(zeile);
     std::string cacheTyp, cacheName;
-    int cacheSize, minZugriffsHaufigkeit;
+    int cacheSize, minZugriffsHaufigkeit, maxPfadHistorie;
     if (ss >> cacheTyp >> cacheName >> cacheSize) {
         if (ss >> minZugriffsHaufigkeit) {
-            // 2. Zahl existirt und ist geladen
-            cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(stringToWString(cacheName), cacheSize, minZugriffsHaufigkeit)));
+            if (ss >> maxPfadHistorie) {
+                cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(stringToWString(cacheName), cacheSize, minZugriffsHaufigkeit, maxPfadHistorie)));
+            } else {
+                cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(stringToWString(cacheName), cacheSize, minZugriffsHaufigkeit)));
+            }
         } else {
             cacheMap.emplace(cacheName, std::make_shared<RamCache>(RamCache(stringToWString(cacheName), cacheSize)));
         }

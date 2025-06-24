@@ -12,11 +12,12 @@
 
 #define FULLPATH_SIZE (MAX_PATH + FSP_FSCTL_TRANSACT_PATH_SIZEMAX / sizeof(WCHAR))
 
-RamCache::RamCache(std::wstring name, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit) {
+RamCache::RamCache(std::wstring name, UINT64 maxCacheSizeInGb, int minZugriffsHaufigkeit, int maxPfadHistorie) {
     cacheName = name;
     cacheTyp = L"RamCache";
     setMaxCacheSize(maxCacheSizeInGb);
     setMinZugriffsHaufigkeit(minZugriffsHaufigkeit);
+    setMaxPfadHistorie(maxPfadHistorie);
 }
 
 // private Funktioen
