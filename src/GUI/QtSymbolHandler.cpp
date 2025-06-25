@@ -40,17 +40,10 @@ QtSymbolHandler::QtSymbolHandler(GuiManager *guiManager, QIcon icon, MainWindow 
 QtSymbolHandler::~QtSymbolHandler() {
     trayIcon->hide();
     delete trayIcon;
-    if (exitThread.joinable()) {
-        exitThread.join();
-    }
 }
 
 void QtSymbolHandler::shutdown() {
-    if (exitThread.joinable()) {
-        PLOG_DEBUG << "shutdown schon gestartet";
-    } else {
-        exitThread = std::thread(&GuiManager ::shutdown, guiManager);
-    }
+    guiManager->shutdown();
 }
 
 void QtSymbolHandler::handleTrayActivated(QSystemTrayIcon::ActivationReason reason) {

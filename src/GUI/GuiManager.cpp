@@ -11,12 +11,30 @@ GuiManager::GuiManager(int argc, char *argv[], ConfigLoader *controller)
 }
 
 GuiManager::~GuiManager() {
+    shutdown();
+    if (exitThread.joinable()) {
+        exitThread.join();
+    }
     if (qtThread.joinable()) {
         qtThread.join();
     }
 }
 
 void GuiManager::shutdown() {
+    if (exitThread.joinable()) {
+        PLOG_DEBUG << "shutdown schon gestartet";
+    } else {
+        exitThread = std::thread(&GuiManager ::shutdownThreadFunktion, this);
+    }
+}
+
+void GuiManager::shutdownThreadFunktion() {
+    if (!configLoader->getIsStarted()) {
+        PLOG_DEBUG << "warte auf ConfigLoader";
+        while (!configLoader->getIsStarted()) {
+            Sleep(100);
+        }
+    }
     PLOG_DEBUG << "shutdown guiClose";
     guiClose();
     PLOG_DEBUG << "shutdown configLoader";
@@ -25,9 +43,14 @@ void GuiManager::shutdown() {
 }
 
 void GuiManager::guiClose() {
+    PLOG_DEBUG << "schliesse alle Fenster";
     qApp->closeAllWindows();
+    PLOG_DEBUG << "beende GUI";
     qApp->quit();
-    Sleep(100); // Gebe Qt Zeit zum beenden
+    if (qtThread.joinable()) {
+        PLOG_DEBUG << "warte auf GUI";
+        qtThread.join();
+    }
 }
 
 void GuiManager::startGui(int argc, char *argv[]) {

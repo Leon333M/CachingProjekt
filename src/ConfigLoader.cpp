@@ -6,6 +6,14 @@
 #include <locale>
 #include <sstream>
 
+ConfigLoader::~ConfigLoader() {
+    for (std::thread &thread : threads) {
+        if (thread.joinable()) {
+            thread.join();
+        }
+    }
+}
+
 bool ConfigLoader::loadFromFile(const std::wstring &filename) {
     bool ret = false;
     if (loadFile(filename)) {
@@ -20,8 +28,11 @@ void ConfigLoader::start() {
         threads.emplace_back(&ConfigLoader::starteVhdd, this, std::ref(vhdd));
         Sleep(1000);
     }
+    isStarted = true;
     for (std::thread &thread : threads) {
-        thread.join();
+        if (thread.joinable()) {
+            thread.join();
+        }
     }
 }
 

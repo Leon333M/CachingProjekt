@@ -13,8 +13,10 @@ private:
     std::string logDatei = "";
     int logLevel = 1;
     bool hideGui = true;
+    bool isStarted = false;
 
 public:
+    ~ConfigLoader();
     bool loadFromFile(const std::wstring &filename);
     void start();
     void clear();
@@ -39,6 +41,7 @@ public:
     std::vector<VirtuelleFestplatte> *getVhdds() { return &vhdds; };
     std::unordered_map<std::string, std::shared_ptr<CacheInterface>> *getCacheMap() { return &cacheMap; };
     bool getHideGui() { return hideGui; };
+    bool getIsStarted() { return isStarted; };
     std::wstring stringToWString(const std::string &str);
     std::string wstringToString(const std::wstring &wstr);
 

@@ -5,13 +5,15 @@
 
 class GuiManager {
 private:
-    std::thread qtThread;
     ConfigLoader *configLoader;
+    std::thread qtThread;
+    std::thread exitThread;
 
 public:
     GuiManager(int argc, char *argv[], ConfigLoader *controller);
     ~GuiManager();
     void shutdown();
+    void shutdownThreadFunktion();
     void guiClose();
     void guiShow();
 

@@ -73,12 +73,13 @@ int main(int argc, char *argv[]) {
         PLOG_DEBUG << "starte virtuelles Laufwerk:, das Hdd spiegelt.";
         configLoader.start();
         PLOG_DEBUG << "virtuelles Laufwerk bendet, warte auf GUI.";
+        gm = nullptr;
         guiManager.~GuiManager();
         PLOG_DEBUG << "ende main";
         return 0;
 
     } catch (...) {
-        std::cout << "Error das progam ist abgestuertzt" << std::endl;
+        std::cout << "Error das Progam ist abgestuertzt" << std::endl;
         return 0;
     }
 }

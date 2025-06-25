@@ -13,7 +13,6 @@ private:
     MainWindow *mainWindow;
     QIcon icon;
     QSystemTrayIcon *trayIcon;
-    std::thread exitThread;
 
 public:
     QtSymbolHandler(GuiManager *guiManager, QIcon icon, MainWindow *mw);

@@ -174,6 +174,7 @@ void VirtuelleFestplatte::shutdown() {
     if (fspService != nullptr) {
         FspServiceStop(fspService);
     } else {
+        return; // da vhdPtfs nicht existiert
         if (vhdPtfs != nullptr) {
             ptfsDelete(vhdPtfs);
         }
