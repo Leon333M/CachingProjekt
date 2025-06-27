@@ -1,9 +1,6 @@
 Damit das Programm funktioniert, muss WinFsp installiert sein:
 https://winfsp.dev/rel/
 
-Wenn ihr es im Standardpfad installiert habt, ist die winfsp-x64.dll dort zu finden:
-C:\Code\WinFsp\bin\winfsp-x64.dll
-
 Hier eine Anleitung für die config.txt:
 
 # Konfiguration für RamCache
@@ -27,7 +24,6 @@ Cache c1 sc1 rc1
 # Virtuelle Festplatten-Konfiguration
 Vhdd F: G: rc1
 # F: ist die originale Festplatte, die auf G: gespiegelt wird. Der Cache (rc1) wird auf G: angewendet.
-
 Vhdd D: H: rc1
 # D: ist die originale Festplatte, die auf H: gespiegelt wird. Der Cache (rc1) wird auf G: angewendet.
 
