@@ -1,0 +1,15 @@
+MIT License (für den selbst geschriebenen Quellcode)
+
+Copyright (c) 2025 Leon Zoenrer
+
+Hiermit wird unentgeltlich jeder Person, die eine Kopie dieses Quellcodes (nachfolgend „Code“ genannt) erhält, die Erlaubnis erteilt, den Code uneingeschränkt zu verwenden, einschließlich und ohne Einschränkung des Rechts, ihn zu nutzen, zu kopieren, zu modifizieren, zusammenzuführen, zu veröffentlichen, zu verbreiten, unterzulizenzieren und/oder zu verkaufen, und Personen, denen dieser Code bereitgestellt wird, diese Rechte zu verschaffen, unter den folgenden Bedingungen:
+
+Der obige Urheberrechtshinweis und dieser Genehmigungshinweis sind in allen Kopien oder Teilkopien des Codes beizulegen.
+
+DER CODE WIRD OHNE JEDE AUSDRÜCKLICHE ODER IMPLIZIERTE GARANTIE BEREITGESTELLT, EINSCHLIESSLICH DER GARANTIEN ZUR TAUGLICHKEIT, ZU RECHTSANSPRÜCHEN ODER DER VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK. IN KEINEM FALL SIND DIE AUTOREN ODER COPYRIGHTINHABER FÜR ANSPRÜCHE, SCHÄDEN ODER SONSTIGE HAFTUNGEN VERANTWORTLICH, OB AUS EINEM VERTRAG, EINER UNERLAUBTEN HANDLUNG ODER ANDERWEITIG, DIE AUS DEM CODE ODER DER VERWENDUNG DES CODES ENTSTEHEN.
+
+---
+
+**Hinweis:**  
+Diese Lizenz gilt ausschließlich für den von mir selbst geschriebenen Quellcode in diesem Projekt.  
+Das Gesamtprojekt unterliegt der GNU General Public License v3.0 (GPLv3), da es GPL-lizenzierte Bibliotheken verwendet.

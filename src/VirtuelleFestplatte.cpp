@@ -180,6 +180,7 @@ void VirtuelleFestplatte::shutdown() {
         }
     }
 }
+
 // private Funktion:
 bool VirtuelleFestplatte::isFail(NTSTATUS result, PTFS *ptfs) {
     if (!NT_SUCCESS(result)) {
